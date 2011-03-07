@@ -1,0 +1,31 @@
+{
+    "name": "VoKadio",
+    "version": "1.2.4",
+    "description": "Проигрыватель аудиозаписей сайта ВКонтакте ( http://vkontakte.ru/ ).",
+    
+    "icons": {
+        "16"  : "icons/16x16.png",
+        "19"  : "icons/19x19.png",
+        "32"  : "icons/32x32.png",
+        "64"  : "icons/64x64.png",
+        "128" : "icons/128x128.png"
+    },
+    
+    "browser_action": {
+        "default_icon"  : "icons/popup.png",
+        "default_title" : "VoKadio",
+        "popup"         : "popup.html"
+    },
+    
+    "content_scripts": [
+        {
+            "js"         : [ "js/set-session.js" ],
+            "matches"    : [ "http://vkontakte.ru/api/login_success.html", "http://vkontakte.ru/api/login_failure.html" ],
+            "all_frames" : true
+        }
+    ],
+    
+    "background_page": "background.html",
+    
+    "permissions": [ "notifications", "http://api.vkontakte.ru/", "http://ws.audioscrobbler.com/" ]
+}
