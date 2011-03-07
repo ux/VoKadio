@@ -39,7 +39,7 @@ function updateAudioMeta(index, record)
         
         $('#artist').text('');
         $('#album').remove();
-        $('#album-art img').attr('src', 'icons/64x64.png');
+        $('#album-art img').attr('src', 'images/album-art.png');
         
         audio_helper.getTrackInfo(decodeHtml(record.artist), decodeHtml(record.title),
             function (track_info, rid) {

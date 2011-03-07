@@ -163,7 +163,7 @@ function updateAudioMeta(index, record)
     $(meta_artist).text('');
     $(meta_album).remove();
     
-    $(meta_cover).attr('src', 'icons/64x64.png');
+    $(meta_cover).attr('src', 'images/album-art.png');
     
     $(meta_total).attr('title', '');
     updateTooltips(meta_total);
