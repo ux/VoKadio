@@ -3,7 +3,7 @@
  * 
  * This file is part of VoKadio extension for Google Chrome browser
  * 
- * Copyright (c) 2007 - 2010 InfoStyle Company (http://infostyle.com.ua/)
+ * Copyright (c) 2007 - 2011 InfoStyle Company (http://infostyle.com.ua/)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,13 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 function UnloadManagerServer()
 {
     var handlers = {};
-    var this_obj = this;
+    var that = this;
     
     this.registerHandler = function (id, handler) {
         handlers[id] = handler;
@@ -41,7 +41,8 @@ function UnloadManagerServer()
     
     chrome.extension.onConnect.addListener(function(port) {
         port.onDisconnect.addListener(function(port) {
-            this_obj.emitHandler(port.name);
+            that.emitHandler(port.name);
         });
     });
 }
+

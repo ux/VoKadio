@@ -3,7 +3,7 @@
  * 
  * This file is part of VoKadio extension for Google Chrome browser
  * 
- * Copyright (c) 2007 - 2010 InfoStyle Company (http://infostyle.com.ua/)
+ * Copyright (c) 2007 - 2011 InfoStyle Company (http://infostyle.com.ua/)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 function EventDispatcher()
@@ -25,11 +25,11 @@ function EventDispatcher()
     
     this.addEventListener = function (type, listener)
     {
-        if ( typeof this._eventListeners[type] == 'undefined' )
+        if (typeof this._eventListeners[type] == 'undefined')
             this._eventListeners[type] = [];
         
-        if ( this._getEventListenerIndex(type, listener) === false ) {
-            if ( typeof listener == 'function' ) {
+        if (this._getEventListenerIndex(type, listener) === false) {
+            if (typeof listener == 'function') {
                 this._eventListeners[type].push(listener);
             }
             else {
@@ -40,34 +40,38 @@ function EventDispatcher()
     
     this.removeEventListener = function (type, listener)
     {
-        var i = this._getEventListenerIndex(type, listener);
+        var index = this._getEventListenerIndex(type, listener);
         
-        if ( i !== false )
+        if (index !== false)
             this._eventListeners[type].splice(i, 1);
         
-        return i !== false;
+        return index !== false;
     };
     
     this.dispatchEvent = function (event)
     {
-        if ( typeof event == 'string' )
-            event = { type: event };
+        if (typeof event == 'string')
+            event = {type: event};
         
-        if ( ! event.target )
+        if ( ! event.target)
             event.target = this;
         
-        if ( ! event.type )
+        if ( ! event.type)
             throw new Error('Event object missing "type" property.');
         
-        if ( this.hasEventListener(event.type) ) {
+        if (this.hasEventListener(event.type)) {
             var listeners = this._eventListeners[event.type];
             
-            for ( var i = 0; i < listeners.length; i++ ) {
+            for (var i = 0; i < listeners.length; i++) {
                 try {
                     listeners[i].call(this, event);
                 }
-                catch ( error ) {
-                    console.error('FIXME: ' + error + '(Listener: ', listeners[i], '; Event: ', event, '; Error: ', error, '; Context: ', this, ')');
+                catch (error) {
+                    console.error('FIXME: ' + error,
+                                  '(Listener: ', listeners[i],
+                                  '; Event: ', event,
+                                  '; Error: ', error,
+                                  '; Context: ', this, ')');
                 }
             }
         }
@@ -81,16 +85,12 @@ function EventDispatcher()
     
     this._getEventListenerIndex = function (type, listener)
     {
-        if ( this.hasEventListener(type) ) {
-            var listeners = this._eventListeners[type];
-            
-            for ( var i = 0; i < listeners.length; i++ ) {
-                if ( listeners[i] === listener ) {
+        if (this.hasEventListener(type))
+            for (var listeners = this._eventListeners[type], i = 0; i < listeners.length; i++)
+                if (listeners[i] === listener)
                     return i;
-                }
-            }
-        }
         
         return false;
     };
 }
+

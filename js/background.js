@@ -1,7 +1,7 @@
 /*
  * This file is part of VoKadio extension for Google Chrome browser
  * 
- * Copyright (c) 2007 - 2010 InfoStyle Company (http://infostyle.com.ua/)
+ * Copyright (c) 2007 - 2011 InfoStyle Company (http://infostyle.com.ua/)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 var vk_session = new VkSession(VK_APP_ID, VK_TEST_MODE, VK_SETTINGS);
@@ -30,24 +30,16 @@ var unload_server = new UnloadManagerServer();
 
 //*****************************************************************************
 
-
-function updateSession(session)
-{
-    if (VkSession.updateSessions) {
-        VkSession.updateSessions(session);
-        console.info('new session received');
-    }
-}
-
 var request_handlers = {
     updateSession: function (request) {
-        updateSession(request.session);
+        vk_session.session(request.session);
+        console.info('new session received');
     }
 };
 
 function extensionRequestHandler(request, sender, sendResponse)
 {
-    if ( typeof request.handler != 'undefined' ) {
+    if (typeof request.handler != 'undefined') {
         var hdl = request_handlers[request.handler];
         sendResponse(hdl(request, sender, sendResponse));
     }
@@ -66,10 +58,10 @@ function setIconFromCanvas(canvas, canvasContext)
     });
 }
 
-var icon_rotator = new RotateAnimation(
-    $('<img src="icons/popup.png" alt="" />')[0],
-    setIconFromCanvas,
-    { framesCount: ICON_ANIMATION_FRAMES, speed: ICON_ANIMATION_SPEED });
+var icon_rotator = new RotateAnimation($('<img src="icons/popup.png" alt="" />')[0],
+                                       setIconFromCanvas,
+                                       { framesCount: ICON_ANIMATION_FRAMES,
+                                         speed: ICON_ANIMATION_SPEED });
 
 audio_player.audio.addEventListener('play', function () {
     icon_rotator.rotateTo(-0.5 * Math.PI);
@@ -111,8 +103,8 @@ var notification = null;
 
 function playlistIndexChangedHandler(event)
 {
-    if ( event.index >= 0 ) {
-        if ( ! has_notification ) {
+    if (event.index >= 0) {
+        if ( ! has_notification) {
             has_notification = true;
             notification = webkitNotifications.createHTMLNotification('notification.html');
             notification.onclose = function () { has_notification = false; };
@@ -125,7 +117,7 @@ function playlistIndexChangedHandler(event)
 
 function playerTimeUpdatedHandler(event)
 {
-    if ( ! isNaN(this.duration) )
+    if ( ! isNaN(this.duration))
         chrome.browserAction.setBadgeText({
             text: secondsToTime(this.duration - this.currentTime)
         });

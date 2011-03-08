@@ -1,7 +1,7 @@
 /*
  * This file is part of VoKadio extension for Google Chrome browser
  * 
- * Copyright (c) 2007 - 2010 InfoStyle Company (http://infostyle.com.ua/)
+ * Copyright (c) 2007 - 2011 InfoStyle Company (http://infostyle.com.ua/)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 const EXTENSION_NAME = 'VoKadio 1.2';
@@ -38,3 +38,4 @@ const TOOLTIP_DELAY = 666;
 
 const ICON_ANIMATION_FRAMES = 36;
 const ICON_ANIMATION_SPEED  = 10;
+
