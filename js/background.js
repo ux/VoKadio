@@ -20,7 +20,7 @@
 var vk_session = new VkSession(VK_APP_ID, VK_TEST_MODE, VK_SETTINGS);
 var vk_query   = new VkQuery(vk_session);
 
-var lastfm = new LastFM({ apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET });
+var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET});
 
 var audio_player = new AudioPlayer();
 var audio_helper = new AudioHelper(vk_query, lastfm, audio_player);
@@ -33,7 +33,7 @@ var unload_server = new UnloadManagerServer();
 
 function updateSession(session)
 {
-    if ( VkSession.updateSessions ) {
+    if (VkSession.updateSessions) {
         VkSession.updateSessions(session);
         console.info('new session received');
     }
@@ -83,7 +83,7 @@ audio_player.audio.addEventListener('pause', function () {
 //*****************************************************************************
 
 
-if ( typeof localStorage['volume'] == 'undefined' )
+if (typeof localStorage['volume'] == 'undefined')
     localStorage['volume'] = 1;
 
 audio_player.audio.volume = localStorage['volume'];
@@ -93,7 +93,7 @@ audio_player.audio.addEventListener('volumechange', function () {
 });
 
 
-if ( typeof localStorage['playorder'] == 'undefined' )
+if (typeof localStorage['playorder'] == 'undefined')
     localStorage['playorder'] = AudioPlayer.PLAYORDER_NORMAL;
 
 audio_player.playorder(localStorage['playorder']);
@@ -120,7 +120,7 @@ function playlistIndexChangedHandler(event)
         }
     }
     else
-        chrome.browserAction.setBadgeText({ text: '' });
+        chrome.browserAction.setBadgeText({text: ''});
 }
 
 function playerTimeUpdatedHandler(event)
@@ -140,17 +140,5 @@ audio_player.audio.addEventListener('timeupdate', playerTimeUpdatedHandler);
 //*****************************************************************************
 
 
-function fixChrome5xBug() // Chrome 5.x bug fixer
-{
-    var v = audio_player.audio.volume;
-    audio_player.audio.volume = v < 0.5 ? 1 : 0;
-    audio_player.audio.volume = v;
-}
-
-audio_player.audio.addEventListener('canplay', fixChrome5xBug);
-
-
-//*****************************************************************************
-
-
 doVkAuth(vk_session, true);
+

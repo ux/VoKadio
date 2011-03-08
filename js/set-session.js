@@ -19,14 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if ( location.pathname == '/api/login_success.html' )
+if (location.pathname == '/api/login_success.html')
     var session = JSON.parse(decodeURIComponent(location.hash.replace(/^#session=/, '')));
 else
     var session = null;
 
-chrome.extension.sendRequest({ handler: 'updateSession', session: session });
+chrome.extension.sendRequest({handler: 'updateSession', session: session});
 
-if ( window ) {
+if (window) {
     window.open('', '_self', ''); // Google Chrome browser bug fix ;)
     window.close();
 }
+

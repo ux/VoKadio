@@ -90,7 +90,7 @@ function scrollToTrack(index)
 
 function refreshAudioVolume()
 {
-    if ( ! volume_slider.sliding )
+    if ( ! volume_slider.sliding)
         $(volume_slider).slider('option', 'value', bp.audio_player.audio.volume);
 }
 
@@ -116,7 +116,7 @@ function toggleMute()
 
 function refreshAudioProgress()
 {
-    if ( ! progress_slider.sliding ) {
+    if ( ! progress_slider.sliding) {
         var duration, time;
         
         if ( bp.audio_player.audio.readyState > 0 ) {
@@ -144,7 +144,7 @@ function updateProgress(event, ui) { bp.audio_player.audio.currentTime = ui.valu
 
 function updatePlayStatus()
 {
-    if ( bp.audio_player.audio.paused )
+    if (bp.audio_player.audio.paused)
         $(toggle_play_button).removeClass('pause');
     else
         $(toggle_play_button).addClass('pause');
@@ -564,3 +564,4 @@ function initPopup()
     
     finishInit();
 }
+

@@ -19,11 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function AudioPlayer(play_next_on_error)
+function AudioPlayer()
 {
     EventDispatcher.call(this);
     
-    if ( ! AudioPlayer.static_initialized ) {
+    if ( ! AudioPlayer.static_initialized) {
         AudioPlayer.EVENT_INDEX_CHANGED     = 'index-changed';
         AudioPlayer.EVENT_PLAYLIST_UPDATED  = 'playlist-updated';
         AudioPlayer.EVENT_PLAYORDER_CHANGED = 'playorder-changed';
@@ -34,8 +34,6 @@ function AudioPlayer(play_next_on_error)
         
         AudioPlayer.static_initialized = true;
     }
-    
-    play_next_on_error = typeof play_next_on_error == 'undefined' ? true : play_next_on_error;
     
     var player = this;
     
@@ -55,23 +53,21 @@ function AudioPlayer(play_next_on_error)
     audio.addEventListener('canplay', function (event) { player.play(); });
     audio.addEventListener('ended',   function (event) { player.next(); });
     
-    if ( play_next_on_error ) {
-        audio.addEventListener('emptied', function (event) {
-            if ( current_index >= 0 && audio.error != null)
-                player.next();
-        });
-        
-        audio.addEventListener('stalled', function (event) {
-            if ( current_index >= 0 )
-                player.next();
-        });
-    }
+    audio.addEventListener('emptied', function (event) {
+        if ( current_index >= 0 && audio.error != null)
+            player.play();
+    });
+    
+    audio.addEventListener('stalled', function (event) {
+        if (current_index >= 0)
+            player.play();
+    });
     
     this.audio = audio;
     
     this.playlist = function (new_playlist)
     {
-        if ( typeof new_playlist != 'undefined' ) {
+        if (typeof new_playlist != 'undefined') {
             playlist = new_playlist;
             
             var prev_index = current_index;
@@ -85,8 +81,8 @@ function AudioPlayer(play_next_on_error)
             
             this.dispatchEvent({ type: AudioPlayer.EVENT_PLAYLIST_UPDATED });
             
-            if ( audio.paused ) {
-                if ( current_index != prev_index )
+            if (audio.paused) {
+                if (current_index != prev_index)
                     this.dispatchEvent({ type: AudioPlayer.EVENT_INDEX_CHANGED, index: current_index });
             }
             else
@@ -100,11 +96,11 @@ function AudioPlayer(play_next_on_error)
     {
         index = typeof index == 'undefined' ? -1 : parseInt(index);
         
-        if ( index != current_index && index >= 0 && index < playlist.length && typeof playlist[index] != 'undefined' ) {
-            if ( playorder_list[playorder_index - 1] == index ) {
+        if (index != current_index && index >= 0 && index < playlist.length && typeof playlist[index] != 'undefined') {
+            if (playorder_list[playorder_index - 1] == index) {
                 playorder_index--;
             }
-            else if ( playorder_list[playorder_index + 1] == index ) {
+            else if (playorder_list[playorder_index + 1] == index) {
                 playorder_index++;
             }
             else {
@@ -120,9 +116,9 @@ function AudioPlayer(play_next_on_error)
             audio.src = playlist[current_index].url;
             audio.load();
             
-            this.dispatchEvent({ type: AudioPlayer.EVENT_INDEX_CHANGED, index: current_index });
+            this.dispatchEvent({type: AudioPlayer.EVENT_INDEX_CHANGED, index: current_index});
         }
-        else if ( current_index < 0 )
+        else if (current_index < 0)
             this.next();
         else
             audio.play();
@@ -137,7 +133,7 @@ function AudioPlayer(play_next_on_error)
     {
         index = typeof index == 'undefined' ? current_index : index;
         
-        if ( index == current_index && ! audio.paused )
+        if (index == current_index && ! audio.paused)
             this.pause();
             
         else
@@ -188,9 +184,10 @@ function AudioPlayer(play_next_on_error)
         if (typeof new_playorder != 'undefined' && new_playorder != playorder) {
             playorder  = new_playorder;
             audio.loop = playorder == AudioPlayer.PLAYORDER_LOOP;
-            this.dispatchEvent({ type: AudioPlayer.EVENT_PLAYORDER_CHANGED, playorder: playorder });
+            this.dispatchEvent({type: AudioPlayer.EVENT_PLAYORDER_CHANGED, playorder: playorder});
         }
         
         return playorder;
     };
 }
+

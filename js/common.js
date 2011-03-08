@@ -26,10 +26,7 @@ function doVkAuth(session, iframe_only, close_window_on_auth_window)
         'height=' + VK_AUTH_WINDOW_HEIGHT;
     
     iframe_only = iframe_only || false;
-    
-    close_window_on_auth_window = typeof close_window_on_auth_window == 'undefined'
-        ? true
-        : close_window_on_auth_window;
+    close_window_on_auth_window = close_window_on_auth_window == undefined ? true : close_window_on_auth_window;
     
     var session_updated = session.lastUpdated();
     
@@ -43,8 +40,8 @@ function doVkAuth(session, iframe_only, close_window_on_auth_window)
         setTimeout(function () {
             iframe.remove();
             
-            if ( ! iframe_only && session.lastUpdated() == session_updated ) {
-                if ( close_window_on_auth_window && window )
+            if ( ! iframe_only && session.lastUpdated() == session_updated) {
+                if (close_window_on_auth_window && window)
                     window.close();
                 
                 window.open(login_url, 'vk-auth-dialog', VK_AUTH_WINDOW_ATTRS_STR);
@@ -60,7 +57,7 @@ function decodeHtml(html)
 
 function secondsToTime(microtime)
 {
-    if ( isNaN(microtime) )
+    if (isNaN(microtime))
         return '0:00';
     else {
         var minutes = '' + parseInt(microtime / 60);
@@ -86,8 +83,5 @@ var regexp_specials = new RegExp('[.*+?|()\\[\\]{}\\\\]', 'g');
 
 function regExpEscape(str)
 {
-    if (str == undefined)
-        return undefined;
-    else
-        return ('' + str).replace(regexp_specials, '\\$&');
+    return (str == undefined) ? undefined :  ('' + str).replace(regexp_specials, '\\$&');
 }
