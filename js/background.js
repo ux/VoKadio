@@ -27,6 +27,8 @@ var audio_helper = new AudioHelper(vk_query, lastfm, audio_player);
 
 var unload_server = new UnloadManagerServer();
 
+var options = new Options();
+
 
 //*****************************************************************************
 
@@ -75,23 +77,17 @@ audio_player.audio.addEventListener('pause', function () {
 //*****************************************************************************
 
 
-if (typeof localStorage['volume'] == 'undefined')
-    localStorage['volume'] = 1;
-
-audio_player.audio.volume = localStorage['volume'];
+audio_player.audio.volume = options.get('player.volume', 1);
 
 audio_player.audio.addEventListener('volumechange', function () {
-    localStorage['volume'] = audio_player.audio.volume;
+    options.set('player.volume', audio_player.audio.volume);
 });
 
 
-if (typeof localStorage['playorder'] == 'undefined')
-    localStorage['playorder'] = AudioPlayer.PLAYORDER_NORMAL;
-
-audio_player.playorder(localStorage['playorder']);
+audio_player.playorder(options.get('player.playorder', AudioPlayer.PLAYORDER_NORMAL));
 
 audio_player.addEventListener(AudioPlayer.EVENT_PLAYORDER_CHANGED, function (event) {
-    localStorage['playorder'] = event.playorder;
+    options.set('player.playorder', event.playorder);
 });
 
 
