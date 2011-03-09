@@ -69,9 +69,9 @@ function AudioHelper(vk_query, lastfm, audio_player)
         return artist + track;
     };
     
-    this.getArtistPhoto = function (artist, set_artist_photo)
+    this.getArtistImages = function (artist, set_artist_photo)
     {
-        lastfm.artist.getInfo({artist: artist}, {
+        lastfm.artist.getInfo({artist: artist, autocorrect: '1'}, {
             success: function (data) {
                 set_artist_photo(that.lastfmImagesToObject(data.artist.image)); },
             
@@ -86,7 +86,7 @@ function AudioHelper(vk_query, lastfm, audio_player)
         
         var that = this;
         
-        lastfm.track.getInfo({artist: artist, track: track}, {
+        lastfm.track.getInfo({artist: artist, track: track, autocorrect: '1'}, {
             success: function (data) {
                 var album = data.track.album;
                 
@@ -96,16 +96,16 @@ function AudioHelper(vk_query, lastfm, audio_player)
                     if (cover)
                         set_album_info(request_id, album.title, cover);
                     else
-                        that.getArtistPhoto(artist, function (photo) {
+                        that.getArtistImages(artist, function (photo) {
                             set_album_info(request_id, album.title, photo); });
                 }
                 else
-                    that.getArtistPhoto(artist, function (photo) {
+                    that.getArtistImages(artist, function (photo) {
                         set_album_info(request_id, undefined, photo); });
             },
             
             error: function () {
-                that.getArtistPhoto(artist, function (photo) {
+                that.getArtistImages(artist, function (photo) {
                     set_album_info(request_id, undefined, photo); });
             }
         });
