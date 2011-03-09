@@ -32,39 +32,33 @@ unload_client.addHandler(elc.unloadAllListeners);
 
 function updateAudioMeta(index, record)
 {
-    if ( index >= 0 && record ) {
+    if (index >= 0 && record) {
         $('#buttons .next').html(audio_player.playlist()[audio_player.nextIndex()].title);
         
-        $('#track-info .title').html(EXTENSION_NAME);
+        var artist = decodeHtml(record.artist), track = decodeHtml(record.title);
         
-        $('#artist').text('');
+        $('#track-info .title').text(track);
+        $('#artist').text(artist);
+        
         $('#album').remove();
         $('#album-art img').attr('src', 'images/album-art.png');
         
-        audio_helper.getTrackInfo(decodeHtml(record.artist), decodeHtml(record.title),
-            function (track_info, rid) {
-                var current_track = audio_player.playlist()[audio_player.currentIndex()];
+        audio_helper.geAlbumInfo(artist, track, function(rid, title, cover) {
+            var current_track = audio_player.playlist()[audio_player.currentIndex()];
+            
+            if (rid != audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist), decodeHtml(current_track.title)))
+                return;
+            
+            if (cover && cover.medium)
+                $('#album-art img').attr('src', cover.medium);
+            
+            if (title) {
+                if ($('#album').length == 0) 
+                    $('#metadata').append($('<li id="album"></li>'));
                 
-                var crid = audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist),
-                                                              decodeHtml(current_track.title));
-                
-                if (rid == crid) {
-                    if (typeof track_info.track != 'undefined')
-                        $('#track-info .title').text(track_info.track);
-                    
-                    if (typeof track_info.artist != 'undefined')
-                        $('#artist').text(track_info.artist);
-                    
-                    if (typeof track_info.album != 'undefined') {
-                        if ($('#album').length == 0) 
-                            $('#metadata').append($('<li id="album"></li>'));
-                        $('#album').text(track_info.album);
-                    }
-                    
-                    if (track_info.cover && track_info.cover.medium) 
-                        $('#album-art img').attr('src', track_info.cover.medium);
-                }
-            });
+                $('#album').text(title);
+            }
+        });
     }
 }
 

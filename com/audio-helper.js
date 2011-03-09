@@ -29,13 +29,11 @@ function AudioHelper(vk_query, lastfm, audio_player)
     this.makeVkRequest = function (method_name, method_params, callback)
     {
         try {
-            var xml_http_request = vk_query.doRequest(method_name, method_params, callback);
+            return vk_query.doRequest(method_name, method_params, callback);
         }
         catch (err) {
             return false;
         }
-        
-        return xml_http_request;
     };
     
     this.updateUserAudio = function ()
@@ -60,130 +58,57 @@ function AudioHelper(vk_query, lastfm, audio_player)
                 }
             }
             
-            return imgs_obj_not_empty ? imgs_obj : null;
+            return imgs_obj_not_empty ? imgs_obj : undefined;
         }
         else
-            return null;
+            return undefined;
     };
     
     this.getTrackInfoRequestId = function (artist, track)
     {
-        return md5(artist) + md5(track);
+        return artist + track;
     };
     
-    this.getTrackInfoAsync = function (artist, track, set_track_partial_meta)
+    this.getArtistPhoto = function (artist, set_artist_photo)
     {
-        var request_id = this.getTrackInfoRequestId(artist, track);
-        
-        set_track_partial_meta({artist: artist, track: track}, request_id);
-        
-        var that = this;
-        
-        lastfm.track.search({artist: artist, track: track, limit: 1}, {
+        lastfm.artist.getInfo({artist: artist}, {
             success: function (data) {
-                var track = data.results.trackmatches.track;
-                
-                if (track) {
-                    set_track_partial_meta({artist: track.artist, track: track.name}, request_id);
-                    
-                    var cover = that.lastfmImagesToObject(track.image);
-                    if (cover) {
-                        set_track_partial_meta({cover: cover}, request_id);
-                    }
-                    else {
-                        lastfm.artist.getInfo({artist: track.artist}, {
-                            success: function (data) {
-                                if (typeof data.artist != 'undefined') {
-                                    var cover = that.lastfmImagesToObject(data.artist.image);
-                                    if (cover) {
-                                        set_track_partial_meta({cover: cover}, request_id);
-                                    }
-                                }
-                            }
-                        });
-                    }
-                    
-                    lastfm.track.getInfo({artist: track.artist, track: track.name}, {
-                        success: function (data) {
-                            if (typeof data.track != 'undefined') {
-                                var album = data.track.album;
-                                if (typeof album != 'undefined') {
-                                    set_track_partial_meta({album: album.title}, request_id);
-                                }
-                            }
-                        }
-                    });
-                }
-            }
+                set_artist_photo(that.lastfmImagesToObject(data.artist.image)); },
+            
+            error: function () {
+                set_artist_photo(undefined); }
         });
-    };
+    }
     
-    this.getTrackInfoSync = function (artist, track, set_track_meta)
+    this.geAlbumInfo = function (artist, track, set_album_info)
     {
-        var that = this;
-        
         var request_id = this.getTrackInfoRequestId(artist, track);
         
-        var result = {artist: artist, track: track};
+        var that = this;
         
-        lastfm.track.search({artist: artist, track: track, limit: 1}, {
+        lastfm.track.getInfo({artist: artist, track: track}, {
             success: function (data) {
-                var track = data.results.trackmatches.track;
+                var album = data.track.album;
                 
-                if (track) {
-                    result.artist = track.artist;
-                    result.track  = track.name;
+                if (album) {
+                    var cover = that.lastfmImagesToObject(album.image);
                     
-                    var cover = that.lastfmImagesToObject(track.image);
                     if (cover)
-                        result.cover = cover;
-                    
-                    lastfm.track.getInfo({artist: track.artist, track: track.name}, {
-                        success: function (data) {
-                            if (typeof data.track != 'undefined') {
-                                var album = data.track.album;
-                                
-                                if (typeof album != 'undefined')
-                                    result.album = album.title;
-                                
-                                if (result.cover)
-                                    set_track_meta(result, request_id);
-                                else {
-                                    lastfm.artist.getInfo({artist: result.artist}, {
-                                        success: function (data) {
-                                            if (typeof data.artist != 'undefined') {
-                                                var cover = that.lastfmImagesToObject(data.artist.image);
-                                                if (cover)
-                                                    result.cover = cover;
-                                                
-                                                set_track_meta(result, request_id);
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    });
+                        set_album_info(request_id, album.title, cover);
+                    else
+                        that.getArtistPhoto(artist, function (photo) {
+                            set_album_info(request_id, album.title, photo); });
                 }
-                
                 else
-                    set_track_meta(result, request_id);
+                    that.getArtistPhoto(artist, function (photo) {
+                        set_album_info(request_id, undefined, photo); });
             },
             
             error: function () {
-                set_track_meta(result, request_id);
+                that.getArtistPhoto(artist, function (photo) {
+                    set_album_info(request_id, undefined, photo); });
             }
         });
-    };
-    
-    this.getTrackInfo = function (artist, track, set_track_meta, async)
-    {
-        async = typeof async == 'undefined' ? true : async;
-        
-        if (async)
-            return this.getTrackInfoAsync(artist, track, set_track_meta);
-        else
-            return this.getTrackInfoSync(artist, track, set_track_meta);
     };
 }
 

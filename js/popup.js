@@ -178,38 +178,35 @@ function updateAudioMeta(index, record)
         
         $(progress_info_total).text(secondsToTime(record.duration));
         
-        bp.audio_helper.getTrackInfo(decodeHtml(record.artist), decodeHtml(record.title), function(track_info, rid){
+        var artist = decodeHtml(record.artist), track = decodeHtml(record.title);
+        
+        $(meta_title).text(track);
+        $(meta_title).attr('title', track);
+        updateTooltips(meta_title);
+        
+        $(meta_artist).text(artist);
+        
+        $(meta_total).attr('title', artist);
+        meta_total.myTitle = artist;
+        updateTooltips(meta_total);
+        
+        bp.audio_helper.geAlbumInfo(artist, track, function(rid, title, cover) {
             var current_track = bp.audio_player.playlist()[bp.audio_player.currentIndex()];
             
-            var crid = bp.audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist), decodeHtml(current_track.title));
+            if (rid != bp.audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist), decodeHtml(current_track.title)))
+                return;
             
-            if (rid == crid) {
-                if (typeof track_info.track != 'undefined') {
-                    $(meta_title).text(track_info.track);
-                    $(meta_title).attr('title', track_info.track);
-                    updateTooltips(meta_title);
-                }
+            if (cover && cover.medium) 
+                $(meta_cover).attr('src', cover.medium);
+            
+            if (title) {
+                if ($(meta_album).length == 0) 
+                    $(meta_total).append($('<li id="album"></li>'));
                 
-                if (typeof track_info.artist != 'undefined') {
-                    $(meta_artist).text(track_info.artist);
-                    
-                    $(meta_total).attr('title', track_info.artist);
-                    meta_total.myTitle = track_info.artist;
-                    updateTooltips(meta_total);
-                }
+                $(meta_album).text(title);
                 
-                if (typeof track_info.album != 'undefined') {
-                    if ($(meta_album).length == 0) 
-                        $(meta_total).append($('<li id="album"></li>'));
-                    
-                    $(meta_album).text(track_info.album);
-                    
-                    $(meta_total).attr('title',meta_total.myTitle + ' :: ' + track_info.album);
-                    updateTooltips(meta_total);
-                }
-                
-                if (track_info.cover && track_info.cover.medium) 
-                    $(meta_cover).attr('src', track_info.cover.medium);
+                $(meta_total).attr('title', meta_total.myTitle + ' :: ' + title);
+                updateTooltips(meta_total);
             }
         });
     }
