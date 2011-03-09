@@ -69,8 +69,7 @@ function startCloseCountdown(timeout)
 {
     timeout = timeout || 333;
     close_countdown = setTimeout(function () {
-        if ( window )
-            window.close();
+        if (window) window.close();
     }, timeout);
 }
 
@@ -83,7 +82,7 @@ function restartCloseCountdown(timeout)
 {
     cancelCloseCountdown();
     
-    if ( window )
+    if (window)
         startCloseCountdown(timeout);
 }
 
@@ -105,14 +104,14 @@ $(document).ready(function () { startCloseCountdown(NOTIFICATION_TIMEOUT); });
 var playlist = audio_player.playlist();
 var currentIndex = audio_player.currentIndex();
 
-if ( vk_session.hasSession() || playlist.length > 0 && currentIndex >= 0 )
+if (vk_session.hasSession() || playlist.length > 0 && currentIndex >= 0)
     updateAudioMeta(currentIndex, playlist[currentIndex]);
 else
     window.close();
 
 
 elc.add(audio_player, AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
-    if ( ! mouse_in_window )
+    if ( ! mouse_in_window)
         restartCloseCountdown(NOTIFICATION_TIMEOUT);
     
     updateAudioMeta(event.index, event.index >= 0 ? this.playlist()[event.index] : null);
