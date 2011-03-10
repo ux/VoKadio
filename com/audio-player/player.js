@@ -135,7 +135,6 @@ function AudioPlayer()
         
         if (index == current_index && ! audio.paused)
             this.pause();
-            
         else
             this.play(index);
     };
