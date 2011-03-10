@@ -17,17 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function updateTooltips(selector)
-{
-    selector = selector || '*[title]';
-    return $(selector).tooltip({
-        track    : true,
-        delay    : TOOLTIP_DELAY,
-        showURL  : false,
-        showBody : ' - ',
-        fade     : 250
-    });
-}
 
 function registerSliding(event, ui)   { ui.handle.sliding = true;  }
 function unregisterSliding(event, ui) { ui.handle.sliding = false; }
@@ -158,7 +147,6 @@ function updateAudioMeta(index, record)
 {
     $(meta_title).html(EXTENSION_NAME);
     $(meta_title).attr('title', decodeHtml(EXTENSION_NAME));
-    updateTooltips(meta_title);
     
     $(meta_artist).text('');
     $(meta_album).remove();
@@ -166,7 +154,6 @@ function updateAudioMeta(index, record)
     $(meta_cover).attr('src', 'images/album-art.png');
     
     $(meta_total).attr('title', '');
-    updateTooltips(meta_total);
     
     $(progress_info_played).text(secondsToTime(0));
     $(progress_info_total).text(secondsToTime(0));
@@ -182,13 +169,11 @@ function updateAudioMeta(index, record)
         
         $(meta_title).text(track);
         $(meta_title).attr('title', track);
-        updateTooltips(meta_title);
         
         $(meta_artist).text(artist);
         
         $(meta_total).attr('title', artist);
         meta_total.myTitle = artist;
-        updateTooltips(meta_total);
         
         bp.audio_helper.geAlbumInfo(artist, track, function(rid, title, cover) {
             var current_track = bp.audio_player.playlist()[bp.audio_player.currentIndex()];
@@ -206,7 +191,6 @@ function updateAudioMeta(index, record)
                 $(meta_album).text(title);
                 
                 $(meta_total).attr('title', meta_total.myTitle + ' :: ' + title);
-                updateTooltips(meta_total);
             }
         });
     }
@@ -236,7 +220,6 @@ function updateAudioRecords(audio_records, now_playing_index)
             track.title      = decodeHtml(audio_records[i].artist + ' - ' + audio_records[i].title);
             
             track.addEventListener('click', function () { bp.audio_player.togglePlay(this.trackindex); });
-            track.addEventListener('mouseover', function () { if (this.title != '') updateTooltips(this); });
             
             $(track).find('.artist')[0].innerHTML = audio_records[i].artist;
             $(track).find('.title')[0].innerHTML = audio_records[i].title;
@@ -434,7 +417,6 @@ function initPlayerControls()
     $(next_button).click(function () { bp.audio_player.next(); });
     
     $(update_session_button).click(function () { doVkAuth(bp.vk_session); });
-    updateTooltips(update_session_button);
     
     elc.add(bp.audio_player.audio, 'play', updatePlayStatus);
     elc.add(bp.audio_player.audio, 'pause', updatePlayStatus);
