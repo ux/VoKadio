@@ -19,10 +19,11 @@
 
 var bp = chrome.extension.getBackgroundPage();
 
-var AudioPlayer = bp.AudioPlayer;
+var AudioPlayer   = bp.AudioPlayer;
 var audio_player  = bp.audio_player;
 var vk_session    = bp.vk_session;
 var audio_helper  = bp.audio_helper;
+var options       = bp.options;
 
 var elc = new EventsListenersCollector();
 
@@ -86,19 +87,24 @@ function restartCloseCountdown(timeout)
         startCloseCountdown(timeout);
 }
 
+
 var mouse_in_window = false;
+var show_always_notification = options.get('notification.show-behavior') == 'show-always';
 
-$('body').mouseover(function () {
-    mouse_in_window = true;
-    cancelCloseCountdown();
-});
 
-$('body').mouseout(function () {
-    mouse_in_window = false;
-    restartCloseCountdown(NOTIFICATION_TIMEOUT_SECOND);
-});
+if ( ! show_always_notification) {
+    $('body').mouseover(function () {
+        mouse_in_window = true;
+        cancelCloseCountdown();
+    });
 
-$(document).ready(function () { startCloseCountdown(NOTIFICATION_TIMEOUT); });
+    $('body').mouseout(function () {
+        mouse_in_window = false;
+        restartCloseCountdown(NOTIFICATION_TIMEOUT_SECOND);
+    });
+
+    $(document).ready(function () { startCloseCountdown(NOTIFICATION_TIMEOUT); });
+}
 
 
 var playlist = audio_player.playlist();
@@ -111,7 +117,7 @@ else
 
 
 elc.add(audio_player, AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
-    if ( ! mouse_in_window)
+    if ( ! mouse_in_window && ! show_always_notification)
         restartCloseCountdown(NOTIFICATION_TIMEOUT);
     
     updateAudioMeta(event.index, event.index >= 0 ? this.playlist()[event.index] : null);

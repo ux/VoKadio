@@ -21,3 +21,10 @@ var bp = chrome.extension.getBackgroundPage();
 
 var options = bp.options;
 
+
+$('#notification-show-behavior').val(options.get('notification.show-behavior', 'show-on-update'));
+
+$('#notification-show-behavior').change(function () {
+    options.set('notification.show-behavior', $('#notification-show-behavior').val());
+});
+

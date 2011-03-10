@@ -100,7 +100,7 @@ var notification = null;
 function playlistIndexChangedHandler(event)
 {
     if (event.index >= 0) {
-        if ( ! has_notification) {
+        if (options.get('notification.show-behavior') != 'hide' && ! has_notification) {
             has_notification = true;
             notification = webkitNotifications.createHTMLNotification('notification.html');
             notification.onclose = function () { has_notification = false; };
