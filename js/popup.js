@@ -39,38 +39,59 @@ unload_client.addHandler(elc.unloadAllListeners);
 var volume_slider,
     volume_mute,
     volume_slider_range,
+    
     progress_slider,
     progress_info_played,
     progress_info_total,
+    
     toggle_play_button,
     previous_button,
     next_button,
     update_session_button,
+    
     meta_title,
     meta_artist,
     meta_album,
     meta_total,
     meta_cover,
+    
     tracklist,
-    tracklist_items,
-    tracklist_body,
+    tracklist_container,
+    
     player,
-    track_pattern,
     playorder_input,
+    
     quick_search,
-    quick_search_input;
+    quick_search_input,
+    
+    track_height,
+    visible_tracks_count,
+    visible_tracks;
 
 
 //*****************************************************************************
 
 
-
-function scrollToTrack(index)
+function getVisibleTrack(record_index, track_cb)
 {
-    if (index >= 0 && index < bp.audio_player.playlist().length)
-        $(tracklist_body).scrollTo(
-            $(tracklist_items)[index],
-            { duration: 333, offset: { top: -180 }});
+    var visible_min_track = parseInt($(tracklist_container).scrollTop() / track_height);
+    
+    var li_index = record_index - visible_min_track;
+    
+    if (record_index >= visible_min_track && li_index < visible_tracks_count)
+        track_cb.call(visible_tracks[li_index]);
+}
+
+function scrollToTrack(index, on_after)
+{
+    if (index >= 0 && index < bp.audio_player.playlist().length) {
+        var scroll_pos = track_height * parseInt(index - visible_tracks_count / 2 + 1);
+        
+        $(tracklist_container).scrollTo(
+            scroll_pos > 0 ? scroll_pos : 0,
+            (on_after != undefined) ? {onAfter: on_after} : {}
+        );
+    }
 }
 
 
@@ -158,10 +179,12 @@ function updateAudioMeta(index, record)
     $(progress_info_played).text(secondsToTime(0));
     $(progress_info_total).text(secondsToTime(0));
     
-    $(tracklist_items).removeClass('now-playing');
+    $(visible_tracks).removeClass('now-playing');
     
     if (index >= 0 && record) {
-        $($(tracklist_items)[bp.audio_player.currentIndex()]).addClass('now-playing');
+        getVisibleTrack(bp.audio_player.currentIndex(), function () {
+            $(this).addClass('now-playing');
+        });
         
         $(progress_info_total).text(secondsToTime(record.duration));
         
@@ -205,40 +228,41 @@ function updateAudioMeta(index, record)
 
 //*****************************************************************************
 
-
 function updateAudioRecords(audio_records, now_playing_index)
 {
-    records_count = audio_records.length;
+    var scroll_top        = $(tracklist_container).scrollTop();
+    var records_count     = audio_records.length;
+    var visible_min_track = parseInt(scroll_top / track_height);
     
-    if (records_count > 0) {
-        var tracks = [$(track_pattern)[0]];
-        for (var i = 1; i < records_count; i++)
-            tracks.push($(tracks[0]).clone(false)[0]);
-        
-        $(tracks).each(function (i, track) {
-            track.trackindex = i;
-            track.title      = decodeHtml(audio_records[i].artist + ' - ' + audio_records[i].title);
-            
-            track.addEventListener('click', function () { bp.audio_player.togglePlay(this.trackindex); });
-            
-            $(track).find('.artist')[0].innerHTML = audio_records[i].artist;
-            $(track).find('.title')[0].innerHTML = audio_records[i].title;
-            $(track).find('.duration')[0].innerText = secondsToTime(audio_records[i].duration);
-            $(track).find('a.download')[0].href = audio_records[i].url;
-        });
-        
-        if (now_playing_index >= 0)
-            tracks[now_playing_index].className += ' now-playing';
-        
-        $(tracklist).html(tracks);
-    }
-    else
-        $(tracklist).text('');
+    $(visible_tracks).removeClass('now-playing');
     
-    if (bp.vk_session.hasSession())
-        $(player).removeClass('unvisible');
-    else
-        $(player).addClass('unvisible');
+    $(visible_tracks).each(function (index) {
+        var audio_record_index = visible_min_track + index;
+        
+        if (audio_record_index >= records_count) {
+            $(this).hide();
+        }
+        else {
+            var audio_record = audio_records[audio_record_index];
+            
+            this.trackindex = audio_record_index;
+            this.title      = decodeHtml(audio_record.artist + ' - ' + audio_record.title);
+            
+            if (now_playing_index == audio_record_index)
+                $(this).addClass('now-playing');
+            
+            $(this).find('.artist')[0].innerHTML   = audio_record.artist;
+            $(this).find('.title')[0].innerHTML    = audio_record.title;
+            $(this).find('.duration')[0].innerText = secondsToTime(audio_record.duration);
+            $(this).find('a.download')[0].href     = audio_record.url;
+            
+            $(this).show();
+        }
+    });
+    
+    $(tracklist).attr('start', visible_min_track + 1);
+    $(tracklist).css({'margin-top' : scroll_top + 'px',
+                      'height'     : (records_count * track_height - scroll_top) + 'px'});
 }
 
 
@@ -271,14 +295,17 @@ function qsSelectFounded(index)
 {
     qsClearFounded();
     qs_found_index = index;
-    $($(tracklist_items)[index]).addClass('found');
-    scrollToTrack(index);
+    scrollToTrack(index, function () {
+        getVisibleTrack(index, function () {
+            $(this).addClass('found');
+        });
+    });
 }
 
 function qsClearFounded()
 {
     qs_found_index = -1;
-    $(tracklist_items).removeClass('found');
+    $(visible_tracks).removeClass('found');
 }
 
 function makeQsId()
@@ -338,26 +365,36 @@ function assignVariables()
     volume_slider         = $('#volume-control .slider')[0];
     volume_mute           = $('#volume-control .mute')[0];
     volume_slider_range   = $('#volume-control .slider .ui-slider-range')[0];
+    
     progress_slider       = $('#progress .slider')[0];
     progress_info_played  = $('#progress .info .played')[0];
     progress_info_total   = $('#progress .info .total')[0];
+    
     toggle_play_button    = $('#buttons .play')[0];
     previous_button       = $('#buttons .previous')[0];
     next_button           = $('#buttons .next')[0];
     update_session_button = $('#buttons .refresh')[0];
+    
     meta_title            = $('#track-info .title')[0];
     meta_artist           = $('#artist')[0];
     meta_album            = '#album';
     meta_total            = $('#metadata')[0];
     meta_cover            = $('#album-art img')[0];
+    
     tracklist             = $('#tracklist')[0];
-    tracklist_items       = '#tracklist li';
-    tracklist_body        = $('#body')[0];
+    tracklist_container   = $('#body')[0];
+    
     player                = $('#player')[0];
-    track_pattern         = $('#track-pattern').html().trim();
     playorder_input       = $('#playorder_input')[0];
+    
     quick_search          = $('#quick-search')[0];
     quick_search_input    = $('#quick-search input')[0];
+    
+    var track             = $(tracklist).find('li:first');
+    track_height          = track.outerHeight(false) + parseInt((track.outerHeight(true) - track.outerHeight(false)) / 2);
+    visible_tracks_count  = parseInt($(tracklist_container).height() / track_height) +
+                            Boolean($(tracklist_container).height() % track_height);
+    visible_tracks        = $(tracklist).find('li');
 }
 
 
@@ -436,8 +473,18 @@ function initAudioMeta()
 
 function initAudioRecords()
 {
+    while (visible_tracks.length < visible_tracks_count)
+        visible_tracks.push($(visible_tracks[0]).clone(true)[0]);
+    
+    $(tracklist).html(visible_tracks);
+    
     elc.add(bp.audio_player, bp.AudioPlayer.EVENT_PLAYLIST_UPDATED, function () {
         updateAudioRecords(this.playlist(), this.currentIndex());
+    });
+    
+    $(tracklist_container).scroll(function() {
+        updateAudioRecords(bp.audio_player.playlist(),
+                           bp.audio_player.currentIndex());
     });
     
     updateAudioRecords(bp.audio_player.playlist(), bp.audio_player.currentIndex());

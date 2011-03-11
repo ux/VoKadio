@@ -67,8 +67,8 @@ function AudioPlayer()
     
     this.playlist = function (new_playlist)
     {
-        if (typeof new_playlist != 'undefined') {
-            playlist = new_playlist;
+        if (new_playlist != undefined) {
+            playlist = $.isEmptyObject(new_playlist) ? [] : new_playlist;
             
             var prev_index = current_index;
             current_index = -1;

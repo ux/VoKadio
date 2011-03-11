@@ -2,14 +2,11 @@
 <head>
     <title>VoKadio Popup Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <script type="text/javascript"> console.time('popup-load'); </script>
-    
     <link rel="stylesheet" type="text/css" href="css/main.css" />
 </head>
 
 <body>
-<div id="player" class="unvisible">
+<div id="player">
     <div id="now-playing">
         <div id="album-art">
             <img src="images/album-art.png" alt="" />
@@ -45,10 +42,8 @@
     </div><!--/now-playing-->
     
     <div id="body">
-        <ol id="tracklist"></ol>
-        
-        <ol id="track-pattern" class="unvisible">
-            <li><span class="artist"></span><span class="title"></span> <span class="duration"></span> <a onclick="event.stopPropagation();" target="_blank" href="#download" class="download"></a></li>
+        <ol id="tracklist">
+            <li onclick="bp.audio_player.togglePlay(this.trackindex);"><span class="artist"></span><span class="title"></span> <span class="duration"></span> <a onclick="event.stopPropagation();" target="_blank" href="#download" class="download"></a></li>
         </ol>
     </div><!--/body-->
     
@@ -76,14 +71,6 @@
 
 <script type="text/javascript" src="js/popup.js"></script>
 
-<script type="text/javascript">
-
-    console.time('popup-init');
-    initPopup();
-    console.timeEnd('popup-init');
-    
-    $(document).ready(function () { console.timeEnd('popup-load'); });
-
-</script>
+<script type="text/javascript"> initPopup(); </script>
 </body>
 </html>
