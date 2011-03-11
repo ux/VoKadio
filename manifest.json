@@ -27,5 +27,7 @@
     "background_page" : "background.html",
     "options_page"    : "options.html",
     
-    "permissions": ["notifications", "http://api.vkontakte.ru/", "http://ws.audioscrobbler.com/"]
+    "permissions": ["notifications", "http://api.vkontakte.ru/", "http://ws.audioscrobbler.com/"],
+    
+    "minimum_chrome_version": "6"
 }
