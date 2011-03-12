@@ -66,7 +66,9 @@ var volume_slider,
     
     track_height,
     visible_tracks_count,
-    visible_tracks;
+    visible_tracks,
+    
+    tracklist_scroll_helper;
 
 
 //*****************************************************************************
@@ -261,8 +263,8 @@ function updateAudioRecords(audio_records, now_playing_index)
     });
     
     $(tracklist).attr('start', visible_min_track + 1);
-    $(tracklist).css({'margin-top' : scroll_top + 'px',
-                      'height'     : (records_count * track_height - scroll_top) + 'px'});
+    
+    $(tracklist_scroll_helper).css('height', (records_count * track_height) + 'px');
 }
 
 
@@ -395,6 +397,8 @@ function assignVariables()
     visible_tracks_count  = parseInt($(tracklist_container).height() / track_height) +
                             Boolean($(tracklist_container).height() % track_height);
     visible_tracks        = $(tracklist).find('li');
+    
+    tracklist_scroll_helper = $('#tracklist-scroll-helper')[0];
 }
 
 
@@ -481,6 +485,10 @@ function initAudioRecords()
     elc.add(bp.audio_player, bp.AudioPlayer.EVENT_PLAYLIST_UPDATED, function () {
         updateAudioRecords(this.playlist(), this.currentIndex());
     });
+    
+    tracklist.addEventListener('mousewheel', function (event) {
+        tracklist_container.dispatchEvent(event);
+    }, false);
     
     $(tracklist_container).scroll(function() {
         updateAudioRecords(bp.audio_player.playlist(),
