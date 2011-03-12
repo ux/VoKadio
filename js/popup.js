@@ -295,7 +295,7 @@ function qsItemMatch(re, item)
 
 function qsSelectFounded(index)
 {
-    qsClearFounded();
+    qsResetSearch();
     qs_found_index = index;
     scrollToTrack(index, function () {
         getVisibleTrack(index, function () {
@@ -304,9 +304,9 @@ function qsSelectFounded(index)
     });
 }
 
-function qsClearFounded()
+function qsResetSearch()
 {
-    qs_found_index = -1;
+    qs_found_index = bp.audio_player.currentIndex();
     $(visible_tracks).removeClass('found');
 }
 
@@ -516,11 +516,13 @@ function initQuickSearch()
             
             $(quick_search).removeClass('unvisible');
             quick_search_input.focus();
+            
+            qsResetSearch();
         }
     });
     
     quick_search_input.addEventListener('blur', function () {
-        qsClearFounded();
+        qsResetSearch();
         $(quick_search).addClass('unvisible');
         quick_search_input.value = '';
     });
@@ -550,7 +552,7 @@ function initQuickSearch()
             default:
                 event.stopPropagation();
                 this.dispatchEvent(event);
-                qsClearFounded();
+                qsResetSearch();
                 qsFindNext();
         }
     });
@@ -558,7 +560,7 @@ function initQuickSearch()
     quick_search_input.addEventListener('keypress', function (event) {
         event.stopPropagation();
         this.dispatchEvent(event);
-        qsClearFounded();
+        qsResetSearch();
         qsFindNext();
     });
 }
