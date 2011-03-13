@@ -88,6 +88,15 @@ function restartCloseCountdown(timeout)
 }
 
 
+function updatePlayStatus()
+{
+    if (bp.audio_player.audio.paused)
+        $('#buttons .play').removeClass('pause');
+    else
+        $('#buttons .play').addClass('pause');
+}
+
+
 var mouse_in_window = false;
 var show_always_notification = options.get('notification.show-behavior') == 'show-always';
 
@@ -122,4 +131,9 @@ elc.add(audio_player, AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
     
     updateAudioMeta(event.index, event.index >= 0 ? this.playlist()[event.index] : null);
 });
+
+elc.add(bp.audio_player.audio, 'play', updatePlayStatus);
+elc.add(bp.audio_player.audio, 'pause', updatePlayStatus);
+
+updatePlayStatus();
 
