@@ -1,6 +1,6 @@
 {
     "name"        : "VoKadio",
-    "version"     : "1.2.8",
+    "version"     : "1.2.8.1",
     "description" : "Проигрыватель аудиозаписей сайта ВКонтакте (vkontakte.ru)",
     
     "icons": {
