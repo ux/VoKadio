@@ -2,20 +2,50 @@
 <head>
     <title>Настройка VoKadio</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <style type="text/css">
+    
+        #options label {
+            display: inline-block;
+            width: 300px;
+        }
+        
+        #options>dt>* {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 5px;
+        }
+    
+    </style>
+    
+    <script type="text/javascript" src="lib/jquery/jquery.js"></script>
+    <script type="text/javascript" src="js/config.js"></script>
+    
 </head>
 
 <body>
 
-<div id="options">
-    <label for="notification-show-behavior">Как показывать всплывающее окно (нотификейшен):</label>
-    <select id="notification-show-behavior">
-        <option value="hide">Не показывать</option>
-        <option value="show-on-update">Показать, если изменилась текущая песня</option>
-        <option value="show-always">Всегда показывать</option>
-    </select>
-</div>
+<dl id="options">
+    <dt>
+        <img src="icons/48x48.png" alt="VoKadio" />
+        <h1>Настройка VoKadio</h1>
+    </dt>
+    
+    <dd>
+        <ul>
+            <li>
+            <label for="notification-show-behavior">Как показывать окно уведомления?</label>
+            
+            <select id="notification-show-behavior">
+                <option value="hide">Не показывать</option>
+                <option value="show-on-update">Показать на несколько секунд (по умолчанию)</option>
+                <option value="show-always">Всегда показывать</option>
+            </select>
+            </li>
+        </ul>
+    </dd>
+</dl>
 
-<script type="text/javascript" src="lib/jquery/jquery.js"></script>
 <script type="text/javascript" src="js/options.js"></script>
 
 </body>
