@@ -50,17 +50,18 @@ function AudioPlayer()
     audio.controls = false;
     audio.loop = playorder == AudioPlayer.PLAYORDER_LOOP;
     audio.preload = 'auto';
+    
     audio.addEventListener('canplay', function (event) { player.play(); });
     audio.addEventListener('ended',   function (event) { player.next(); });
     
     audio.addEventListener('emptied', function (event) {
-        if ( current_index >= 0 && audio.error != null)
-            player.play();
+        if ( ! audio.paused && current_index >= 0 && audio.error != null)
+            audio.play();
     });
     
     audio.addEventListener('stalled', function (event) {
-        if (current_index >= 0)
-            player.play();
+        if ( ! audio.paused && current_index >= 0)
+            audio.play();
     });
     
     this.audio = audio;
