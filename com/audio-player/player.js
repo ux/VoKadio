@@ -56,12 +56,12 @@ function AudioPlayer()
     
     audio.addEventListener('emptied', function (event) {
         if ( ! audio.paused && current_index >= 0 && audio.error != null)
-            audio.play();
+            player.play();
     });
     
     audio.addEventListener('stalled', function (event) {
         if ( ! audio.paused && current_index >= 0)
-            audio.play();
+            player.play();
     });
     
     this.audio = audio;
