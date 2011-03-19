@@ -560,8 +560,13 @@ function initQuickSearch()
     quick_search_input.addEventListener('keypress', function (event) {
         event.stopPropagation();
         this.dispatchEvent(event);
+        
         qsResetSearch();
-        qsFindNext();
+        
+        if (qsFindNext() === false) {
+            qs_found_index = -1;
+            qsFindNext();
+        }
     });
 }
 
