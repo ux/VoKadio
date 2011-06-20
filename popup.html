@@ -11,28 +11,28 @@
         <div id="album-art">
             <img src="images/album-art.png" alt="" />
         </div><!--
-        
+
      --><div id="track-info">
             <h1><span class="title"></span></h1>
-            
+
             <ul id="metadata">
                 <li id="artist"></li>
             </ul>
-            
+
             <div id="controls">
                 <ul id="buttons">
                     <li><a class="play" href="#toggle-play"></a></li>
                     <li><a class="previous" href="#previous"></a></li>
                     <li><a class="next" href="#next"></a></li>
-                    
+
                     <li style="margin-left:15px;"><a class="refresh" href="#refresh" title="обновить сессию"></a></li>
                 </ul>
-                
+
                 <div id="volume-control">
                     <a href="#toggle-mute" class="mute"></a>
                     <div class="slider-container"><div class="slider"></div></div>
                 </div>
-                
+
                 <div id="progress">
                     <div class="info"><span class="played">0:00</span><span class="total">0:00</span></div>
                     <div class="slider"></div>
@@ -40,17 +40,17 @@
             </div>
         </div>
     </div><!--/now-playing-->
-    
+
     <div id="body">
         <ol id="tracklist">
             <li onclick="bp.audio_player.togglePlay(this.trackindex);"><span class="artist"></span><span class="title"></span> <span class="duration"></span> <a onclick="event.stopPropagation();" target="_blank" href="#download" class="download"></a></li>
         </ol>
-        
+
         <div id="tracklist-scroll-helper"></div>
     </div><!--/body-->
-    
+
     <div id="quick-search" class="unvisible"><input type="text" /></div>
-    
+
     <div id="footer">
         <select id="playorder_input">
             <option value="normal">Стандартный порядок</option>
@@ -65,7 +65,6 @@
 <script type="text/javascript" src="lib/jquery/jquery.scrollTo.js"></script>
 <script type="text/javascript" src="lib/jquery/jquery-ui.js"></script>
 
-<script type="text/javascript" src="com/unload-manager/client.js"></script>
 <script type="text/javascript" src="com/events-listeners-collector.js"></script>
 
 <script type="text/javascript" src="js/common.js"></script>
@@ -73,6 +72,5 @@
 
 <script type="text/javascript" src="js/popup.js"></script>
 
-<script type="text/javascript"> initPopup(); </script>
 </body>
 </html>
