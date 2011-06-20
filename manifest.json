@@ -1,20 +1,21 @@
 {
-    "name"        : "VoKadio",
-    "version"     : "1.2.9",
-    "description" : "Проигрыватель аудиозаписей сайта ВКонтакте (vkontakte.ru)",
-    
+    "name"         : "VoKadio",
+    "version"      : "1.2.9",
+    "description"  : "Проигрыватель аудиозаписей сайта ВКонтакте (vkontakte.ru)",
+    "homepage_url" : "http://vkontakte.ru/vokadio",
+
     "icons": {
         "16"  : "icons/16x16.png",
         "48"  : "icons/48x48.png",
         "128" : "icons/128x128.png"
     },
-    
+
     "browser_action": {
         "default_icon"  : "icons/popup.png",
         "default_title" : "VoKadio",
         "popup"         : "popup.html"
     },
-    
+
     "content_scripts": [
         {
             "all_frames" : true,
@@ -23,11 +24,11 @@
                             "http://vkontakte.ru/api/login_failure.html" ]
         }
     ],
-    
+
     "background_page" : "background.html",
     "options_page"    : "options.html",
-    
+
     "permissions": ["notifications", "http://api.vkontakte.ru/", "http://ws.audioscrobbler.com/"],
-    
-    "minimum_chrome_version": "6"
+
+    "minimum_chrome_version": "12"
 }
