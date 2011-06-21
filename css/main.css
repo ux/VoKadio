@@ -397,13 +397,13 @@ body
                 background-color:#ffcc00;
                 color:#000;
             }
-            
+
             #tracklist li.found
             {
                 background-color:#08a0e4;
                 color:#fff;
             }
-            
+
             #tracklist li:after
             {
                 content:'';
@@ -431,7 +431,7 @@ body
             {
                 background-position:100% -160px;
             }
-            
+
             #tracklist li.found:after
             {
                 background-position:100% -120px;
@@ -459,7 +459,7 @@ body
                     border-radius:3px;
                     -webkit-border-radius:3px;
                 }
-                
+
                 #tracklist li .download
                 {
                     width:16px;
