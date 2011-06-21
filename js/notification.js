@@ -43,7 +43,7 @@ function updateAudioMeta(index, record)
         $('#album').remove();
         $('#album-art img').attr('src', 'images/album-art.png');
 
-        audio_helper.geAlbumInfo(artist, track, function(rid, title, cover) {
+        audio_helper.getAlbumInfo(artist, track, function(rid, title, cover) {
             var current_track = audio_player.playlist()[audio_player.currentIndex()];
 
             if (rid != audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist), decodeHtml(current_track.title)))

@@ -196,7 +196,7 @@ function updateAudioMeta(index, record)
         $(meta_total).attr('title', artist);
         meta_total.myTitle = artist;
 
-        bp.audio_helper.geAlbumInfo(artist, track, function(rid, title, cover) {
+        bp.audio_helper.getAlbumInfo(artist, track, function(rid, title, cover) {
             var current_track = bp.audio_player.playlist()[bp.audio_player.currentIndex()];
 
             if (rid != bp.audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist), decodeHtml(current_track.title)))
