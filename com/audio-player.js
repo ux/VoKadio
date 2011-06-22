@@ -23,18 +23,6 @@ function AudioPlayer()
 {
     EventDispatcher.call(this);
 
-    if ( ! AudioPlayer.static_initialized) {
-        AudioPlayer.EVENT_INDEX_CHANGED     = 'index-changed';
-        AudioPlayer.EVENT_PLAYLIST_UPDATED  = 'playlist-updated';
-        AudioPlayer.EVENT_PLAYORDER_CHANGED = 'playorder-changed';
-
-        AudioPlayer.PLAYORDER_NORMAL  = 'normal';
-        AudioPlayer.PLAYORDER_SHUFFLE = 'shuffle';
-        AudioPlayer.PLAYORDER_LOOP    = 'loop';
-
-        AudioPlayer.static_initialized = true;
-    }
-
     var player = this;
 
     var playlist        = [];
@@ -190,4 +178,12 @@ function AudioPlayer()
         return playorder;
     };
 }
+
+AudioPlayer.EVENT_INDEX_CHANGED     = 'index-changed';
+AudioPlayer.EVENT_PLAYLIST_UPDATED  = 'playlist-updated';
+AudioPlayer.EVENT_PLAYORDER_CHANGED = 'playorder-changed';
+
+AudioPlayer.PLAYORDER_NORMAL  = 'normal';
+AudioPlayer.PLAYORDER_SHUFFLE = 'shuffle';
+AudioPlayer.PLAYORDER_LOOP    = 'loop';
 
