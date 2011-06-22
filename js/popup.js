@@ -362,7 +362,6 @@ function assignVariables()
 {
     volume_slider         = $('#volume-control .slider')[0];
     volume_mute           = $('#volume-control .mute')[0];
-    volume_slider_range   = $('#volume-control .slider .ui-slider-range')[0];
 
     progress_slider       = $('#progress .slider')[0];
     progress_info_played  = $('#progress .info .played')[0];
@@ -417,6 +416,8 @@ function initVolumeControl()
         stop        : unregisterSliding,
         slide       : updateVolume
     });
+
+    volume_slider_range = $('#volume-control .slider .ui-slider-range')[0];
 
     $(volume_mute).click(function () { toggleMute(); });
 
@@ -599,4 +600,3 @@ initQuickSearch();
 checkVkAuthentication();
 
 finishInit();
-
