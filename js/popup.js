@@ -600,3 +600,4 @@ initQuickSearch();
 checkVkAuthentication();
 
 finishInit();
+

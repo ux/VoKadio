@@ -104,9 +104,14 @@ function playlistIndexChangedHandler(event)
             notification.onclose = function () { has_notification = false; };
             notification.show();
         }
+
+        var record = audio_player.playlist()[audio_player.currentIndex()];
+        chrome.browserAction.setTitle({title: decodeHtml(record.artist + " - " + record.title)});
     }
-    else
+    else {
         chrome.browserAction.setBadgeText({text: ''});
+        chrome.browserAction.setTitle({title: 'VoKadio'});
+    }
 }
 
 function playerTimeUpdatedHandler(event)
