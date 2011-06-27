@@ -17,36 +17,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function doVkAuth(session, iframe_only, close_window_on_auth_window)
+function requestVkAuth(session, silent_only)
 {
-    const VK_AUTH_WINDOW_ATTRS_STR =
-        'left='   + parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2) + ',' +
-        'top='    + parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2) + ',' +
-        'width='  + VK_AUTH_WINDOW_WIDTH + ',' +
-        'height=' + VK_AUTH_WINDOW_HEIGHT;
+    silent_only = silent_only || false;
 
-    iframe_only = iframe_only || false;
-    close_window_on_auth_window = close_window_on_auth_window == undefined ? true : close_window_on_auth_window;
+    var session_updated = session.updatedAt();
 
-    var session_updated = session.lastUpdated();
+    var auth_url = 'http://api.vkontakte.ru/oauth/authorize?client_id=' + session.appId() +
+                   '&scope=' + session.settings() + '&response_type=token&display=popup' +
+                   '&redirect_uri=http://vokadio.infostyle.com.ua/auth/vk/' +
+                   chrome.extension.getURL('').match(/:\/\/(.*)\//)[1];
 
-    var login_url = 'http://vkontakte.ru/login.php?app=' + session.appId() +
-                    '&layout=popup&type=browser&settings=' + session.settings();
-
-    var iframe = $('<iframe src="' + login_url + '" style="display: none"></iframe>');
+    var iframe = $('<iframe src="' + auth_url + '" style="display: none"></iframe>');
     $('body').append(iframe);
 
     iframe.load(function () {
-        setTimeout(function () {
-            iframe.remove();
-
-            if ( ! iframe_only && session.lastUpdated() == session_updated) {
-                if (close_window_on_auth_window && window)
-                    window.close();
-
-                window.open(login_url, 'vk-auth-dialog', VK_AUTH_WINDOW_ATTRS_STR);
-            }
-        }, AUTH_WINDOW_OPEN_DELAY);
+        if ( ! silent_only && session.updatedAt() == session_updated)
+            window.open(auth_url, 'vk-auth-dialog', 'left='   + parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2) + ',' +
+                                                    'top='    + parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2) + ',' +
+                                                    'width='  + VK_AUTH_WINDOW_WIDTH + ',' +
+                                                    'height=' + VK_AUTH_WINDOW_HEIGHT);
+        iframe.remove();
     });
 }
 

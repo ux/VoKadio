@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var vk_session = new VkSession(VK_APP_ID, VK_TEST_MODE, VK_SETTINGS);
+var vk_session = new VkSession(VK_APP_ID, VK_SETTINGS);
 var vk_query   = new VkQuery(vk_session);
 
 var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET});
@@ -26,26 +26,6 @@ var audio_player = new AudioPlayer();
 var audio_helper = new AudioHelper(vk_query, lastfm, audio_player);
 
 var options = new Options();
-
-
-//*****************************************************************************
-
-var request_handlers = {
-    updateSession: function (request) {
-        vk_session.session(request.session);
-        console.info('new session received');
-    }
-};
-
-function extensionRequestHandler(request, sender, sendResponse)
-{
-    if (typeof request.handler != 'undefined') {
-        var hdl = request_handlers[request.handler];
-        sendResponse(hdl(request, sender, sendResponse));
-    }
-}
-
-chrome.extension.onRequest.addListener(extensionRequestHandler);
 
 
 //*****************************************************************************
@@ -131,5 +111,5 @@ audio_player.audio.addEventListener('timeupdate', playerTimeUpdatedHandler);
 //*****************************************************************************
 
 
-doVkAuth(vk_session, true);
+requestVkAuth(vk_session, true);
 

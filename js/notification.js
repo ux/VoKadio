@@ -118,7 +118,7 @@ if ( ! show_always_notification) {
 var playlist = audio_player.playlist();
 var currentIndex = audio_player.currentIndex();
 
-if (vk_session.hasSession() || playlist.length > 0 && currentIndex >= 0)
+if (vk_session.exists() || playlist.length > 0 && currentIndex >= 0)
     updateAudioMeta(currentIndex, playlist[currentIndex]);
 else
     window.close();

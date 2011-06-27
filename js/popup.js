@@ -454,7 +454,7 @@ function initPlayerControls()
     $(previous_button).click(function () { bp.audio_player.previous(); });
     $(next_button).click(function () { bp.audio_player.next(); });
 
-    $(update_session_button).click(function () { doVkAuth(bp.vk_session); });
+    $(update_session_button).click(function () { bp.requestVkAuth(bp.vk_session); });
 
     elc.add(bp.audio_player.audio, 'play', updatePlayStatus);
     elc.add(bp.audio_player.audio, 'pause', updatePlayStatus);
@@ -571,22 +571,6 @@ function initQuickSearch()
 //*****************************************************************************
 
 
-function checkVkAuthentication()
-{
-    if ( ! bp.vk_session.hasSession())
-        doVkAuth(bp.vk_session);
-}
-
-function finishInit()
-{
-    $(document).ready(function () { scrollToTrack(bp.audio_player.currentIndex()); });
-    $(window).unload(function () { elc.unloadAllListeners(); });
-}
-
-
-//*****************************************************************************
-
-
 assignVariables();
 
 initVolumeControl();
@@ -597,7 +581,9 @@ initAudioRecords();
 initPlayOrder();
 initQuickSearch();
 
-checkVkAuthentication();
+if (bp.vk_session.isEmpty())
+    bp.requestVkAuth(bp.vk_session);
 
-finishInit();
+$(document).ready(function () { scrollToTrack(bp.audio_player.currentIndex()); });
+$(window).unload(function () { elc.unloadAllListeners(); });
 
