@@ -17,7 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var vk_session = new VkSession(VK_APP_ID, VK_SETTINGS);
+
+function requestVkAuth(session, silent_only)
+{
+    silent_only = silent_only || false;
+
+    var session_updated = session.updatedAt();
+
+    var auth_url = 'http://api.vkontakte.ru/oauth/authorize?client_id=' + session.appId() +
+                   '&scope=' + session.settings() + '&response_type=token&display=popup' +
+                   '&redirect_uri=http://vokadio.infostyle.com.ua/auth/vk/' +
+                   chrome.extension.getURL('').match(/:\/\/(.*)\//)[1];
+
+    var iframe = $('<iframe src="' + auth_url + '" style="display: none"></iframe>');
+    $('body').append(iframe);
+
+    iframe.load(function () {
+        if ( ! silent_only && session.updatedAt() == session_updated)
+            window.open(auth_url, 'vk-auth-dialog', 'left='   + parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2) + ',' +
+                                                    'top='    + parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2) + ',' +
+                                                    'width='  + VK_AUTH_WINDOW_WIDTH + ',' +
+                                                    'height=' + VK_AUTH_WINDOW_HEIGHT);
+        iframe.remove();
+    });
+}
+
+
+//*****************************************************************************
+
+
+var vk_session = new VkSession(VK_APP_ID, VK_SETTINGS, requestVkAuth);
 var vk_query   = new VkQuery(vk_session);
 
 var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET});

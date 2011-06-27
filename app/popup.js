@@ -454,7 +454,7 @@ function initPlayerControls()
     $(previous_button).click(function () { bp.audio_player.previous(); });
     $(next_button).click(function () { bp.audio_player.next(); });
 
-    $(update_session_button).click(function () { bp.requestVkAuth(bp.vk_session); });
+    $(update_session_button).click(function () { bp.vk_session.refresh(); });
 
     elc.add(bp.audio_player.audio, 'play', updatePlayStatus);
     elc.add(bp.audio_player.audio, 'pause', updatePlayStatus);
@@ -582,7 +582,7 @@ initPlayOrder();
 initQuickSearch();
 
 if (bp.vk_session.isEmpty())
-    bp.requestVkAuth(bp.vk_session);
+    bp.vk_session.refresh();
 
 $(document).ready(function () { scrollToTrack(bp.audio_player.currentIndex()); });
 $(window).unload(function () { elc.unloadAllListeners(); });
