@@ -18,14 +18,12 @@
  */
 
 
-function requestVkAuth(session, silent_only)
+function requestVkAuth(session, silent)
 {
-    silent_only = silent_only || false;
+    var session_updated = session.updatedAt;
 
-    var session_updated = session.updatedAt();
-
-    var auth_url = 'http://api.vkontakte.ru/oauth/authorize?client_id=' + session.appId() +
-                   '&scope=' + session.settings() + '&response_type=token&display=popup' +
+    var auth_url = 'http://api.vkontakte.ru/oauth/authorize?client_id=' + session.appId +
+                   '&scope=' + session.settings + '&response_type=token&display=popup' +
                    '&redirect_uri=http://vokadio.infostyle.com.ua/auth/vk/' +
                    chrome.extension.getURL('').match(/:\/\/(.*)\//)[1];
 
@@ -33,7 +31,7 @@ function requestVkAuth(session, silent_only)
     $('body').append(iframe);
 
     iframe.load(function () {
-        if ( ! silent_only && session.updatedAt() == session_updated)
+        if ( ! silent && session.updatedAt == session_updated)
             window.open(auth_url, 'vk-auth-dialog', 'left='   + parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2) + ',' +
                                                     'top='    + parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2) + ',' +
                                                     'width='  + VK_AUTH_WINDOW_WIDTH + ',' +
@@ -140,5 +138,5 @@ audio_player.audio.addEventListener('timeupdate', playerTimeUpdatedHandler);
 //*****************************************************************************
 
 
-requestVkAuth(vk_session, true);
+vk_session.refresh(true);
 

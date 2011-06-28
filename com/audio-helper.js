@@ -19,7 +19,7 @@
 
 function AudioHelper(vk_query, lastfm, audio_player)
 {
-    session = vk_query.session();
+    session = vk_query.session;
     var self = this;
 
     session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
