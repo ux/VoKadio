@@ -20,10 +20,10 @@
 function AudioHelper(vk_query, lastfm, audio_player)
 {
     session = vk_query.session();
-    var that = this;
+    var self = this;
 
     session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
-        that.updateUserAudio();
+        self.updateUserAudio();
     });
 
     this.makeVkRequest = function (method_name, method_params, callback)
@@ -73,7 +73,7 @@ function AudioHelper(vk_query, lastfm, audio_player)
     {
         lastfm.artist.getInfo({artist: artist, autocorrect: '1'}, {
             success: function (data) {
-                set_artist_photo(that.lastfmImagesToObject(data.artist.image)); },
+                set_artist_photo(self.lastfmImagesToObject(data.artist.image)); },
 
             error: function () {
                 set_artist_photo(undefined); }
@@ -84,28 +84,28 @@ function AudioHelper(vk_query, lastfm, audio_player)
     {
         var request_id = this.getTrackInfoRequestId(artist, track);
 
-        var that = this;
+        var self = this;
 
         lastfm.track.getInfo({artist: artist, track: track, autocorrect: '1'}, {
             success: function (data) {
                 var album = data.track.album;
 
                 if (album) {
-                    var cover = that.lastfmImagesToObject(album.image);
+                    var cover = self.lastfmImagesToObject(album.image);
 
                     if (cover)
                         set_album_info(request_id, album.title, cover);
                     else
-                        that.getArtistImages(artist, function (photo) {
+                        self.getArtistImages(artist, function (photo) {
                             set_album_info(request_id, album.title, photo); });
                 }
                 else
-                    that.getArtistImages(artist, function (photo) {
+                    self.getArtistImages(artist, function (photo) {
                         set_album_info(request_id, undefined, photo); });
             },
 
             error: function () {
-                that.getArtistImages(artist, function (photo) {
+                self.getArtistImages(artist, function (photo) {
                     set_album_info(request_id, undefined, photo); });
             }
         });
