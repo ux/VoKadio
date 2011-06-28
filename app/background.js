@@ -121,6 +121,8 @@ function playlistIndexChangedHandler(event)
     }
 }
 
+audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED, playlistIndexChangedHandler);
+
 function playerTimeUpdatedHandler(event)
 {
     if ( ! isNaN(this.duration))
@@ -129,14 +131,25 @@ function playerTimeUpdatedHandler(event)
         });
 }
 
-audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED,
-                              playlistIndexChangedHandler);
-
 audio_player.audio.addEventListener('timeupdate', playerTimeUpdatedHandler);
 
 
 //*****************************************************************************
 
 
-vk_session.refresh(true);
+vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
+    audio_helper.updateUserAudio();
+});
+
+
+//*****************************************************************************
+
+
+vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function (event) {
+    options.set('vk.session', JSON.stringify({data: event.data, updated_at: event.target.updatedAt}));
+});
+
+var session_cache = JSON.parse(options.get('vk.session', 'null'));
+if ( ! (session_cache && vk_session.data(session_cache.data, new Date(session_cache.updated_at))))
+    vk_session.refresh(true);
 

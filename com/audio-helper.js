@@ -19,12 +19,7 @@
 
 function AudioHelper(vk_query, lastfm, audio_player)
 {
-    session = vk_query.session;
     var self = this;
-
-    session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
-        self.updateUserAudio();
-    });
 
     this.makeVkRequest = function (method_name, method_params, callback)
     {
@@ -83,8 +78,6 @@ function AudioHelper(vk_query, lastfm, audio_player)
     this.getAlbumInfo = function (artist, track, set_album_info)
     {
         var request_id = this.getTrackInfoRequestId(artist, track);
-
-        var self = this;
 
         lastfm.track.getInfo({artist: artist, track: track, autocorrect: '1'}, {
             success: function (data) {
