@@ -17,14 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 var bp = chrome.extension.getBackgroundPage();
 
 var options = bp.options;
 
-
 $('#notification-show-behavior').val(options.get('notification.show-behavior', 'show-on-update'));
 
 $('#notification-show-behavior').change(function () {
-    options.set('notification.show-behavior', $('#notification-show-behavior').val());
+    options.set('notification.show-behavior', $(this).val());
+});
+
+
+$('#use-lastfm')[0].checked = options.get('lastfm');
+
+$('#use-lastfm').change(function () {
+    this.checked ? options.set('lastfm', '1') : options.clear('lastfm');
 });
 
