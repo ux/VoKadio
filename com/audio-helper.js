@@ -23,7 +23,7 @@ function AudioHelper(vk_query, lastfm, audio_player)
 
     this.updateUserAudio = function ()
     {
-        return vk_query.doRequest('audio.get', {}, function (audio_records) {
+        return vk_query.call('audio.get', {}, function (audio_records) {
             audio_player.playlist(audio_records);
         });
     };
