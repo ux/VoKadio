@@ -18,7 +18,7 @@
 
     </style>
 
-    <script type="text/javascript" src="lib/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/lib/jquery/jquery.js"></script>
 </head>
 
 <body>
@@ -32,19 +32,24 @@
     <dd>
         <ul>
             <li>
-            <label for="notification-show-behavior">Как показывать окно уведомления?</label>
+                <label for="notification-show-behavior">Как показывать окно уведомления?</label>
 
-            <select id="notification-show-behavior">
-                <option value="hide">Не показывать</option>
-                <option value="show-on-update">Показать на несколько секунд (по умолчанию)</option>
-                <option value="show-always">Всегда показывать</option>
-            </select>
+                <select id="notification-show-behavior">
+                    <option value="hide">Не показывать</option>
+                    <option value="show-on-update">Показать на несколько секунд (по умолчанию)</option>
+                    <option value="show-always">Всегда показывать</option>
+                </select>
+            </li>
+
+            <li>
+                <input id="use-lastfm" type="checkbox" />
+                <label for="use-lastfm">last.fm скробблинг</label>
             </li>
         </ul>
     </dd>
 </dl>
 
-<script type="text/javascript" src="app/options.js"></script>
+<script type="text/javascript" src="/app/options.js"></script>
 
 </body>
 </html>
