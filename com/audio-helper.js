@@ -21,19 +21,9 @@ function AudioHelper(vk_query, lastfm, audio_player)
 {
     var self = this;
 
-    this.makeVkRequest = function (method_name, method_params, callback)
-    {
-        try {
-            return vk_query.doRequest(method_name, method_params, callback);
-        }
-        catch (err) {
-            return false;
-        }
-    };
-
     this.updateUserAudio = function ()
     {
-        return this.makeVkRequest('audio.get', {}, function (audio_records) {
+        return vk_query.doRequest('audio.get', {}, function (audio_records) {
             audio_player.playlist(audio_records);
         });
     };
