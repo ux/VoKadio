@@ -21,6 +21,5 @@
 
     "permissions": ["notifications", "https://api.vkontakte.ru/", "http://ws.audioscrobbler.com/"],
 
-    "minimum_chrome_version": "12"
+    "minimum_chrome_version": "9"
 }
-
