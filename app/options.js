@@ -32,6 +32,13 @@ $('#notification-show-behavior').change(function () {
 $('#use-lastfm')[0].checked = options.get('lastfm');
 
 $('#use-lastfm').change(function () {
-    this.checked ? options.set('lastfm', '1') : options.clear('lastfm');
+    if (this.checked)
+        options.set('lastfm', '1');
+    else {
+        options.delete('lastfm');
+        options.delete('lastfm.session');
+    }
 });
+
+$(window).unload(function () { bp.checkLastfmSession(); });
 

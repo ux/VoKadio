@@ -17,16 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function AudioHelper(vk_query, lastfm, audio_player)
+function AudioHelper(lastfm)
 {
     var self = this;
-
-    this.updateUserAudio = function ()
-    {
-        return vk_query.call('audio.get', {}, function (audio_records) {
-            audio_player.playlist(audio_records);
-        });
-    };
 
     this.lastfmImagesToObject = function (images)
     {
