@@ -44,7 +44,7 @@ function Options(prefix)
         return localStorage[key_fqn];
     }
 
-    this.clear = function (key)
+    this.delete = function (key)
     {
         delete localStorage[this.getKeyFqn(key)];
     }
