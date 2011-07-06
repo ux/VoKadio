@@ -25,16 +25,14 @@ function EventDispatcher()
 
     this.addEventListener = function (type, listener)
     {
-        if (typeof this._eventListeners[type] == 'undefined')
+        if ( ! (type in this._eventListeners))
             this._eventListeners[type] = [];
 
         if (this._getEventListenerIndex(type, listener) === false) {
-            if (typeof listener == 'function') {
+            if (typeof listener == 'function')
                 this._eventListeners[type].push(listener);
-            }
-            else {
+            else
                 throw new Error('Incorrect event listener type (listener must be a function).');
-            }
         }
     };
 
