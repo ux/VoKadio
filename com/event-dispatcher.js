@@ -21,16 +21,16 @@
 
 function EventDispatcher()
 {
-    this._eventListeners = {};
+    event_listeners = {};
 
     this.addEventListener = function (type, listener)
     {
-        if ( ! (type in this._eventListeners))
-            this._eventListeners[type] = [];
+        if ( ! (type in event_listeners))
+            event_listeners[type] = [];
 
-        if (this._getEventListenerIndex(type, listener) === false) {
+        if (get_event_Listener_index(type, listener) === false) {
             if (typeof listener == 'function')
-                this._eventListeners[type].push(listener);
+                event_listeners[type].push(listener);
             else
                 throw new Error('Incorrect event listener type (listener must be a function).');
         }
@@ -38,10 +38,10 @@ function EventDispatcher()
 
     this.removeEventListener = function (type, listener)
     {
-        var index = this._getEventListenerIndex(type, listener);
+        var index = get_event_Listener_index(type, listener);
 
         if (index !== false)
-            this._eventListeners[type].splice(index, 1);
+            event_listeners[type].splice(index, 1);
 
         return index !== false;
     };
@@ -57,8 +57,8 @@ function EventDispatcher()
         if ( ! event.type)
             throw new Error('Event object missing "type" property.');
 
-        if (this.hasEventListener(event.type)) {
-            var listeners = this._eventListeners[event.type];
+        if (event_listeners[event.type]) {
+            var listeners = event_listeners[event.type];
 
             for (var i = 0; i < listeners.length; i++) {
                 try {
@@ -77,14 +77,13 @@ function EventDispatcher()
 
     this.hasEventListener = function (type)
     {
-        var listeners = this._eventListeners[type];
-        return listeners instanceof Array && listeners.length > 0;
+        return event_listeners[type] && event_listeners[type].length > 0;
     };
 
-    this._getEventListenerIndex = function (type, listener)
+    function get_event_Listener_index(type, listener)
     {
-        if (this.hasEventListener(type))
-            for (var listeners = this._eventListeners[type], i = 0; i < listeners.length; i++)
+        if (event_listeners[type])
+            for (var listeners = event_listeners[type], i = 0; i < listeners.length; i++)
                 if (listeners[i] === listener)
                     return i;
 
