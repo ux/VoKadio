@@ -57,22 +57,9 @@ function EventDispatcher()
         if ( ! event.type)
             throw new Error('Event object missing "type" property.');
 
-        if (event_listeners[event.type]) {
-            var listeners = event_listeners[event.type];
-
-            for (var i = 0; i < listeners.length; i++) {
-                try {
-                    listeners[i].call(this, event);
-                }
-                catch (error) {
-                    console.error('FIXME: ' + error,
-                                  '(Listener: ', listeners[i],
-                                  '; Event: ', event,
-                                  '; Error: ', error,
-                                  '; Context: ', this, ')');
-                }
-            }
-        }
+        if (event_listeners[event.type])
+            for (var listeners = event_listeners[event.type], i = 0; i < listeners.length; i++)
+                listeners[i].call(this, event);
     };
 
     this.hasEventListener = function (type)
