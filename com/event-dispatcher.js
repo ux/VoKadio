@@ -21,7 +21,7 @@
 
 function EventDispatcher()
 {
-    event_listeners = {};
+    var event_listeners = {};
 
     this.addEventListener = function (type, listener)
     {
