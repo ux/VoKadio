@@ -18,6 +18,138 @@
  */
 
 
+
+
+
+
+var AP = AudioPlayer;
+
+AudioPlayer = function ()
+{
+    EventDispatcher.call(this);
+
+    var self = this;
+
+    var my_audio = new AP.Playlist('my-audio');
+
+    my_audio.addEventListener(AP.Playlist.EVENT_PLAYLIST_UPDATED, function () {
+        self.dispatchEvent({type: AudioPlayer.EVENT_PLAYLIST_UPDATED});
+    });
+
+    my_audio.addEventListener(AP.Playlist.EVENT_NOW_PLAYING_CHANGED, function () {
+        self.dispatchEvent({type: AudioPlayer.EVENT_INDEX_CHANGED, index: (my_audio.nowPlaying && my_audio.nowPlaying.index) ? my_audio.nowPlaying.index : -1});
+    });
+
+    var player = new AP.Player();
+    player.addPlaylist(my_audio);
+    player.currentPlaylist = my_audio;
+
+    player.addEventListener(AP.Player.EVENT_PLAYORDER_CHANGED, function () {
+        self.dispatchEvent({type: AudioPlayer.EVENT_PLAYORDER_CHANGED, playorder: self.playorder()});
+    });
+
+    player.addEventListener(AP.Player.EVENT_REPEAT_MODE_CHANGED, function () {
+        self.dispatchEvent({type: AudioPlayer.EVENT_PLAYORDER_CHANGED, playorder: self.playorder()});
+    });
+
+    this.player = player;
+    this.myAudio = my_audio;
+    this.audio = player.audio;
+
+    this.playlist = function (new_playlist)
+    {
+        if (new_playlist)
+            my_audio.playlist = new_playlist;
+
+        return my_audio.playlist;
+    };
+
+    this.play = function (index)
+    {
+        player.play(index);
+    };
+
+    this.pause = function ()
+    {
+        audio.pause();
+    };
+
+    this.togglePlay = function (index)
+    {
+        player.togglePlay(index);
+    };
+
+    this.currentIndex = function ()
+    {
+        return my_audio.nowPlaying ? my_audio.nowPlaying.index : -1;
+    };
+
+    this.previousIndex = function ()
+    {
+        return 0;
+    };
+
+    this.nextIndex = function ()
+    {
+        return 0;
+    };
+
+    this.previous = function ()
+    {
+        player.previous();
+    };
+
+    this.next = function ()
+    {
+        player.next();
+    };
+
+    this.playorder = function (new_playorder)
+    {
+        if (new_playorder) {
+            switch (new_playorder) {
+                case AudioPlayer.PLAYORDER_NORMAL:
+                    player.playorder = AP.Player.PLAYORDER_NORMAL;
+                    player.repeatMode = AP.Player.REPEAT_PLAYLIST;
+                    break;
+                case AudioPlayer.PLAYORDER_LOOP:
+                    player.playorder = AP.Player.PLAYORDER_NORMAL;
+                    player.repeatMode = AP.Player.REPEAT_TRACK;
+                    break;
+                case AudioPlayer.PLAYORDER_SHUFFLE:
+                    player.playorder = AP.Player.PLAYORDER_SHUFFLE;
+                    player.repeatMode = AP.Player.REPEAT_PLAYLIST;
+                    break;
+            }
+        }
+
+        return (player.playorder == AP.Player.PLAYORDER_SHUFFLE)
+            ? AudioPlayer.PLAYORDER_SHUFFLE
+            : (player.repeatMode == AP.Player.REPEAT_TRACK
+                ? AudioPlayer.PLAYORDER_LOOP
+                : AudioPlayer.PLAYORDER_NORMAL);
+    };
+};
+
+AudioPlayer.Player = AP.Player;
+AudioPlayer.Playlist = AP.Playlist;
+AudioPlayer.Utils = AP.Utils;
+
+AudioPlayer.EVENT_INDEX_CHANGED     = 'deprecated.index-changed';
+AudioPlayer.EVENT_PLAYLIST_UPDATED  = 'deprecated.playlist-updated';
+AudioPlayer.EVENT_PLAYORDER_CHANGED = 'deprecated.playorder-changed';
+
+AudioPlayer.PLAYORDER_NORMAL  = 'normal';
+AudioPlayer.PLAYORDER_SHUFFLE = 'shuffle';
+AudioPlayer.PLAYORDER_LOOP    = 'loop';
+
+
+
+
+
+
+
+
 var vk_session = new VkSession(VK_APP_ID, VK_SETTINGS, function (session, silent) {
     var session_updated = session.updatedAt;
 
@@ -49,21 +181,14 @@ var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET});
 var lastfm_session = null;
 
 var audio_player = new AudioPlayer();
-var audio_helper = new AudioHelper(lastfm);
+
+var helper = new PlayerHelper(lastfm);
 
 var options = new Options();
 
 
 //*****************************************************************************
 
-
-function requestLastfmAuth()
-{
-    chrome.tabs.create({url: buildUri('http://www.lastfm.ru/api/auth', {
-        api_key: LASTFM_API_KEY,
-        cb: chrome.extension.getURL('/auth/lastfm.html')
-    })});
-}
 
 // This function is called from /auth/lastfm.html file
 function lastfmAuthCallback(params)
@@ -86,7 +211,10 @@ function checkLastfmSession()
         lastfm_session = JSON.parse(options.get('lastfm.session', 'null'));
 
         if ( ! lastfm_session)
-            requestLastfmAuth();
+            chrome.tabs.create({url: buildUri('http://www.lastfm.ru/api/auth', {
+                api_key: LASTFM_API_KEY,
+                cb: chrome.extension.getURL('/auth/lastfm.html')
+            })});
     }
 }
 
@@ -109,8 +237,8 @@ audio_player.addEventListener(AudioPlayer.EVENT_PLAYORDER_CHANGED, function (eve
 
 
 vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
-    vk_query.call('audio.get', {}, function (audio_records) {
-        audio_player.playlist(audio_records);
+    vk_query.call('audio.get', {}, function (records) {
+        audio_player.playlist(helper.vk.tracksForPlaylist(records));
     });
 });
 
@@ -135,7 +263,7 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
     audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
         if (event.index >= 0) {
             var record = audio_player.playlist()[event.index];
-            chrome.browserAction.setTitle({title: decodeHtml(record.artist + " - " + record.title)});
+            chrome.browserAction.setTitle({title: record.artist + " - " + record.title});
         }
         else {
             chrome.browserAction.setBadgeText({text: ''});
@@ -145,8 +273,7 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
 
     audio_player.audio.addEventListener('timeupdate', function (event) {
         if ( ! isNaN(this.duration))
-            chrome.browserAction.setBadgeText({
-                text: secondsToTime(this.duration - this.currentTime)});
+            chrome.browserAction.setBadgeText({text: secondsToTime(this.duration - this.currentTime)});
     });
 }());
 
@@ -168,51 +295,32 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
     audio_player.audio.addEventListener('pause', function () {
         icon_rotator.rotateTo(0);
     });
+
+    audio_player.audio.addEventListener('ended', function () {
+        icon_rotator.rotateTo(0);
+    });
 }());
 
 (function initLastfmScrobbling()
 {
-    var now_playing = undefined;
-
     audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
-        if (now_playing && lastfm_session) {
-            if (now_playing.continued_at)
-                now_playing.play_duration += calc_duration(now_playing.continued_at);
+        helper.lastfm.scrobbler.stop(lastfm_session);  // is used, when track was switched and was not ended
 
-            if (now_playing.duration > 30 && (now_playing.play_duration >= now_playing.duration / 2 || now_playing.play_duration >= 4 * 60))
-                lastfm.track.scrobble($.extend(track_to_params(now_playing), {timestamp: parseInt(now_playing.started_at.getTime() / 1000)}), lastfm_session);
-        }
-
-        now_playing = audio_player.playlist()[event.index];
-
-        if (now_playing) {
-            now_playing = $.extend({}, now_playing);
-            now_playing.started_at = new Date();
-            now_playing.play_duration = 0;
-        }
+        if (event.index >= 0 && audio_player.playlist()[event.index])
+            helper.lastfm.scrobbler.start(audio_player.playlist()[event.index]);
     });
 
     audio_player.audio.addEventListener('playing', function () {
-        now_playing.continued_at = new Date();
-
-        if (lastfm_session)
-            lastfm.track.updateNowPlaying(track_to_params(now_playing), lastfm_session);
+        helper.lastfm.scrobbler.play(lastfm_session);
     });
 
     audio_player.audio.addEventListener('pause', function () {
-        now_playing.play_duration += calc_duration(now_playing.continued_at);
-        now_playing.continued_at = undefined;
+        helper.lastfm.scrobbler.pause();
     });
 
-    function track_to_params(track)
-    {
-        return {track: decodeHtml(track.title), artist: decodeHtml(track.artist), duration: track.duration};
-    }
-
-    function calc_duration(start_date)
-    {
-        return parseInt((new Date() - start_date) / 1000);
-    }
+    audio_player.audio.addEventListener('ended', function () {
+        helper.lastfm.scrobbler.stop(lastfm_session);
+    });
 }());
 
 $(document).ready(function () { checkLastfmSession(); });
@@ -223,8 +331,8 @@ $(document).ready(function () { checkLastfmSession(); });
         options.set('vk.session', JSON.stringify({data: event.data, updated_at: event.target.updatedAt}));
     });
 
-    var session_cache = JSON.parse(options.get('vk.session', 'null'));
-    if ( ! (session_cache && vk_session.data(session_cache.data, new Date(session_cache.updated_at))))
+    var cached_session = JSON.parse(options.get('vk.session', 'null'));
+    if ( ! (cached_session && vk_session.data(cached_session.data, new Date(cached_session.updated_at))))
         vk_session.refresh(true);
 }());
 

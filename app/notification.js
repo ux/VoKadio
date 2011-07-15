@@ -19,11 +19,11 @@
 
 var bp = chrome.extension.getBackgroundPage();
 
-var AudioPlayer   = bp.AudioPlayer;
-var audio_player  = bp.audio_player;
-var vk_session    = bp.vk_session;
-var audio_helper  = bp.audio_helper;
-var options       = bp.options;
+var AudioPlayer  = bp.AudioPlayer;
+var audio_player = bp.audio_player;
+var vk_session   = bp.vk_session;
+var helper       = bp.helper;
+var options      = bp.options;
 
 var elc = new EventsListenersCollector();
 
@@ -35,18 +35,18 @@ function updateAudioMeta(index, record)
     if (index >= 0 && record) {
         $('#buttons .next').html(audio_player.playlist()[audio_player.nextIndex()].title);
 
-        var artist = decodeHtml(record.artist), track = decodeHtml(record.title);
+        var artist = record.artist, track = record.title;
 
         $('#track-info .title').text(track);
         $('#artist').text(artist);
 
         $('#album').remove();
-        $('#album-art img').attr('src', 'images/album-art.png');
+        $('#album-art img').attr('src', '/images/album-art.png');
 
-        audio_helper.getAlbumInfo(artist, track, function(rid, title, cover) {
+        helper.lastfm.getAlbumInfo(artist, track, function(rid, title, cover) {
             var current_track = audio_player.playlist()[audio_player.currentIndex()];
 
-            if (rid != audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist), decodeHtml(current_track.title)))
+            if (rid != helper.lastfm.getTrackId(current_track.artist, current_track.title))
                 return;
 
             if (cover && cover.medium)

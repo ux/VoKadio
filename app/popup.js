@@ -164,8 +164,8 @@ function updatePlayStatus()
 
 function updateAudioMeta(index, record)
 {
-    $(meta_title).html(EXTENSION_NAME);
-    $(meta_title).attr('title', decodeHtml(EXTENSION_NAME));
+    $(meta_title).text(EXTENSION_NAME);
+    $(meta_title).attr('title', EXTENSION_NAME);
 
     $(meta_artist).text('');
     $(meta_album).remove();
@@ -186,7 +186,7 @@ function updateAudioMeta(index, record)
 
         $(progress_info_total).text(secondsToTime(record.duration));
 
-        var artist = decodeHtml(record.artist), track = decodeHtml(record.title);
+        var artist = record.artist, track = record.title;
 
         $(meta_title).text(track);
         $(meta_title).attr('title', track);
@@ -196,10 +196,10 @@ function updateAudioMeta(index, record)
         $(meta_total).attr('title', artist);
         meta_total.myTitle = artist;
 
-        bp.audio_helper.getAlbumInfo(artist, track, function(rid, title, cover) {
+        bp.helper.lastfm.getAlbumInfo(artist, track, function(rid, title, cover) {
             var current_track = bp.audio_player.playlist()[bp.audio_player.currentIndex()];
 
-            if (rid != bp.audio_helper.getTrackInfoRequestId(decodeHtml(current_track.artist), decodeHtml(current_track.title)))
+            if (rid != bp.helper.lastfm.getTrackId(current_track.artist, current_track.title))
                 return;
 
             if (cover && cover.medium)
@@ -244,13 +244,13 @@ function updateAudioRecords(audio_records, now_playing_index)
             var audio_record = audio_records[audio_record_index];
 
             this.trackindex = audio_record_index;
-            this.title      = decodeHtml(audio_record.artist + ' - ' + audio_record.title);
+            this.title      = audio_record.artist + " - " + audio_record.title;
 
             if (now_playing_index == audio_record_index)
                 $(this).addClass('now-playing');
 
-            $(this).find('.artist')[0].innerHTML   = audio_record.artist;
-            $(this).find('.title')[0].innerHTML    = audio_record.title;
+            $(this).find('.artist')[0].innerText   = audio_record.artist;
+            $(this).find('.title')[0].innerText    = audio_record.title;
             $(this).find('.duration')[0].innerText = secondsToTime(audio_record.duration);
             $(this).find('a.download')[0].href     = audio_record.url;
 
@@ -286,7 +286,7 @@ function qsSearchRegExp()
 
 function qsItemMatch(re, item)
 {
-    return re.test(decodeHtml(item.artist + ' - ' + item.title));
+    return re.test(item.artist + " - " + item.title);
 }
 
 function qsSelectFounded(index)
