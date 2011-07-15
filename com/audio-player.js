@@ -154,9 +154,10 @@ AudioPlayer.Player = function (playorder, repeat_mode)
         item = playlist.getItem(item);
 
         if (item) {
-            var history_item = history.addToPlaylist(AudioPlayer.Utils.cloneFrom(item, {
-                original: {playlist: playlist, item: item}
-            }), index);
+            var original = {playlist: playlist, _item: item};
+            original.__defineGetter__('item', history_original_item_getter);
+
+            var history_item = history.addToPlaylist(AudioPlayer.Utils.cloneFrom(item, {original: original}), index);
 
             history_playlists[playlist.id] = history_playlists[playlist.id] || [];
             history_playlists[playlist.id].push(history_item);
@@ -203,7 +204,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
                 return this.next(playlist);
             else if (item === undefined)
                 return null;
-            else if (history.nowPlaying && playlist == history.nowPlaying.playlist && item == playlist.nowPlaying) {
+            else if (history.nowPlaying && history.nowPlaying.original && playlist == history.nowPlaying.original.playlist && item == playlist.nowPlaying) {
                 if (audio.ended)
                     return this.next(playlist);
                 else {
@@ -248,24 +249,22 @@ AudioPlayer.Player = function (playorder, repeat_mode)
 
     this.playFromHistory = function (item)
     {
-        if ((audio.ended || audio.currentTime) && history.nowPlaying && history.nowPlaying.playlist && history.nowPlaying.playlist.nowPlaying) {
-            var now_played_item = history.nowPlaying.playlist.nowPlaying;
+        if ((audio.ended || audio.currentTime) && history.nowPlaying && history.nowPlaying.original) {
+            var now_played_item = history.nowPlaying.original.item;
 
-            if (audio.ended)
-                now_played_item.ended = true;
-            else
-                now_played_item.currentTime = audio.currentTime;
+            if (now_played_item) {
+                if (audio.ended)
+                    now_played_item.ended = true;
+                else
+                    now_played_item.currentTime = audio.currentTime;
+            }
         }
 
         var now_playing = history.play(item);
 
         if (now_playing) {
-            if (now_playing.original) {
-                var playlist_now_playing = now_playing.original.playlist.play(now_playing.original.item);
-
-                if (playlist_now_playing)
-                    now_playing.original.item = playlist_now_playing;
-            }
+            if (now_playing.original)
+                now_playing.original.playlist.play(now_playing.original.item);
 
             audio.src = now_playing.url;
         }
@@ -315,6 +314,16 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     function history_current_index(for_next_calculation)
     {
         return history.nowPlaying ? (history.nowPlaying.index == null ? history.nowPlaying.prev_index - (for_next_calculation ? 1 : 0) : history.nowPlaying.index) : history.playlist.length - 1;
+    }
+
+    function history_original_item_getter()
+    {
+        var item = this.playlist.getItem(this._item);
+
+        if (item)
+            this._item = item;
+
+        return item;
     }
 };
 
