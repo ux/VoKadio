@@ -17,11 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-
-
-
 var AP = AudioPlayer;
 
 AudioPlayer = function ()
@@ -56,52 +51,21 @@ AudioPlayer = function ()
     this.myAudio = my_audio;
     this.audio = player.audio;
 
+    this.play = function (index) { player.play(index); };
+    this.pause = function () { audio.pause(); };
+    this.togglePlay = function (index) { player.togglePlay(index); };
+    this.currentIndex = function () { return my_audio.nowPlaying ? my_audio.nowPlaying.index : -1; };
+    this.previousIndex = function () { return 0; };
+    this.nextIndex = function () { return 0; };
+    this.previous = function () { player.previous(); };
+    this.next = function () { player.next(); };
+
     this.playlist = function (new_playlist)
     {
         if (new_playlist)
             my_audio.playlist = new_playlist;
 
         return my_audio.playlist;
-    };
-
-    this.play = function (index)
-    {
-        player.play(index);
-    };
-
-    this.pause = function ()
-    {
-        audio.pause();
-    };
-
-    this.togglePlay = function (index)
-    {
-        player.togglePlay(index);
-    };
-
-    this.currentIndex = function ()
-    {
-        return my_audio.nowPlaying ? my_audio.nowPlaying.index : -1;
-    };
-
-    this.previousIndex = function ()
-    {
-        return 0;
-    };
-
-    this.nextIndex = function ()
-    {
-        return 0;
-    };
-
-    this.previous = function ()
-    {
-        player.previous();
-    };
-
-    this.next = function ()
-    {
-        player.next();
     };
 
     this.playorder = function (new_playorder)
@@ -144,10 +108,7 @@ AudioPlayer.PLAYORDER_SHUFFLE = 'shuffle';
 AudioPlayer.PLAYORDER_LOOP    = 'loop';
 
 
-
-
-
-
+//*****************************************************************************
 
 
 var vk_session = new VkSession(VK_APP_ID, VK_SETTINGS, function (session, silent) {
@@ -252,7 +213,7 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
             return;
 
         has_notification = true;
-        notification = webkitNotifications.createHTMLNotification('notification.html');
+        notification = webkitNotifications.createHTMLNotification('/notification.html');
         notification.onclose = function () { has_notification = false; };
         notification.show();
     });
@@ -267,7 +228,7 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
         }
         else {
             chrome.browserAction.setBadgeText({text: ''});
-            chrome.browserAction.setTitle({title: 'VoKadio'});
+            chrome.browserAction.setTitle({title: EXTENSION_NAME});
         }
     });
 
