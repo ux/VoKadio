@@ -267,6 +267,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
                 now_playing.original.playlist.play(now_playing.original.item);
 
             audio.src = now_playing.url;
+            audio.load();
         }
 
         return now_playing;
