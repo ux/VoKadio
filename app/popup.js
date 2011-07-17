@@ -215,10 +215,6 @@ function updateAudioMeta(index, record)
             }
         });
     }
-    else {
-        bp.audio_player.audio.src = '';
-        bp.audio_player.audio.load();
-    }
 
     refreshAudioProgress();
 }
