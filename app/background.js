@@ -236,6 +236,22 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
 
 (function initPopupIcon()
 {
+    var icon_rotator = new RotateAnimation(
+        $('<img src="icons/popup.png" alt="" />')[0],
+        {framesCount: ICON_ANIMATION_FRAMES, speed: ICON_ANIMATION_SPEED},
+        function (canvas, canvasContext) {
+            chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0, canvas.width, 19)});
+        });
+
+    audio_player.audio.addEventListener('play', function () { icon_rotator.rotateTo(-0.5 * Math.PI); });
+    audio_player.audio.addEventListener('pause', function () { icon_rotator.rotateTo(0); });
+    audio_player.audio.addEventListener('ended', function () { icon_rotator.rotateTo(0); });
+
+    audio_player.audio.addEventListener('timeupdate', function (event) {
+        if ( ! isNaN(this.duration))
+            chrome.browserAction.setBadgeText({text: secondsToTime(this.duration - this.currentTime)});
+    });
+
     audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
         if (event.index >= 0) {
             var record = audio_player.playlist()[event.index];
@@ -245,35 +261,6 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
             chrome.browserAction.setBadgeText({text: ''});
             chrome.browserAction.setTitle({title: EXTENSION_NAME});
         }
-    });
-
-    audio_player.audio.addEventListener('timeupdate', function (event) {
-        if ( ! isNaN(this.duration))
-            chrome.browserAction.setBadgeText({text: secondsToTime(this.duration - this.currentTime)});
-    });
-}());
-
-(function initIconRotator()
-{
-    var icon_rotator = new RotateAnimation(
-        $('<img src="icons/popup.png" alt="" />')[0],
-        {framesCount: ICON_ANIMATION_FRAMES, speed: ICON_ANIMATION_SPEED},
-        function (canvas, canvasContext) {
-            chrome.browserAction.setIcon({
-                imageData: canvasContext.getImageData(0, 0, canvas.width, 19)
-            });
-        });
-
-    audio_player.audio.addEventListener('play', function () {
-        icon_rotator.rotateTo(-0.5 * Math.PI);
-    });
-
-    audio_player.audio.addEventListener('pause', function () {
-        icon_rotator.rotateTo(0);
-    });
-
-    audio_player.audio.addEventListener('ended', function () {
-        icon_rotator.rotateTo(0);
     });
 }());
 
