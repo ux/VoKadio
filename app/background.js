@@ -198,7 +198,22 @@ audio_player.addEventListener(AudioPlayer.EVENT_PLAYORDER_CHANGED, function (eve
 
 
 vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
-    vk_query.call('audio.get', {}, function (records) {
+    var history_playlist = audio_player.player.history.playlist;
+
+    if (history_playlist.length > 0) {
+        var audios_list = [];
+        for (var i in history_playlist)
+            audios_list.push(history_playlist[i].owner_id + '_' + history_playlist[i].aid);
+
+        vk_query.call('audio.getById', {audios: audios_list.join(',')}, function (records) {
+            audio_player.player.history.playlist = helper.vk.tracksForPlaylist(records);
+        });
+    }
+});
+
+
+vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
+    vk_query.call('audio.get', {count: 16000}, function (records) {
         audio_player.playlist(helper.vk.tracksForPlaylist(records));
     });
 });
