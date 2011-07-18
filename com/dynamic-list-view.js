@@ -184,11 +184,11 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
         inner_div.style.height = '200px';
         outer_div.appendChild(inner_div);
 
-	    var scrollbar_width = 100 - jQuery(inner_div).width();
+        var scrollbar_width = 100 - jQuery(inner_div).width();
 
-	    document.body.removeChild(outer_div);
+        document.body.removeChild(outer_div);
 
-	    return scrollbar_width;
+        return scrollbar_width;
     }
 
     function create_min_div()
