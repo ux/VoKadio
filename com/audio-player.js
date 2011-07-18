@@ -369,7 +369,7 @@ AudioPlayer.Playlist = function (id)
 
     this.addToPlaylist = function (item, index)
     {
-        index = index || playlist.length;
+        index = index == null ? playlist.length : index;
         if (index < 0)
             index = 0;
 
