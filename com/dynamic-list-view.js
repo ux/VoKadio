@@ -119,7 +119,7 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
     this.scrollTo = function (item_index)
     {
         if (activated) {
-            var scroll_top = item_height * parseInt(item_index - max_visible_items_count / 2 + 2);
+            var scroll_top = parseInt(item_index * item_height - (scrollbar_height - item_height) / 2);
             scrollbar_element.scrollTop = scroll_top > 0 ? scroll_top : 0;
             scroll_index = null;
         }
