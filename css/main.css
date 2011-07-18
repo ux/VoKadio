@@ -349,22 +349,14 @@ body
     #body
     {
         height:336px;
-        overflow:auto;
         margin:9px 0 0;
     }
-
-        #tracklist-scroll-helper {
-            visibility: hidden;
-            width: 0;
-            height: 0;
-        }
 
         #tracklist
         {
             list-style-position:inside;
             font-size:75%;
             width:360px;
-            position: fixed;
         }
 
             #tracklist li

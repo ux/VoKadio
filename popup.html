@@ -10,6 +10,7 @@
     <script type="text/javascript" src="/lib/utils.js"></script>
 
     <script type="text/javascript" src="/com/events-listeners-collector.js"></script>
+    <script type="text/javascript" src="/com/dynamic-list-view.js"></script>
 
     <script type="text/javascript" src="/app/config.js"></script>
 </head>
@@ -54,8 +55,6 @@
         <ol id="tracklist">
             <li onclick="bp.audio_player.togglePlay(this.trackindex);"><span class="artist"></span><span class="title"></span> <span class="duration"></span> <a onclick="event.stopPropagation();" target="_blank" href="#download" class="download"></a></li>
         </ol>
-
-        <div id="tracklist-scroll-helper"></div>
     </div><!--/body-->
 
     <div id="quick-search" class="unvisible"><input type="text" /></div>

@@ -60,37 +60,7 @@ var volume_slider,
     quick_search,
     quick_search_input,
 
-    track_height,
-    visible_tracks_count,
-    visible_tracks,
-
-    tracklist_scroll_helper;
-
-
-//*****************************************************************************
-
-
-function getVisibleTrack(record_index, track_cb)
-{
-    var visible_min_track = parseInt($(tracklist_container).scrollTop() / track_height);
-
-    var li_index = record_index - visible_min_track;
-
-    if (record_index >= visible_min_track && li_index < visible_tracks_count)
-        track_cb.call(visible_tracks[li_index]);
-}
-
-function scrollToTrack(index, on_after)
-{
-    if (index >= 0 && index < bp.audio_player.playlist().length) {
-        var scroll_pos = track_height * parseInt(index - visible_tracks_count / 2 + 1);
-
-        $(tracklist_container).scrollTo(
-            scroll_pos > 0 ? scroll_pos : 0,
-            (on_after != undefined) ? {onAfter: on_after} : {}
-        );
-    }
-}
+    tracklist_mgr;
 
 
 //*****************************************************************************
@@ -177,13 +147,9 @@ function updateAudioMeta(index, record)
     $(progress_info_played).text(secondsToTime(0));
     $(progress_info_total).text(secondsToTime(0));
 
-    $(visible_tracks).removeClass('now-playing');
+    tracklist_mgr.refresh();
 
     if (index >= 0 && record) {
-        getVisibleTrack(bp.audio_player.currentIndex(), function () {
-            $(this).addClass('now-playing');
-        });
-
         $(progress_info_total).text(secondsToTime(record.duration));
 
         var artist = record.artist, track = record.title;
@@ -222,46 +188,6 @@ function updateAudioMeta(index, record)
 
 //*****************************************************************************
 
-function updateAudioRecords(audio_records, now_playing_index)
-{
-    var scroll_top        = $(tracklist_container).scrollTop();
-    var records_count     = audio_records.length;
-    var visible_min_track = parseInt(scroll_top / track_height);
-
-    $(visible_tracks).removeClass('now-playing');
-
-    $(visible_tracks).each(function (index) {
-        var audio_record_index = visible_min_track + index;
-
-        if (audio_record_index >= records_count) {
-            $(this).hide();
-        }
-        else {
-            var audio_record = audio_records[audio_record_index];
-
-            this.trackindex = audio_record_index;
-            this.title      = audio_record.artist + " - " + audio_record.title;
-
-            if (now_playing_index == audio_record_index)
-                $(this).addClass('now-playing');
-
-            $(this).find('.artist')[0].innerText   = audio_record.artist;
-            $(this).find('.title')[0].innerText    = audio_record.title;
-            $(this).find('.duration')[0].innerText = secondsToTime(audio_record.duration);
-            $(this).find('a.download')[0].href     = audio_record.url;
-
-            $(this).show();
-        }
-    });
-
-    $(tracklist).attr('start', visible_min_track + 1);
-
-    $(tracklist_scroll_helper).css('height', (records_count * track_height) + 'px');
-}
-
-
-//*****************************************************************************
-
 
 var qs_found_index = -1;
 
@@ -289,17 +215,17 @@ function qsSelectFounded(index)
 {
     qsResetSearch();
     qs_found_index = index;
-    scrollToTrack(index, function () {
-        getVisibleTrack(index, function () {
-            $(this).addClass('found');
-        });
+
+    tracklist_mgr.scrollTo(index);
+    tracklist_mgr.getItem(index, function () {
+        $(this).addClass('found');
     });
 }
 
 function qsResetSearch()
 {
     qs_found_index = bp.audio_player.currentIndex();
-    $(visible_tracks).removeClass('found');
+    $(tracklist.children).removeClass('found');
 }
 
 function makeQsId()
@@ -382,14 +308,6 @@ function assignVariables()
 
     quick_search          = $('#quick-search')[0];
     quick_search_input    = $('#quick-search input')[0];
-
-    var track             = $(tracklist).find('li:first');
-    track_height          = track.outerHeight(false) + parseInt((track.outerHeight(true) - track.outerHeight(false)) / 2);
-    visible_tracks_count  = parseInt($(tracklist_container).height() / track_height) +
-                            Boolean($(tracklist_container).height() % track_height);
-    visible_tracks        = $(tracklist).find('li');
-
-    tracklist_scroll_helper = $('#tracklist-scroll-helper')[0];
 }
 
 
@@ -470,25 +388,31 @@ function initAudioMeta()
 
 function initAudioRecords()
 {
-    while (visible_tracks.length < visible_tracks_count)
-        visible_tracks.push($(visible_tracks[0]).clone(true)[0]);
-
-    $(tracklist).html(visible_tracks);
-
     elc.add(bp.audio_player, bp.AudioPlayer.EVENT_PLAYLIST_UPDATED, function () {
-        updateAudioRecords(this.playlist(), this.currentIndex());
+        tracklist_mgr.itemsCount = this.playlist().length;
     });
 
-    tracklist.addEventListener('mousewheel', function (event) {
-        tracklist_container.dispatchEvent(event);
-    }, false);
+    tracklist_mgr = new DynamicListView(tracklist, function (index) {
+        var $this = $(this);
+        var audio_record = bp.audio_player.playlist()[index];
 
-    $(tracklist_container).scroll(function() {
-        updateAudioRecords(bp.audio_player.playlist(),
-                           bp.audio_player.currentIndex());
-    });
+        this.trackindex = index;
+        this.title      = audio_record.artist + " - " + audio_record.title;
 
-    updateAudioRecords(bp.audio_player.playlist(), bp.audio_player.currentIndex());
+        if (index == bp.audio_player.currentIndex())
+            $this.addClass('now-playing');
+        else
+            $this.removeClass('now-playing');
+
+        $this.find('.artist')[0].innerText   = audio_record.artist;
+        $this.find('.title')[0].innerText    = audio_record.title;
+        $this.find('.duration')[0].innerText = secondsToTime(audio_record.duration);
+        $this.find('a.download')[0].href     = audio_record.url;
+    }, tracklist.children[0]);
+
+    tracklist_mgr.activate();
+
+    tracklist_mgr.itemsCount = bp.audio_player.playlist().length;
 }
 
 function initPlayOrder()
@@ -572,14 +496,14 @@ assignVariables();
 initVolumeControl();
 initProgressControl();
 initPlayerControls();
-initAudioMeta();
 initAudioRecords();
+initAudioMeta();
 initPlayOrder();
 initQuickSearch();
 
 if (bp.vk_session.isEmpty())
     bp.vk_session.refresh();
 
-$(document).ready(function () { scrollToTrack(bp.audio_player.currentIndex()); });
+$(document).ready(function () { tracklist_mgr.scrollTo(bp.audio_player.currentIndex()); });
 $(window).unload(function () { elc.unloadAllListeners(); });
 
