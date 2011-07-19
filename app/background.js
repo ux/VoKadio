@@ -60,12 +60,12 @@ AudioPlayer = function ()
     this.previous = function () { player.previous(); };
     this.next = function () { player.next(); };
 
-    this.playlist = function (new_playlist)
+    this.playlist = function (items)
     {
-        if (new_playlist)
-            my_audio.playlist = new_playlist;
+        if (items)
+            my_audio.items = items;
 
-        return my_audio.playlist;
+        return my_audio.items;
     };
 
     this.playorder = function (new_playorder)
@@ -198,7 +198,7 @@ audio_player.addEventListener(AudioPlayer.EVENT_PLAYORDER_CHANGED, function (eve
 
 
 vk_session.addEventListener(VkSession.EVENT_SESSION_RECEIVED, function () {
-    var history_playlist = audio_player.player.history.playlist;
+    var history_playlist = audio_player.player.history.items;
 
     if (history_playlist.length > 0) {
         var audios_list = [];
@@ -206,7 +206,7 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_RECEIVED, function () {
             audios_list.push(history_playlist[i].owner_id + '_' + history_playlist[i].aid);
 
         vk_query.call('audio.getById', {audios: audios_list.join(',')}, function (records) {
-            audio_player.player.history.playlist = helper.vk.tracksForPlaylist(records);
+            audio_player.player.history.items = helper.vk.tracksForPlaylist(records);
         });
     }
 });

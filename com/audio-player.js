@@ -52,7 +52,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     audio.addEventListener('stalled', function (event) { if ( ! this.paused) this.play(); });
 
     audio.addEventListener('ended', function (event) {
-        if (current_playlist && !(repeat_mode == AudioPlayer.Player.REPEAT_NONE && history_current_index() >= history.playlist.length - 1 && current_playlist.nowPlaying && (current_playlist.nowPlaying.index == null ? current_playlist.nowPlaying.prev_index : current_playlist.nowPlaying.index) >= current_playlist.playlist.length - 1))
+        if (current_playlist && !(repeat_mode == AudioPlayer.Player.REPEAT_NONE && history_current_index() >= history.items.length - 1 && current_playlist.nowPlaying && (current_playlist.nowPlaying.index == null ? current_playlist.nowPlaying.prev_index : current_playlist.nowPlaying.index) >= current_playlist.items.length - 1))
             setTimeout(function () { self.next(); }, 0);
     });
 
@@ -64,7 +64,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     var history_playlists = {};
 
     history.addEventListener(AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, function (event) {
-        var i, playlist_id, playlist = event.playlist;
+        var i, playlist_id, items = event.items;
 
         for (playlist_id in history_playlists)
             for (i in history_playlists[playlist_id]) {
@@ -80,9 +80,9 @@ AudioPlayer.Player = function (playorder, repeat_mode)
 
         history_playlists = {};
 
-        for (i in playlist)
-            if (playlist[i].original) {
-                var item = playlist[i];
+        for (i in items)
+            if (items[i].original) {
+                var item = items[i];
                 playlist_id = item.original.playlist.id;
 
                 history_playlists[playlist_id] = history_playlists[playlist_id] || [];
@@ -139,11 +139,9 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     };
 
     this.__defineGetter__('currentPlaylist', function () { return current_playlist; });
-    this.__defineSetter__('currentPlaylist', function (new_current_playlist) {
-        new_current_playlist = this.getPlaylist(new_current_playlist);
-
-        if (new_current_playlist)
-            current_playlist = new_current_playlist;
+    this.__defineSetter__('currentPlaylist', function (playlist) {
+        if (playlist = this.getPlaylist(playlist))
+            current_playlist = playlist;
     });
 
     this.__defineGetter__('history', function () { return history; });
@@ -172,16 +170,19 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     {
         item = history.removeFromPlaylist(item);
 
-        if (item && item.playlist)
-            for (var i in history_playlists[item.playlist.id])
-                if (history_playlists[item.playlist.id][i] == item) {
-                    history_playlists[item.playlist.id].splice(i, 1);
+        if (item && item.original) {
+            var playlist_id = item.original.playlist.id;
 
-                    if (history_playlists[item.playlist.id].length == 0)
-                        delete history_playlists[item.playlist.id];
+            for (var i in history_playlists[playlist_id])
+                if (history_playlists[playlist_id][i] == item) {
+                    history_playlists[playlist_id].splice(i, 1);
+
+                    if (history_playlists[playlist_id].length == 0)
+                        delete history_playlists[playlist_id];
 
                     break;
                 }
+        }
 
         return item;
     };
@@ -227,7 +228,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     {
         playlist = this.getPlaylist(playlist);
 
-        return this.play({index: Math.floor(Math.random() * playlist.playlist.length)}, playlist, previous);
+        return this.play({index: Math.floor(Math.random() * playlist.items.length)}, playlist, previous);
     };
 
     this.play = function(item, playlist, previous)
@@ -289,7 +290,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
                     return this.playRandom(playlist, true);
                 else
                     return this.play((playlist.nowPlaying ? (playlist.nowPlaying.index == null ? playlist.nowPlaying.prev_index : playlist.nowPlaying.index) : 0) - 1, playlist, true) ||
-                           this.play(playlist.playlist.length - 1, playlist, true);
+                           this.play(playlist.items.length - 1, playlist, true);
             }
             else
                 return this.playFromHistory(index);
@@ -302,7 +303,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
 
         var index = history_current_index(true) + 1;
 
-        if (index > history.playlist.length - 1) {
+        if (index > history.items.length - 1) {
             if (playorder == AudioPlayer.Player.PLAYORDER_SHUFFLE)
                 return this.playRandom(playlist);
             else
@@ -314,7 +315,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
 
     function history_current_index(for_next_calculation)
     {
-        return history.nowPlaying ? (history.nowPlaying.index == null ? history.nowPlaying.prev_index - (for_next_calculation ? 1 : 0) : history.nowPlaying.index) : history.playlist.length - 1;
+        return history.nowPlaying ? (history.nowPlaying.index == null ? history.nowPlaying.prev_index - (for_next_calculation ? 1 : 0) : history.nowPlaying.index) : history.items.length - 1;
     }
 
     function history_original_item_getter()
@@ -332,19 +333,17 @@ AudioPlayer.Playlist = function (id)
 {
     EventDispatcher.call(this);
 
-    var playlist     = [];
-    var playlist_ids = {};
-    var now_playing  = null;
+    var items = [], items_ids = {}, now_playing = null;
 
     this.__defineGetter__('id', function () { return id; });
 
-    this.__defineGetter__('playlist', function () { return playlist; });
-    this.__defineSetter__('playlist', function (new_playlist) {
-        playlist = [];
-        playlist_ids = {};
+    this.__defineGetter__('items', function () { return items; });
+    this.__defineSetter__('items', function (new_items) {
+        items = [];
+        items_ids = {};
 
-        for (var i in new_playlist)
-            this.addToPlaylist(new_playlist[i]);
+        for (var i in new_items)
+            this.addToPlaylist(new_items[i]);
 
         if (now_playing) {
             var time = now_playing.currentTime;
@@ -364,24 +363,24 @@ AudioPlayer.Playlist = function (id)
         }
 
         this.dispatchEvent({type: AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED,
-                            playlist: playlist, nowPlaying: now_playing});
+                            items: items, nowPlaying: now_playing});
     });
 
     this.addToPlaylist = function (item, index)
     {
-        index = index == null ? playlist.length : index;
+        index = index == null ? items.length : index;
         if (index < 0)
             index = 0;
 
         item.index = index;
 
-        playlist.splice(index, 0, item);
+        items.splice(index, 0, item);
 
-        playlist_ids[item.id] = playlist_ids[item.id] || [];
-        playlist_ids[item.id].push(item);
+        items_ids[item.id] = items_ids[item.id] || [];
+        items_ids[item.id].push(item);
 
-        for (var i = item.index + 1; i < playlist.length; i++)
-            playlist[i].index = i;
+        for (var i = item.index + 1; i < items.length; i++)
+            items[i].index = i;
 
         return item;
     };
@@ -393,20 +392,20 @@ AudioPlayer.Playlist = function (id)
         if (item && item.index) {
             var i;
 
-            playlist.splice(item.index, 1);
+            items.splice(item.index, 1);
 
-            for (i in playlist_ids[item.id])
-                if (playlist_ids[item.id][i] == item) {
-                    playlist_ids[item.id].splice(i, 1);
+            for (i in items_ids[item.id])
+                if (items_ids[item.id][i] == item) {
+                    items_ids[item.id].splice(i, 1);
 
-                    if (playlist_ids[item.id].length == 0)
-                        delete playlist_ids[item.id];
+                    if (items_ids[item.id].length == 0)
+                        delete items_ids[item.id];
 
                     break;
                 }
 
-            for (i = item.index; i < playlist.length; i++)
-                playlist[i].index = i;
+            for (i = item.index; i < items.length; i++)
+                items[i].index = i;
 
             item.prev_index = item.index;
             item.index = null;
@@ -422,28 +421,28 @@ AudioPlayer.Playlist = function (id)
         if (item == undefined)
             return now_playing;
         else if (typeof item == 'object') {
-            if (item.index != null && playlist_ids[item.id]) {
-                if (playlist[item.index] && playlist[item.index].id == item.id)
-                    return playlist[item.index];
+            if (item.index != null && items_ids[item.id]) {
+                if (items[item.index] && items[item.index].id == item.id)
+                    return items[item.index];
                 else {
                     var closest_index = null;
 
-                    for (var i in playlist_ids[item.id])
-                        if (closest_index == null || Math.abs(playlist_ids[item.id][i].index - item.index) < Math.abs(closest_index - item.index))
-                            closest_index = playlist_ids[item.id][i].index;
+                    for (var i in items_ids[item.id])
+                        if (closest_index == null || Math.abs(items_ids[item.id][i].index - item.index) < Math.abs(closest_index - item.index))
+                            closest_index = items_ids[item.id][i].index;
 
-                    return playlist[closest_index];
+                    return items[closest_index];
                 }
             }
             else if (item.index != null)
-                return playlist[item.index];
-            else if (playlist_ids[item.id])
-                return playlist_ids[item.id][0];
+                return items[item.index];
+            else if (items_ids[item.id])
+                return items_ids[item.id][0];
             else
                 return undefined;
         }
         else
-            return playlist[item];
+            return items[item];
     };
 
     this.__defineGetter__('nowPlaying', function () { return now_playing; });
