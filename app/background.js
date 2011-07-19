@@ -111,7 +111,7 @@ AudioPlayer.PLAYORDER_LOOP    = 'loop';
 //*****************************************************************************
 
 
-var vk_session = new VkSession(VK_APP_ID, VK_SETTINGS, function (session, silent) {
+var vk_session = new VkAPI.Session(VK_APP_ID, VK_SETTINGS, function (session, silent) {
     var session_updated = session.updatedAt;
 
     var auth_url = buildUri('http://api.vkontakte.ru/oauth/authorize', {
@@ -136,7 +136,7 @@ var vk_session = new VkSession(VK_APP_ID, VK_SETTINGS, function (session, silent
     });
 });
 
-var vk_query = new VkQuery(vk_session);
+var vk_query = new VkAPI.Query(vk_session);
 
 var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET});
 var lastfm_session = null;
@@ -197,7 +197,7 @@ audio_player.addEventListener(AudioPlayer.EVENT_PLAYORDER_CHANGED, function (eve
 });
 
 
-vk_session.addEventListener(VkSession.EVENT_SESSION_RECEIVED, function () {
+vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
     var history_playlist = audio_player.player.history.items;
 
     if (history_playlist.length > 0) {
@@ -212,7 +212,7 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_RECEIVED, function () {
 });
 
 
-vk_session.addEventListener(VkSession.EVENT_SESSION_RECEIVED, function () {
+vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
     vk_query.call('audio.get', {count: 16000}, function (records) {
         audio_player.playlist(helper.vk.tracksForPlaylist(records));
     });
@@ -290,12 +290,12 @@ $(document).ready(function () { checkLastfmSession(); });
 
 (function initVkSession()
 {
-    vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function (event) {
+    vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_UPDATED, function (event) {
         options.set('vk.session', JSON.stringify({data: event.data, updated_at: event.target.updatedAt}));
     });
 
     var cached_session = JSON.parse(options.get('vk.session', 'null'));
-    if ( ! (cached_session && vk_session.data(cached_session.data, new Date(cached_session.updated_at))))
+    if ( ! (cached_session && vk_session.updateData(cached_session.data, new Date(cached_session.updated_at))))
         vk_session.refresh(true);
 }());
 
