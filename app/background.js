@@ -197,7 +197,7 @@ audio_player.addEventListener(AudioPlayer.EVENT_PLAYORDER_CHANGED, function (eve
 });
 
 
-vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
+vk_session.addEventListener(VkSession.EVENT_SESSION_RECEIVED, function () {
     var history_playlist = audio_player.player.history.playlist;
 
     if (history_playlist.length > 0) {
@@ -212,7 +212,7 @@ vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
 });
 
 
-vk_session.addEventListener(VkSession.EVENT_SESSION_UPDATED, function () {
+vk_session.addEventListener(VkSession.EVENT_SESSION_RECEIVED, function () {
     vk_query.call('audio.get', {count: 16000}, function (records) {
         audio_player.playlist(helper.vk.tracksForPlaylist(records));
     });
