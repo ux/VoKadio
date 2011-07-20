@@ -82,7 +82,7 @@ var lastfm_session = null;
 
 var player = new AudioPlayer.Player(),
     helper = new PlayerHelper(lastfm),
-    my_audio = new VkUser.Audio(null, player, vk_query, helper);
+    my_audio = new VK.Audio(null, player, vk_query, helper);
 
 
 //*****************************************************************************
@@ -122,6 +122,8 @@ function checkLastfmSession()
 
 (function initPlayer()
 {
+    player.currentPlaylist = my_audio.currentAlbum.createPlaylist();
+
     player.audio.volume = options.get('player.volume', 1);
     player.audio.addEventListener('volumechange', function () {
         options.set('player.volume', player.audio.volume);

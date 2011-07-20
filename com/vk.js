@@ -19,13 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var VkUser = {};
+var VK = {};
 
-VkUser.Audio = function (owner_id, player, query, helper)
+VK.Audio = function (owner_id, player, query, helper)
 {
     var all_audio, self = this, albums = {}, current_album = null;
 
-    all_audio = new VkUser.Audio.Album(null, owner_id, "Все аудиозаписи", player, query, helper);
+    all_audio = new VK.Audio.Album(null, owner_id, "Все аудиозаписи", player, query, helper);
 
     query.session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, update_all_audio);
 
@@ -75,7 +75,7 @@ VkUser.Audio = function (owner_id, player, query, helper)
                     delete albums[album.id];
                 }
                 else
-                    album = new VkUser.Audio.Album(album_obj.album_id, owner_id, album_obj.title, player, query, helper);
+                    album = new VK.Audio.Album(album_obj.album_id, owner_id, album_obj.title, player, query, helper);
 
                 new_albums[album.id] = album;
             }
@@ -126,7 +126,7 @@ VkUser.Audio = function (owner_id, player, query, helper)
 };
 
 
-VkUser.Audio.Album = function (id, owner_id, title, player, query, helper)
+VK.Audio.Album = function (id, owner_id, title, player, query, helper)
 {
     var playlist;
 
@@ -136,7 +136,7 @@ VkUser.Audio.Album = function (id, owner_id, title, player, query, helper)
     this.__defineSetter__('title', function (new_title) { title = new_title; });
     this.__defineGetter__('playlist', function () { return playlist; });
 
-    this.fetchPlaylist = function ()
+    this.createPlaylist = function ()
     {
         if ( ! playlist) {
             var playlist_id = (owner_id == null ? 'owner' : owner_id) + '_' + (id == null ? 'all' : id);
@@ -144,6 +144,13 @@ VkUser.Audio.Album = function (id, owner_id, title, player, query, helper)
             playlist = new AudioPlayer.Playlist(playlist_id);
             player.addPlaylist(playlist);
         }
+
+        return playlist;
+    };
+
+    this.fetchPlaylist = function ()
+    {
+        this.createPlaylist();
 
         var params = {count: 16000};
         (owner_id != null) && (params.uid = owner_id);
