@@ -44,6 +44,11 @@ function playorder(player, new_playorder)
 
 //*****************************************************************************
 
+var options = new Options();
+
+var DEBUG = options.get('debug', false);
+
+VkAPI.DEBUG = DEBUG;
 
 var vk_session = new VkAPI.Session(VK_APP_ID, VK_SETTINGS, function (session, silent) {
     var session_updated = session.updatedAt;
@@ -79,8 +84,6 @@ var player = new AudioPlayer.Player(),
     helper = new PlayerHelper(lastfm),
     my_audio = new VkUser.Audio(null, player, vk_query, helper);
 
-var options = new Options();
-
 
 //*****************************************************************************
 
@@ -92,10 +95,10 @@ function lastfmAuthCallback(params)
         success: function (data) {
             lastfm_session = data.session;
             options.set('lastfm.session', JSON.stringify(lastfm_session));
-            console.debug("last.fm session received: ", lastfm_session);
+            if (DEBUG) console.debug("last.fm session received: ", lastfm_session);
         },
         error: function (code, message) {
-            console.error("Error retrieving last.fm session: " + message + " (Error code: " + code + ")");
+            throw new Error("Error retrieving last.fm session: " + message + " (Error code: " + code + ")");
         }
     });
 }
