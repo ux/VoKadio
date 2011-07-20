@@ -19,22 +19,16 @@
 
 var bp = chrome.extension.getBackgroundPage();
 
-var AudioPlayer  = bp.AudioPlayer;
-var audio_player = bp.audio_player;
-var vk_session   = bp.vk_session;
-var helper       = bp.helper;
-var options      = bp.options;
-
-var elc = new EventsListenersCollector();
+var elc = new bp.EventsListenersCollector();
 
 $(window).unload(function () { elc.unloadAllListeners(); });
 
 
-function updateAudioMeta(index, record)
+function updateAudioMeta()
 {
-    if (index >= 0 && record) {
-        $('#buttons .next').html(audio_player.playlist()[audio_player.nextIndex()].title);
+    var record = bp.player.history.nowPlaying;
 
+    if (record) {
         var artist = record.artist, track = record.title;
 
         $('#track-info .title').text(track);
@@ -43,20 +37,19 @@ function updateAudioMeta(index, record)
         $('#album').remove();
         $('#album-art img').attr('src', '/images/album-art.png');
 
-        helper.lastfm.getAlbumInfo(artist, track, function(rid, title, cover) {
-            var current_track = audio_player.playlist()[audio_player.currentIndex()];
+        bp.helper.lastfm.getAlbumInfo(artist, track, function(rid, title, cover) {
+            var current_track = bp.player.history.nowPlaying;
 
-            if (rid != helper.lastfm.getTrackId(current_track.artist, current_track.title))
-                return;
+            if (current_track && rid == bp.helper.lastfm.getTrackId(current_track.artist, current_track.title)) {
+                if (cover && cover.medium)
+                    $('#album-art img').attr('src', cover.medium);
 
-            if (cover && cover.medium)
-                $('#album-art img').attr('src', cover.medium);
+                if (title) {
+                    if ($('#album').length == 0)
+                        $('#metadata').append($('<li id="album"></li>'));
 
-            if (title) {
-                if ($('#album').length == 0)
-                    $('#metadata').append($('<li id="album"></li>'));
-
-                $('#album').text(title);
+                    $('#album').text(title);
+                }
             }
         });
     }
@@ -68,9 +61,7 @@ var close_countdown = null;
 function startCloseCountdown(timeout)
 {
     timeout = timeout || 333;
-    close_countdown = setTimeout(function () {
-        if (window) window.close();
-    }, timeout);
+    close_countdown = setTimeout(function () { if (window) window.close(); }, timeout);
 }
 
 function cancelCloseCountdown()
@@ -89,7 +80,7 @@ function restartCloseCountdown(timeout)
 
 function updatePlayStatus()
 {
-    if (bp.audio_player.audio.paused)
+    if (bp.player.audio.paused)
         $('#buttons .play').removeClass('pause');
     else
         $('#buttons .play').addClass('pause');
@@ -97,7 +88,7 @@ function updatePlayStatus()
 
 
 var mouse_in_window = false;
-var show_always_notification = options.get('notification.show-behavior') == 'show-always';
+var show_always_notification = bp.options.get('notification.show-behavior') == 'show-always';
 
 
 if ( ! show_always_notification) {
@@ -108,31 +99,28 @@ if ( ! show_always_notification) {
 
     $('body').mouseout(function () {
         mouse_in_window = false;
-        restartCloseCountdown(NOTIFICATION_TIMEOUT_SECOND);
+        restartCloseCountdown(bp.NOTIFICATION_TIMEOUT_SECOND);
     });
 
-    $(document).ready(function () { startCloseCountdown(NOTIFICATION_TIMEOUT); });
+    $(document).ready(function () { startCloseCountdown(bp.NOTIFICATION_TIMEOUT); });
 }
 
 
-var playlist = audio_player.playlist();
-var currentIndex = audio_player.currentIndex();
-
-if (vk_session.exists() || playlist.length > 0 && currentIndex >= 0)
-    updateAudioMeta(currentIndex, playlist[currentIndex]);
+if (bp.player.history.nowPlaying)
+    updateAudioMeta();
 else
     window.close();
 
 
-elc.add(audio_player, AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
+elc.add(bp.player.history, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
     if ( ! mouse_in_window && ! show_always_notification)
-        restartCloseCountdown(NOTIFICATION_TIMEOUT);
+        restartCloseCountdown(bp.NOTIFICATION_TIMEOUT);
 
-    updateAudioMeta(event.index, event.index >= 0 ? this.playlist()[event.index] : null);
+    updateAudioMeta();
 });
 
-elc.add(bp.audio_player.audio, 'play', updatePlayStatus);
-elc.add(bp.audio_player.audio, 'pause', updatePlayStatus);
+elc.add(bp.player.audio, 'play', updatePlayStatus);
+elc.add(bp.player.audio, 'pause', updatePlayStatus);
 
 updatePlayStatus();
 

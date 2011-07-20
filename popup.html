@@ -2,16 +2,11 @@
 <head>
     <title>VoKadio Popup Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
 
     <script type="text/javascript" src="/lib/jquery/jquery.js"></script>
     <script type="text/javascript" src="/lib/jquery/jquery-ui.js"></script>
-    <script type="text/javascript" src="/lib/utils.js"></script>
-
-    <script type="text/javascript" src="/com/events-listeners-collector.js"></script>
-    <script type="text/javascript" src="/com/dynamic-list-view.js"></script>
-
-    <script type="text/javascript" src="/app/config.js"></script>
 </head>
 
 <body>
@@ -52,7 +47,7 @@
 
     <div id="body">
         <ol id="tracklist">
-            <li onclick="bp.audio_player.togglePlay(this.trackindex);"><span class="artist"></span><span class="title"></span> <span class="duration"></span> <a onclick="event.stopPropagation();" target="_blank" href="#download" class="download"></a></li>
+            <li onclick="bp.player.togglePlay(this.trackindex, this.playlist);"><span class="artist"></span><span class="title"></span> <span class="duration"></span> <a onclick="event.stopPropagation();" target="_blank" href="#download" class="download"></a></li>
         </ol>
     </div><!--/body-->
 

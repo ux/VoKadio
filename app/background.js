@@ -17,95 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var AP = AudioPlayer;
-
-AudioPlayer = function ()
+function playorder(player, new_playorder)
 {
-    EventDispatcher.call(this);
-
-    var self = this;
-
-    var my_audio = new AP.Playlist('my-audio');
-
-    my_audio.addEventListener(AP.Playlist.EVENT_PLAYLIST_UPDATED, function () {
-        self.dispatchEvent({type: AudioPlayer.EVENT_PLAYLIST_UPDATED});
-    });
-
-    my_audio.addEventListener(AP.Playlist.EVENT_NOW_PLAYING_CHANGED, function () {
-        self.dispatchEvent({type: AudioPlayer.EVENT_INDEX_CHANGED, index: (my_audio.nowPlaying && my_audio.nowPlaying.index) ? my_audio.nowPlaying.index : -1});
-    });
-
-    var player = new AP.Player();
-    player.addPlaylist(my_audio);
-    player.currentPlaylist = my_audio;
-
-    player.addEventListener(AP.Player.EVENT_PLAYORDER_CHANGED, function () {
-        self.dispatchEvent({type: AudioPlayer.EVENT_PLAYORDER_CHANGED, playorder: self.playorder()});
-    });
-
-    player.addEventListener(AP.Player.EVENT_REPEAT_MODE_CHANGED, function () {
-        self.dispatchEvent({type: AudioPlayer.EVENT_PLAYORDER_CHANGED, playorder: self.playorder()});
-    });
-
-    this.player = player;
-    this.myAudio = my_audio;
-    this.audio = player.audio;
-
-    this.play = function (index) { player.play(index); };
-    this.pause = function () { audio.pause(); };
-    this.togglePlay = function (index) { player.togglePlay(index); };
-    this.currentIndex = function () { return my_audio.nowPlaying ? my_audio.nowPlaying.index : -1; };
-    this.previousIndex = function () { return 0; };
-    this.nextIndex = function () { return 0; };
-    this.previous = function () { player.previous(); };
-    this.next = function () { player.next(); };
-
-    this.playlist = function (items)
-    {
-        if (items)
-            my_audio.items = items;
-
-        return my_audio.items;
-    };
-
-    this.playorder = function (new_playorder)
-    {
-        if (new_playorder) {
-            switch (new_playorder) {
-                case AudioPlayer.PLAYORDER_NORMAL:
-                    player.playorder = AP.Player.PLAYORDER_NORMAL;
-                    player.repeatMode = AP.Player.REPEAT_PLAYLIST;
-                    break;
-                case AudioPlayer.PLAYORDER_LOOP:
-                    player.playorder = AP.Player.PLAYORDER_NORMAL;
-                    player.repeatMode = AP.Player.REPEAT_TRACK;
-                    break;
-                case AudioPlayer.PLAYORDER_SHUFFLE:
-                    player.playorder = AP.Player.PLAYORDER_SHUFFLE;
-                    player.repeatMode = AP.Player.REPEAT_PLAYLIST;
-                    break;
-            }
+    if (new_playorder) {
+        switch (new_playorder) {
+            case 'normal':
+                player.playorder = AudioPlayer.Player.PLAYORDER_NORMAL;
+                player.repeatMode = AudioPlayer.Player.REPEAT_PLAYLIST;
+                break;
+            case 'loop':
+                player.playorder = AudioPlayer.Player.PLAYORDER_NORMAL;
+                player.repeatMode = AudioPlayer.Player.REPEAT_TRACK;
+                break;
+            case 'shuffle':
+                player.playorder = AudioPlayer.Player.PLAYORDER_SHUFFLE;
+                player.repeatMode = AudioPlayer.Player.REPEAT_PLAYLIST;
+                break;
         }
+    }
 
-        return (player.playorder == AP.Player.PLAYORDER_SHUFFLE)
-            ? AudioPlayer.PLAYORDER_SHUFFLE
-            : (player.repeatMode == AP.Player.REPEAT_TRACK
-                ? AudioPlayer.PLAYORDER_LOOP
-                : AudioPlayer.PLAYORDER_NORMAL);
-    };
-};
-
-AudioPlayer.Player = AP.Player;
-AudioPlayer.Playlist = AP.Playlist;
-AudioPlayer.Utils = AP.Utils;
-
-AudioPlayer.EVENT_INDEX_CHANGED     = 'deprecated.index-changed';
-AudioPlayer.EVENT_PLAYLIST_UPDATED  = 'deprecated.playlist-updated';
-AudioPlayer.EVENT_PLAYORDER_CHANGED = 'deprecated.playorder-changed';
-
-AudioPlayer.PLAYORDER_NORMAL  = 'normal';
-AudioPlayer.PLAYORDER_SHUFFLE = 'shuffle';
-AudioPlayer.PLAYORDER_LOOP    = 'loop';
+    return (player.playorder == AudioPlayer.Player.PLAYORDER_SHUFFLE)
+        ? 'shuffle'
+        : (player.repeatMode == AudioPlayer.Player.REPEAT_TRACK ? 'loop' : 'normal');
+}
 
 
 //*****************************************************************************
@@ -141,9 +75,9 @@ var vk_query = new VkAPI.Query(vk_session);
 var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET});
 var lastfm_session = null;
 
-var audio_player = new AudioPlayer();
-
-var helper = new PlayerHelper(lastfm);
+var player = new AudioPlayer.Player(),
+    helper = new PlayerHelper(lastfm),
+    my_audio = new VkUser.Audio(null, player, vk_query, helper);
 
 var options = new Options();
 
@@ -183,48 +117,41 @@ function checkLastfmSession()
 //*****************************************************************************
 
 
-audio_player.audio.volume = options.get('player.volume', 1);
-
-audio_player.audio.addEventListener('volumechange', function () {
-    options.set('player.volume', audio_player.audio.volume);
-});
-
-
-audio_player.playorder(options.get('player.playorder', AudioPlayer.PLAYORDER_NORMAL));
-
-audio_player.addEventListener(AudioPlayer.EVENT_PLAYORDER_CHANGED, function (event) {
-    options.set('player.playorder', event.playorder);
-});
-
-
-vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
-    var history_playlist = audio_player.player.history.items;
-
-    if (history_playlist.length > 0) {
-        var audios_list = [];
-        for (var i in history_playlist)
-            audios_list.push(history_playlist[i].owner_id + '_' + history_playlist[i].aid);
-
-        vk_query.call('audio.getById', {audios: audios_list.join(',')}, function (records) {
-            audio_player.player.history.items = helper.vk.tracksForPlaylist(records);
-        });
-    }
-});
-
-
-vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
-    vk_query.call('audio.get', {count: 16000}, function (records) {
-        audio_player.playlist(helper.vk.tracksForPlaylist(records));
+(function initPlayer()
+{
+    player.audio.volume = options.get('player.volume', 1);
+    player.audio.addEventListener('volumechange', function () {
+        options.set('player.volume', player.audio.volume);
     });
-});
+
+    playorder(player, options.get('player.playorder', 'normal'));
+    player.addEventListener(AudioPlayer.Player.EVENT_PLAYORDER_CHANGED, store_playorder);
+    player.addEventListener(AudioPlayer.Player.EVENT_REPEAT_MODE_CHANGED, store_playorder);
+
+    vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
+        var history_items = player.history.items;
+
+        if (history_items.length > 0) {
+            var audios_list = [];
+            for (var i in history_items)
+                audios_list.push(history_items[i].owner_id + '_' + history_items[i].aid);
+
+            vk_query.call('audio.getById', {audios: audios_list.join(',')}, function (records) {
+                player.history.items = helper.vk.tracksForPlaylist(records);
+            });
+        }
+    });
+
+    function store_playorder() { options.set('player.playorder', playorder(player)); }
+}());
 
 (function initNotification()
 {
     var has_notification = false;
     var notification = null;
 
-    audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
-        if (event.index < 0 || options.get('notification.show-behavior') == 'hide' || has_notification)
+    player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
+        if (has_notification || options.get('notification.show-behavior') == 'hide' || !event.nowPlaying)
             return;
 
         has_notification = true;
@@ -243,20 +170,18 @@ vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
             chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0, canvas.width, 19)});
         });
 
-    audio_player.audio.addEventListener('play', function () { icon_rotator.rotateTo(-0.5 * Math.PI); });
-    audio_player.audio.addEventListener('pause', function () { icon_rotator.rotateTo(0); });
-    audio_player.audio.addEventListener('ended', function () { icon_rotator.rotateTo(0); });
+    player.audio.addEventListener('play', function () { icon_rotator.rotateTo(-0.5 * Math.PI); });
+    player.audio.addEventListener('pause', function () { icon_rotator.rotateTo(0); });
+    player.audio.addEventListener('ended', function () { icon_rotator.rotateTo(0); });
 
-    audio_player.audio.addEventListener('timeupdate', function (event) {
+    player.audio.addEventListener('timeupdate', function (event) {
         if ( ! isNaN(this.duration))
             chrome.browserAction.setBadgeText({text: secondsToTime(this.duration - this.currentTime)});
     });
 
-    audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
-        if (event.index >= 0) {
-            var record = audio_player.playlist()[event.index];
-            chrome.browserAction.setTitle({title: record.artist + " - " + record.title});
-        }
+    player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
+        if (event.nowPlaying)
+            chrome.browserAction.setTitle({title: event.nowPlaying.artist + " - " + event.nowPlaying.title});
         else {
             chrome.browserAction.setBadgeText({text: ''});
             chrome.browserAction.setTitle({title: EXTENSION_NAME});
@@ -266,22 +191,22 @@ vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
 
 (function initLastfmScrobbling()
 {
-    audio_player.addEventListener(AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
+    player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
         helper.lastfm.scrobbler.stop(lastfm_session);  // is used, when track was switched and was not ended
 
-        if (event.index >= 0 && audio_player.playlist()[event.index])
-            helper.lastfm.scrobbler.start(audio_player.playlist()[event.index]);
+        if (event.nowPlaying)
+            helper.lastfm.scrobbler.start(event.nowPlaying);
     });
 
-    audio_player.audio.addEventListener('playing', function () {
+    player.audio.addEventListener('playing', function () {
         helper.lastfm.scrobbler.play(lastfm_session);
     });
 
-    audio_player.audio.addEventListener('pause', function () {
+    player.audio.addEventListener('pause', function () {
         helper.lastfm.scrobbler.pause();
     });
 
-    audio_player.audio.addEventListener('ended', function () {
+    player.audio.addEventListener('ended', function () {
         helper.lastfm.scrobbler.stop(lastfm_session);
     });
 }());

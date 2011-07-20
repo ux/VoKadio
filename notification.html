@@ -2,11 +2,10 @@
 <head>
     <title>VoKadio Notification Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
 
     <script type="text/javascript" src="/lib/jquery/jquery.js"></script>
-    <script type="text/javascript" src="/com/events-listeners-collector.js"></script>
-    <script type="text/javascript" src="/app/config.js"></script>
 </head>
 
 <body>
@@ -26,9 +25,9 @@
 
             <div id="controls">
                 <ul id="buttons">
-                    <li><a class="previous" href="#previous" onclick="audio_player.previous();"></a></li>
-                    <li><a class="play" href="#toggle-play" onclick="bp.audio_player.togglePlay();"></a></li>
-                    <li style="background: none;"><a class="next enhanced" href="#next" onclick="audio_player.next();"></a></li>
+                    <li><a class="previous" href="#previous" onclick="bp.player.previous();"></a></li>
+                    <li><a class="play" href="#toggle-play" onclick="bp.player.togglePlay();"></a></li>
+                    <li><a class="next" href="#next" onclick="bp.player.next();"></a></li>
                 </ul>
             </div>
         </div>

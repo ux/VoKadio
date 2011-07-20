@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 function registerSliding(event, ui)   { ui.handle.sliding = true;  }
 function unregisterSliding(event, ui) { ui.handle.sliding = false; }
 
@@ -26,7 +25,7 @@ function unregisterSliding(event, ui) { ui.handle.sliding = false; }
 
 
 var bp  = chrome.extension.getBackgroundPage();
-var elc = new EventsListenersCollector();
+var elc = new bp.EventsListenersCollector();
 
 
 //*****************************************************************************
@@ -69,16 +68,16 @@ var volume_slider,
 function refreshAudioVolume()
 {
     if ( ! volume_slider.sliding)
-        $(volume_slider).slider('option', 'value', bp.audio_player.audio.volume);
+        $(volume_slider).slider('option', 'value', bp.player.audio.volume);
 }
 
-function updateVolume(event, ui) { bp.audio_player.audio.volume = ui.value; }
+function updateVolume(event, ui) { bp.player.audio.volume = ui.value; }
 
 function toggleMute()
 {
-    bp.audio_player.audio.muted = ! bp.audio_player.audio.muted;
+    bp.player.audio.muted = ! bp.player.audio.muted;
 
-    if (bp.audio_player.audio.muted) {
+    if (bp.player.audio.muted) {
         $(volume_mute).addClass('on');
         $(volume_slider_range).addClass('unvisible');
     }
@@ -97,9 +96,9 @@ function refreshAudioProgress()
     if ( ! progress_slider.sliding) {
         var duration, time;
 
-        if ( bp.audio_player.audio.readyState > 0 ) {
-            duration = bp.audio_player.audio.duration;
-            time     = bp.audio_player.audio.currentTime;
+        if ( bp.player.audio.readyState > 0 ) {
+            duration = bp.player.audio.duration;
+            time     = bp.player.audio.currentTime;
         }
         else
             time = duration = 0;
@@ -107,14 +106,14 @@ function refreshAudioProgress()
         $(progress_slider).slider('option', 'max', duration);
         $(progress_slider).slider('option', 'value', time);
 
-        $(progress_info_played).text(secondsToTime(time));
+        $(progress_info_played).text(bp.secondsToTime(time));
 
         if ( duration > 0 )
-            $(progress_info_total).text(secondsToTime(duration));
+            $(progress_info_total).text(bp.secondsToTime(duration));
     }
 }
 
-function updateProgress(event, ui) { bp.audio_player.audio.currentTime = ui.value; }
+function updateProgress(event, ui) { bp.player.audio.currentTime = ui.value; }
 
 
 //*****************************************************************************
@@ -122,7 +121,7 @@ function updateProgress(event, ui) { bp.audio_player.audio.currentTime = ui.valu
 
 function updatePlayStatus()
 {
-    if (bp.audio_player.audio.paused)
+    if (bp.player.audio.paused)
         $(toggle_play_button).removeClass('pause');
     else
         $(toggle_play_button).addClass('pause');
@@ -132,10 +131,10 @@ function updatePlayStatus()
 //*****************************************************************************
 
 
-function updateAudioMeta(index, record)
+function updateAudioMeta()
 {
-    $(meta_title).text(EXTENSION_NAME);
-    $(meta_title).attr('title', EXTENSION_NAME);
+    $(meta_title).text(bp.EXTENSION_NAME);
+    $(meta_title).attr('title', bp.EXTENSION_NAME);
 
     $(meta_artist).text('');
     $(meta_album).remove();
@@ -144,13 +143,13 @@ function updateAudioMeta(index, record)
 
     $(meta_total).attr('title', '');
 
-    $(progress_info_played).text(secondsToTime(0));
-    $(progress_info_total).text(secondsToTime(0));
+    $(progress_info_played).text(bp.secondsToTime(0));
+    $(progress_info_total).text(bp.secondsToTime(0));
 
-    tracklist_mgr.refresh();
+    if (bp.player.history.nowPlaying) {
+        var record = bp.player.history.nowPlaying;
 
-    if (index >= 0 && record) {
-        $(progress_info_total).text(secondsToTime(record.duration));
+        $(progress_info_total).text(bp.secondsToTime(record.duration));
 
         var artist = record.artist, track = record.title;
 
@@ -163,21 +162,20 @@ function updateAudioMeta(index, record)
         meta_total.myTitle = artist;
 
         bp.helper.lastfm.getAlbumInfo(artist, track, function(rid, title, cover) {
-            var current_track = bp.audio_player.playlist()[bp.audio_player.currentIndex()];
+            var current_track = bp.player.history.nowPlaying;
 
-            if (rid != bp.helper.lastfm.getTrackId(current_track.artist, current_track.title))
-                return;
+            if (current_track && rid == bp.helper.lastfm.getTrackId(current_track.artist, current_track.title)) {
+                if (cover && cover.medium)
+                    $(meta_cover).attr('src', cover.medium);
 
-            if (cover && cover.medium)
-                $(meta_cover).attr('src', cover.medium);
+                if (title) {
+                    if ($(meta_album).length == 0)
+                        $(meta_total).append($('<li id="album"></li>'));
 
-            if (title) {
-                if ($(meta_album).length == 0)
-                    $(meta_total).append($('<li id="album"></li>'));
+                    $(meta_album).text(title);
 
-                $(meta_album).text(title);
-
-                $(meta_total).attr('title', meta_total.myTitle + ' :: ' + title);
+                    $(meta_total).attr('title', meta_total.myTitle + ' :: ' + title);
+                }
             }
         });
     }
@@ -198,7 +196,7 @@ function qsSearchRegExp()
     if (search_str != '') {
         var search_words = search_str.split(/\s+/);
         for (var i =0, len = search_words.length; i < len; i++)
-            search_words[i] = regExpEscape(search_words[i]);
+            search_words[i] = bp.regExpEscape(search_words[i]);
 
         return new RegExp(search_words.join('.+'), 'i');
     }
@@ -224,7 +222,9 @@ function qsSelectFounded(index)
 
 function qsResetSearch()
 {
-    qs_found_index = bp.audio_player.currentIndex();
+    qs_found_index = bp.my_audio.currentAlbum.playlist.nowPlaying;
+    (qs_found_index == null) && (qs_found_index = -1);
+
     $(tracklist.children).removeClass('found');
 }
 
@@ -245,7 +245,7 @@ function qsFind(order)
 
         order = order || 1;
 
-        var list = bp.audio_player.playlist(), founded = false;
+        var list = bp.my_audio.currentAlbum.playlist.items, founded = false;
 
         for (var i = qs_found_index + order, len = list.length; i > -1 && i < len; i += order) {
             if (my_qs_id != current_qs_id)
@@ -335,7 +335,7 @@ function initVolumeControl()
 
     $(volume_mute).click(function () { toggleMute(); });
 
-    elc.add(bp.audio_player.audio, 'volumechange', function () { refreshAudioVolume(); });
+    elc.add(bp.player.audio, 'volumechange', function () { refreshAudioVolume(); });
 
     refreshAudioVolume();
 }
@@ -357,71 +357,78 @@ function initProgressControl()
         slide       : updateProgress
     });
 
-    elc.add(bp.audio_player.audio, 'timeupdate', function () { refreshAudioProgress(); });
+    elc.add(bp.player.audio, 'timeupdate', function () { refreshAudioProgress(); });
 
     refreshAudioProgress();
 }
 
 function initPlayerControls()
 {
-    $(toggle_play_button).click(function () { bp.audio_player.togglePlay(); });
-    $(previous_button).click(function () { bp.audio_player.previous(); });
-    $(next_button).click(function () { bp.audio_player.next(); });
+    $(toggle_play_button).click(function () { bp.player.togglePlay(); });
+    $(previous_button).click(function () { bp.player.previous(); });
+    $(next_button).click(function () { bp.player.next(); });
 
     $(update_session_button).click(function () { bp.vk_session.refresh(); });
 
-    elc.add(bp.audio_player.audio, 'play', updatePlayStatus);
-    elc.add(bp.audio_player.audio, 'pause', updatePlayStatus);
+    elc.add(bp.player.audio, 'play', updatePlayStatus);
+    elc.add(bp.player.audio, 'pause', updatePlayStatus);
 
     updatePlayStatus();
 }
 
 function initAudioMeta()
 {
-    elc.add(bp.audio_player, bp.AudioPlayer.EVENT_INDEX_CHANGED, function (event) {
-        updateAudioMeta(event.index, event.index >= 0 ? this.playlist()[event.index] : null);
-    });
-
-    var current_index = bp.audio_player.currentIndex();
-    updateAudioMeta(current_index, current_index >= 0 ? bp.audio_player.playlist()[current_index] : null);
+    elc.add(bp.player.history, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, updateAudioMeta);
+    updateAudioMeta();
 }
 
 function initAudioRecords()
 {
-    elc.add(bp.audio_player, bp.AudioPlayer.EVENT_PLAYLIST_UPDATED, function () {
-        tracklist_mgr.itemsCount = this.playlist().length;
-    });
+    var playlist = bp.my_audio.currentAlbum.fetchPlaylist();
 
-    tracklist_mgr = new DynamicListView(tracklist, function (index) {
+    tracklist_mgr = new bp.DynamicListView(tracklist, function (index) {
         var $this = $(this);
-        var audio_record = bp.audio_player.playlist()[index];
+        var record = bp.my_audio.currentAlbum.playlist.items[index];
 
+        this.playlist   = playlist;
         this.trackindex = index;
-        this.title      = audio_record.artist + " - " + audio_record.title;
+        this.title      = record.artist + " - " + record.title;
 
-        if (index == bp.audio_player.currentIndex())
+        if (playlist.nowPlaying && index == playlist.nowPlaying.index)
             $this.addClass('now-playing');
         else
             $this.removeClass('now-playing');
 
-        $this.find('.artist')[0].innerText   = audio_record.artist;
-        $this.find('.title')[0].innerText    = audio_record.title;
-        $this.find('.duration')[0].innerText = secondsToTime(audio_record.duration);
-        $this.find('a.download')[0].href     = audio_record.url;
+        $this.find('.artist')[0].innerText   = record.artist;
+        $this.find('.title')[0].innerText    = record.title;
+        $this.find('.duration')[0].innerText = bp.secondsToTime(record.duration);
+        $this.find('a.download')[0].href     = record.url;
     }, tracklist.children[0]);
 
     tracklist_mgr.activate();
 
-    tracklist_mgr.itemsCount = bp.audio_player.playlist().length;
+    tracklist_mgr.itemsCount = playlist.items.length;
+
+    elc.add(playlist, bp.AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, function (event) {
+        tracklist_mgr.itemsCount = event.items.length;
+    });
+
+    elc.add(playlist, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
+        tracklist_mgr.refresh();
+    });
+
+    $(document).ready(function () {
+        var now_playing = playlist.nowPlaying;
+
+        if (now_playing)
+            tracklist_mgr.scrollTo(now_playing.index == null ? now_playing.prev_index : now_playing.index);
+    });
 }
 
 function initPlayOrder()
 {
-    $(playorder_input).change(function () {
-        bp.audio_player.playorder(this.value);
-    });
-
-    $(playorder_input).val(bp.audio_player.playorder());
+    $(playorder_input).change(function () { bp.playorder(bp.player, this.value); });
+    $(playorder_input).val(bp.playorder(bp.player));
 }
 
 function initQuickSearch()
@@ -448,7 +455,7 @@ function initQuickSearch()
         switch (event.keyCode) {
             case 37: case 38:
                 if (qsFindPrevious() === false) {
-                    qs_found_index = bp.audio_player.playlist().length;
+                    qs_found_index = bp.my_audio.currentAlbum.playlist.items.length;
                     qsFindPrevious();
                 }
                 break;
@@ -461,8 +468,8 @@ function initQuickSearch()
                 break;
 
             case 13:
-                if (qs_found_index >= 0 && qs_found_index < bp.audio_player.playlist().length)
-                    bp.audio_player.togglePlay(qs_found_index);
+                if (qs_found_index >= 0 && qs_found_index < bp.my_audio.currentAlbum.playlist.items.length)
+                    bp.player.togglePlay(qs_found_index, bp.my_audio.currentAlbum.playlist);
                 $(this).trigger('blur');
                 break;
 
@@ -490,7 +497,6 @@ function initQuickSearch()
 
 //*****************************************************************************
 
-
 assignVariables();
 
 initVolumeControl();
@@ -501,9 +507,5 @@ initAudioMeta();
 initPlayOrder();
 initQuickSearch();
 
-if (bp.vk_session.isEmpty())
-    bp.vk_session.refresh();
-
-$(document).ready(function () { tracklist_mgr.scrollTo(bp.audio_player.currentIndex()); });
 $(window).unload(function () { elc.unloadAllListeners(); });
 
