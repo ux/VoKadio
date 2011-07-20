@@ -45,23 +45,22 @@ AudioPlayer.Player = function (playorder, repeat_mode)
 
     var audio = new Audio();
     audio.autoplay = true;
-    audio.preload = 'auto';
-    audio.loop = repeat_mode == AudioPlayer.Player.REPEAT_TRACK;
+    audio.loop     = false;
+    audio.preload  = 'auto';
+
+    var playlists = {}, current_playlist = null, history_playlists = {};
+
+    var history = new AudioPlayer.Playlist('history');
 
     audio.addEventListener('emptied', function (event) { if ( ! this.paused && this.error) this.play(); });
     audio.addEventListener('stalled', function (event) { if ( ! this.paused) this.play(); });
 
     audio.addEventListener('ended', function (event) {
-        if (current_playlist && !(repeat_mode == AudioPlayer.Player.REPEAT_NONE && history_current_index() >= history.items.length - 1 && current_playlist.nowPlaying && (current_playlist.nowPlaying.index == null ? current_playlist.nowPlaying.prev_index : current_playlist.nowPlaying.index) >= current_playlist.items.length - 1))
+        if (repeat_mode == AudioPlayer.Player.REPEAT_TRACK)
+            setTimeout(function () { self.playFromHistory(history.nowPlaying); }, 0);
+        else if (current_playlist && !(repeat_mode == AudioPlayer.Player.REPEAT_NONE && history_current_index() >= history.items.length - 1 && current_playlist.nowPlaying && (current_playlist.nowPlaying.index == null ? current_playlist.nowPlaying.prev_index : current_playlist.nowPlaying.index) >= current_playlist.items.length - 1))
             setTimeout(function () { self.next(); }, 0);
     });
-
-    var playlists = {};
-
-    var current_playlist = null;
-
-    var history = new AudioPlayer.Playlist('history');
-    var history_playlists = {};
 
     history.addEventListener(AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, function (event) {
         var i, playlist_id, items = event.items;
@@ -103,9 +102,6 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     this.__defineSetter__('repeatMode', function (new_repeat_mode) {
         if (new_repeat_mode != repeat_mode) {
             repeat_mode = new_repeat_mode;
-
-            audio.loop = repeat_mode == AudioPlayer.Player.REPEAT_TRACK;
-
             this.dispatchEvent({type: AudioPlayer.Player.EVENT_REPEAT_MODE_CHANGED,
                                 repeatMode: repeat_mode});
         }
@@ -451,9 +447,8 @@ AudioPlayer.Playlist = function (id)
     {
         var new_now_playing = this.getItem(item);
 
-        if (new_now_playing == now_playing)
-            return now_playing;
-        else if (new_now_playing) {
+        //if (new_now_playing == now_playing) return now_playing; // I believe this is unnecessary. Moreover it could be buggy.
+        if (new_now_playing) {
             if (now_playing) {
                 delete now_playing.currentTime;
                 delete now_playing.ended;
