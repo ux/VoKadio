@@ -222,8 +222,9 @@ function qsSelectFounded(index)
 
 function qsResetSearch()
 {
-    qs_found_index = bp.my_audio.currentAlbum.playlist.nowPlaying;
-    (qs_found_index == null) && (qs_found_index = -1);
+    var now_playing = bp.my_audio.currentAlbum.playlist.nowPlaying;
+
+    qs_found_index = now_playing && now_playing.index != null ? now_playing.index : -1;
 
     $(tracklist.children).removeClass('found');
 }
