@@ -30,8 +30,11 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
 
     create_scrollbar();
 
-    list_element.addEventListener('mousewheel', function (event) { scrollbar_element.dispatchEvent(event); });
     scrollbar_element.addEventListener('scroll', function (event) { self.refresh(); });
+    list_element.addEventListener('mousewheel', function (event) {
+        event.stopPropagation();
+        scrollbar_element.dispatchEvent(event);
+    });
 
     this.__defineGetter__('itemsCount', function () { return items_count; });
     this.__defineSetter__('itemsCount', function (count) {
@@ -42,12 +45,12 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
 
             var list_items_count = items_count < max_visible_items_count ? items_count : max_visible_items_count;
 
-            if (list_items_count > list_element.children.length)
-                while (list_element.children.length != list_items_count)
+            if (list_items_count > list_element.children.length - 1)
+                while ((list_element.children.length - 1) != list_items_count)
                     list_element.appendChild(jQuery(list_item_element_pattern).clone(true)[0]);
 
-            else if (list_items_count < list_element.children.length)
-                while (list_element.children.length != list_items_count)
+            else if (list_items_count < list_element.children.length - 1)
+                while ((list_element.children.length - 1) != list_items_count)
                     list_element.removeChild(list_element.children[0]);
 
             this.refresh();
@@ -60,8 +63,7 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
 
     this.activate = function ()
     {
-        var item = list_element.appendChild(list_item_element_pattern),
-            $item = jQuery(item);
+        var item = list_element.appendChild(list_item_element_pattern), $item = jQuery(item);
 
         item_height = parseInt(($item.outerHeight(true) + $item.outerHeight(false)) / 2);
         scrollbar_height = jQuery(scrollbar_element).height();
@@ -93,11 +95,13 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
 
         var min_item_index = get_min_item_index(), max_item_index = get_max_item_index();
 
-        list_element.start = min_item_index + 1;
-        list_element.style.marginTop = (min_item_index * item_height - scrollbar_element.scrollTop) + 'px';
+        if (max_item_index >= min_item_index) {
+            list_element.start = min_item_index + 1;
+            list_element.children[1].style.marginTop = (min_item_index * item_height - scrollbar_element.scrollTop) + 'px';
 
-        for (var i = min_item_index; i <= max_item_index; i++)
-            draw_item_callback.call(list_element.children[i - min_item_index], i);
+            for (var i = min_item_index; i <= max_item_index; i++)
+                draw_item_callback.call(list_element.children[i - min_item_index + 1], i);
+        }
     };
 
     this.refreshItem = function (item_index)
@@ -113,7 +117,7 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
         var min_item_index = get_min_item_index();
 
         if (item_index >= min_item_index && item_index <= get_max_item_index())
-            callback.call(list_element.children[item_index - min_item_index], item_index);
+            callback.call(list_element.children[item_index - min_item_index + 1], item_index);
     };
 
     this.scrollTo = function (item_index)
@@ -146,13 +150,19 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
 
     function create_scrollbar()
     {
-        var container_element = list_element.parentElement,
-            scrollbar_width = get_scrollbar_width();
+        var scrollbar_width = get_scrollbar_width();
 
-        container_element.style.position = 'relative';
-        container_element.style.overflow = 'hidden';
+        if ( ! document.head.hasDynamicListViewCssClass) {
+            var stylesheet_element = document.createElement('style');
+            stylesheet_element.type = "text/css";
+            stylesheet_element.innerText = ".dynamic-list-view { position: relative; overflow-y: hidden; }\n" +
+                                           ".dynamic-list-view > li { margin-right: " + scrollbar_width + "px; }";
+            document.head.appendChild(stylesheet_element);
 
-        list_element.style.marginRight = scrollbar_width + 'px';
+            document.head.hasDynamicListViewCssClass = true;
+        }
+
+        list_element.className += " dynamic-list-view";
 
         scrollbar_element = create_min_div();
         scrollbar_element.style.width     = scrollbar_width + 'px';
@@ -162,7 +172,7 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
         scrollbar_element.style.right     = '0';
         scrollbar_element.style.overflowX = 'hidden';
         scrollbar_element.style.overflowY = 'scroll';
-        container_element.appendChild(scrollbar_element);
+        list_element.appendChild(scrollbar_element);
 
         height_element = create_min_div();
         scrollbar_element.appendChild(height_element);
