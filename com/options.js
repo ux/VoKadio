@@ -46,9 +46,7 @@ function Options(prefix)
 
     this.set = function (key, value)
     {
-        var key_fqn = this.getKeyFqn(key);
-
-        localStorage[key_fqn] = JSON.stringify(value);
+        localStorage[this.getKeyFqn(key)] = JSON.stringify(value);
 
         return value;
     }
