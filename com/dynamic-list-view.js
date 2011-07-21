@@ -19,15 +19,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function DynamicListView(list_element, draw_item_callback, list_item_element_pattern)
+function DynamicListView(list_element, draw_item_callback)
 {
     var item_height, scrollbar_element, scrollbar_height, height_element,
         self = this, activated = false, items_count = 0,
         max_visible_items_count = 0, scroll_index = null, new_items_count = null,
-        document = list_element.ownerDocument;
+        document = list_element.ownerDocument,
+        list_item_element_pattern = list_element.children[0] || document.createElement('li');
 
-    list_item_element_pattern = list_item_element_pattern || document.createElement('li');
-
+    list_element.innerText = '';
     create_scrollbar();
 
     scrollbar_element.addEventListener('scroll', function (event) { self.refresh(); });
@@ -46,11 +46,11 @@ function DynamicListView(list_element, draw_item_callback, list_item_element_pat
             var list_items_count = items_count < max_visible_items_count ? items_count : max_visible_items_count;
 
             if (list_items_count > list_element.children.length - 1)
-                while ((list_element.children.length - 1) != list_items_count)
+                while (list_element.children.length - 1 != list_items_count)
                     list_element.appendChild(jQuery(list_item_element_pattern).clone(true)[0]);
 
             else if (list_items_count < list_element.children.length - 1)
-                while ((list_element.children.length - 1) != list_items_count)
+                while (list_element.children.length - 1 != list_items_count)
                     list_element.removeChild(list_element.children[0]);
 
             this.refresh();
