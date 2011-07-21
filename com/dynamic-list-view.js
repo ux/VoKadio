@@ -25,7 +25,8 @@ function DynamicListView(list_element, draw_item_callback)
         self = this, activated = false, items_count = 0,
         max_visible_items_count = 0, scroll_index = null, new_items_count = null,
         document = list_element.ownerDocument,
-        list_item_element_pattern = list_element.children[0] || document.createElement('li');
+        list_item_element_pattern = list_element.children[0] || document.createElement('li'),
+        scrollbar_width = get_scrollbar_width();
 
     list_element.innerText = '';
     create_scrollbar();
@@ -99,14 +100,16 @@ function DynamicListView(list_element, draw_item_callback)
             list_element.start = min_item_index + 1;
             list_element.children[1].style.marginTop = (min_item_index * item_height - scrollbar_element.scrollTop) + 'px';
 
-            for (var i = min_item_index; i <= max_item_index; i++)
-                draw_item_callback.call(list_element.children[i - min_item_index + 1], i);
-        }
-    };
+            for (var i = min_item_index; i <= max_item_index; i++) {
+                var item = list_element.children[i - min_item_index + 1];
+                item.style.marginRight = '0px';
 
-    this.refreshItem = function (item_index)
-    {
-        this.getItem(item_index, draw_item_callback);
+                draw_item_callback.call(item, i);
+
+                var margin_right = document.defaultView ? parseInt(document.defaultView.getComputedStyle(item, null).marginRight) : 0;
+                item.style.marginRight = ((isNaN(margin_right) ? 0 : margin_right) + scrollbar_width) + 'px';
+            }
+        }
     };
 
     this.getItem = function (item_index, callback)
@@ -150,21 +153,11 @@ function DynamicListView(list_element, draw_item_callback)
 
     function create_scrollbar()
     {
-        var scrollbar_width = get_scrollbar_width();
-
-        if ( ! document.head.hasDynamicListViewCssClass) {
-            var stylesheet_element = document.createElement('style');
-            stylesheet_element.type = "text/css";
-            stylesheet_element.innerText = ".dynamic-list-view { position: relative; overflow-y: hidden; }\n" +
-                                           ".dynamic-list-view > li { margin-right: " + scrollbar_width + "px; }";
-            document.head.appendChild(stylesheet_element);
-
-            document.head.hasDynamicListViewCssClass = true;
-        }
-
-        list_element.className += " dynamic-list-view";
+        list_element.style.position  = 'relative';
+        list_element.style.overflowY = 'hidden';
 
         scrollbar_element = create_min_div();
+        scrollbar_element.className       = 'scrollbar';
         scrollbar_element.style.width     = scrollbar_width + 'px';
         scrollbar_element.style.height    = '100%';
         scrollbar_element.style.position  = 'absolute';
@@ -213,13 +206,4 @@ function DynamicListView(list_element, draw_item_callback)
         return div;
     }
 }
-
-DynamicListView.clearElement = function (element, attributes_only)
-{
-    if ( ! attributes_only)
-        element.innerText = '';
-
-    while (element.attributes.length > 0)
-        element.removeAttribute((element.attributes.item(0).name));
-};
 
