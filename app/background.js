@@ -94,7 +94,7 @@ function lastfmAuthCallback(params)
     lastfm.auth.getSession({token: params.token}, {
         success: function (data) {
             lastfm_session = data.session;
-            options.set('lastfm.session', JSON.stringify(lastfm_session));
+            options.set('lastfm.session', lastfm_session);
             if (DEBUG) console.debug("last.fm session received: ", lastfm_session);
         },
         error: function (code, message) {
@@ -106,7 +106,7 @@ function lastfmAuthCallback(params)
 function checkLastfmSession()
 {
     if (options.get('lastfm')) {
-        lastfm_session = JSON.parse(options.get('lastfm.session', 'null'));
+        lastfm_session = options.get('lastfm.session', null);
 
         if ( ! lastfm_session)
             chrome.tabs.create({url: buildUri('http://www.lastfm.ru/api/auth', {
@@ -221,10 +221,10 @@ $(document).ready(function () { checkLastfmSession(); });
 (function initVkSession()
 {
     vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_UPDATED, function (event) {
-        options.set('vk.session', JSON.stringify({data: event.data, updated_at: event.target.updatedAt}));
+        options.set('vk.session', {data: event.data, updated_at: event.target.updatedAt});
     });
 
-    var cached_session = JSON.parse(options.get('vk.session', 'null'));
+    var cached_session = options.get('vk.session', null);
     if ( ! (cached_session && vk_session.updateData(cached_session.data, new Date(cached_session.updated_at))))
         vk_session.refresh(true);
 }());

@@ -29,11 +29,11 @@ $('#notification-show-behavior').change(function () {
 });
 
 
-$('#use-lastfm')[0].checked = options.get('lastfm');
+$('#use-lastfm')[0].checked = options.get('lastfm', false);
 
 $('#use-lastfm').change(function () {
     if (this.checked)
-        options.set('lastfm', '1');
+        options.set('lastfm', true);
     else {
         options.delete('lastfm');
         options.delete('lastfm.session');

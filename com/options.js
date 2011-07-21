@@ -32,16 +32,25 @@ function Options(prefix)
     {
         var key_fqn = this.getKeyFqn(key);
 
-        return (localStorage[key_fqn] == undefined) ? default_value : localStorage[key_fqn];
+        if (localStorage[key_fqn] == undefined)
+            return default_value;
+        else {
+            try {
+                return JSON.parse(localStorage[key_fqn]);
+            }
+            catch (e) {
+                return localStorage[key_fqn];
+            }
+        }
     }
 
     this.set = function (key, value)
     {
         var key_fqn = this.getKeyFqn(key);
 
-        localStorage[key_fqn] = value;
+        localStorage[key_fqn] = JSON.stringify(value);
 
-        return localStorage[key_fqn];
+        return value;
     }
 
     this.delete = function (key)
