@@ -59,7 +59,7 @@ VK.Audio = function (owner_id, player, query, helper)
     this.fetchAlbums = function (callback, use_cache)
     {
         if (use_cache == undefined || use_cache)
-            callback.call(this, jQuery.extend({all: all_audio}, albums));
+            callback.call(this, jQuery.extend({null: all_audio}, albums));
 
         var params = {count: 100};
         (owner_id != null) && (params.uid = owner_id);
@@ -94,7 +94,7 @@ VK.Audio = function (owner_id, player, query, helper)
 
             albums = new_albums;
 
-            callback.call(self, jQuery.extend({all: all_audio}, albums));
+            callback.call(self, jQuery.extend({null: all_audio}, albums));
         });
     };
 
@@ -102,7 +102,7 @@ VK.Audio = function (owner_id, player, query, helper)
     {
         query.session.removeEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, update_all_audio);
 
-        var all_albums = jQuery.extend({all: all_audio}, albums);
+        var all_albums = jQuery.extend({null: all_audio}, albums);
 
         current_album = null;
         albums = {};
