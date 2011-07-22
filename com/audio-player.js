@@ -273,7 +273,10 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     this.previous = function (playlist)
     {
         if (audio.currentTime > 7) {
+            audio.pause();
             audio.currentTime = 0;
+            audio.play();
+
             return history.nowPlaying;
         }
         else {
