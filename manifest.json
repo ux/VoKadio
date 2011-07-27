@@ -19,8 +19,11 @@
     "background_page" : "background.html",
     "options_page"    : "options.html",
 
+    "content_scripts": [
+        {"matches": ["<all_urls>"], "js": ["app/hotkeys.js"], "run_at": "document_start"}
+    ],
+
     "permissions": ["notifications", "https://api.vkontakte.ru/", "http://ws.audioscrobbler.com/"],
 
     "minimum_chrome_version": "9"
 }
-

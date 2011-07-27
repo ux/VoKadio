@@ -130,6 +130,10 @@ var bp  = chrome.extension.getBackgroundPage(),
             animate     : true,
             slide       : function (event, ui) {
                 bp.player.audio.volume = ui.value;
+
+                (bp.player.audio.volume > 0.99) && (bp.player.audio.volume = 1);
+                (bp.player.audio.volume < 0.01) && (bp.player.audio.volume = 0);
+
                 bp.player.audio.muted = bp.player.audio.volume == 0;
 
                 update_button();

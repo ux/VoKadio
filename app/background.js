@@ -189,6 +189,37 @@ function checkLastfmSession()
     });
 }());
 
+(function init_global_hotkeys()
+{
+    chrome.extension.onRequest.addListener(function(request) {
+        switch (request.command) {
+            case 'toggle-play':
+                player.togglePlay();
+                break;
+
+            case 'play-next':
+                player.next();
+                break;
+
+            case 'play-previous':
+                player.previous();
+                break;
+
+            case 'volume-up':
+                player.audio.volume += 0.05;
+                (player.audio.volume > 0.95) && (player.audio.volume = 1);
+                player.audio.mute = false;
+                break;
+
+            case 'volume-down':
+                player.audio.volume -= 0.05;
+                (player.audio.volume < 0.05) && (player.audio.volume = 0);
+                player.audio.mute = (player.audio.volume == 0);
+                break;
+        }
+    });
+}());
+
 $(document).ready(function () { checkLastfmSession(); });
 
 (function init_vk_session()
