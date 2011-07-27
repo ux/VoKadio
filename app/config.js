@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const EXTENSION_NAME = "VoKadio 1.5";
+const EXTENSION_NAME = "VoKadio 2.0";
 
 const VK_APP_ID    = 1918960;
 const VK_SETTINGS  = 10;
@@ -27,6 +27,9 @@ const VK_AUTH_WINDOW_HEIGHT = 357;
 
 const LASTFM_API_KEY    = '444041b55f1ebc93b0d19c2c68b01780';
 const LASTFM_API_SECRET = '85fb0997406d984f79df4d8236532f3f';
+
+const POPUP_VIEW_ACTIVATION_TIME = 100;
+const POPUP_VIEW_DEACTIVATION_TIME = 100;
 
 const NOTIFICATION_TIMEOUT = 5000;
 const NOTIFICATION_TIMEOUT_SECOND = 500;

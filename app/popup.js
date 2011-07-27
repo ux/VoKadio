@@ -17,496 +17,818 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function registerSliding(event, ui)   { ui.handle.sliding = true;  }
-function unregisterSliding(event, ui) { ui.handle.sliding = false; }
+var bp  = chrome.extension.getBackgroundPage(),
+    elc = new bp.EventsListenersCollector(window),
+    deleted_audio_items = {},
+    tracklist_search, ContextMenu;
 
 
 //*****************************************************************************
 
 
-var bp  = chrome.extension.getBackgroundPage();
-var elc = new bp.EventsListenersCollector();
-
-
-//*****************************************************************************
-
-
-var volume_slider,
-    volume_mute,
-    volume_slider_range,
-
-    progress_slider,
-    progress_info_played,
-    progress_info_total,
-
-    toggle_play_button,
-    previous_button,
-    next_button,
-    update_session_button,
-
-    meta_title,
-    meta_artist,
-    meta_album,
-    meta_total,
-    meta_cover,
-
-    tracklist,
-    tracklist_container,
-
-    player,
-    playorder_input,
-
-    quick_search,
-    quick_search_input,
-
-    tracklist_mgr;
-
-
-//*****************************************************************************
-
-
-function refreshAudioVolume()
+(function init_player_buttons()
 {
-    if ( ! volume_slider.sliding)
-        $(volume_slider).slider('option', 'value', bp.player.audio.volume);
-}
+    $("#previous-track").click(function () { bp.player.previous(); });
+    $("#next-track").click(function () { bp.player.next(); });
+    $("#refresh-session").click(function () { bp.vk_session.refresh(); });
 
-function updateVolume(event, ui) { bp.player.audio.volume = ui.value; }
+    (function init_toggle_play_button()
+    {
+        var $toggle_play = $("#play-pause");
 
-function toggleMute()
-{
-    bp.player.audio.muted = ! bp.player.audio.muted;
+        elc.add(bp.player.audio, 'play', update_button);
+        elc.add(bp.player.audio, 'pause', update_button);
+        elc.add(bp.player.audio, 'ended', update_button);
 
-    if (bp.player.audio.muted) {
-        $(volume_mute).addClass('on');
-        $(volume_slider_range).addClass('unvisible');
-    }
-    else {
-        $(volume_mute).removeClass('on');
-        $(volume_slider_range).removeClass('unvisible');
-    }
-}
+        $toggle_play.click(button_clicked);
 
+        update_button();
 
-//*****************************************************************************
-
-
-function refreshAudioProgress()
-{
-    if ( ! progress_slider.sliding) {
-        var duration, time;
-
-        if ( bp.player.audio.readyState > 0 ) {
-            duration = bp.player.audio.duration;
-            time     = bp.player.audio.currentTime;
+        function update_button()
+        {
+            $toggle_play.toggleClass('pause', !bp.player.audio.paused && !bp.player.audio.ended);
         }
-        else
-            time = duration = 0;
 
-        $(progress_slider).slider('option', 'max', duration);
-        $(progress_slider).slider('option', 'value', time);
+        function button_clicked()
+        {
+            bp.player.togglePlay();
+        }
+    }());
 
-        $(progress_info_played).text(bp.secondsToTime(time));
+    (function init_repeat_button()
+    {
+        var $repeat = $("#repeat");
 
-        if ( duration > 0 )
-            $(progress_info_total).text(bp.secondsToTime(duration));
-    }
-}
+        elc.add(bp.player, bp.AudioPlayer.Player.EVENT_REPEAT_MODE_CHANGED, update_button);
+        $repeat.click(button_clicked);
+        update_button();
 
-function updateProgress(event, ui) { bp.player.audio.currentTime = ui.value; }
+        function update_button()
+        {
+            $repeat.removeClass('cycle_one');
+            $repeat.removeClass('cycle_all');
 
+            switch (bp.player.repeatMode) {
+                case bp.AudioPlayer.Player.REPEAT_TRACK:
+                    $repeat.addClass('cycle_one');
+                    break;
+                case bp.AudioPlayer.Player.REPEAT_PLAYLIST:
+                    $repeat.addClass('cycle_all');
+                    break;
+            }
+        }
 
-//*****************************************************************************
+        function button_clicked()
+        {
+            var modes = [bp.AudioPlayer.Player.REPEAT_PLAYLIST, bp.AudioPlayer.Player.REPEAT_TRACK, bp.AudioPlayer.Player.REPEAT_NONE];
 
-
-function updatePlayStatus()
-{
-    if (bp.player.audio.paused)
-        $(toggle_play_button).removeClass('pause');
-    else
-        $(toggle_play_button).addClass('pause');
-}
-
-
-//*****************************************************************************
-
-
-function updateAudioMeta()
-{
-    $(meta_title).text(bp.EXTENSION_NAME);
-    $(meta_title).attr('title', bp.EXTENSION_NAME);
-
-    $(meta_artist).text('');
-    $(meta_album).remove();
-
-    $(meta_cover).attr('src', 'images/album-art.png');
-
-    $(meta_total).attr('title', '');
-
-    $(progress_info_played).text(bp.secondsToTime(0));
-    $(progress_info_total).text(bp.secondsToTime(0));
-
-    if (bp.player.history.nowPlaying) {
-        var record = bp.player.history.nowPlaying;
-
-        $(progress_info_total).text(bp.secondsToTime(record.duration));
-
-        var artist = record.artist, track = record.title;
-
-        $(meta_title).text(track);
-        $(meta_title).attr('title', track);
-
-        $(meta_artist).text(artist);
-
-        $(meta_total).attr('title', artist);
-        meta_total.myTitle = artist;
-
-        bp.helper.lastfm.getAlbumInfo(artist, track, function(rid, title, cover) {
-            var current_track = bp.player.history.nowPlaying;
-
-            if (current_track && rid == bp.helper.lastfm.getTrackId(current_track.artist, current_track.title)) {
-                if (cover && cover.medium)
-                    $(meta_cover).attr('src', cover.medium);
-
-                if (title) {
-                    if ($(meta_album).length == 0)
-                        $(meta_total).append($('<li id="album"></li>'));
-
-                    $(meta_album).text(title);
-
-                    $(meta_total).attr('title', meta_total.myTitle + ' :: ' + title);
+            for (var i = 0; i < modes.length; i++) {
+                if (modes[i] == bp.player.repeatMode) {
+                    bp.player.repeatMode = modes[i == 2 ? 0 : i + 1];
+                    return;
                 }
             }
+
+            bp.player.repeatMode = modes[0];
+        }
+    }());
+
+    (function init_shuffle_button()
+    {
+        var $shuffle = $("#shuffle");
+
+        elc.add(bp.player, bp.AudioPlayer.Player.EVENT_PLAYORDER_CHANGED, update_button);
+        $shuffle.click(button_clicked);
+        update_button();
+
+        function update_button()
+        {
+            // there is also class shuffle_author
+            $shuffle.toggleClass('shuffle', bp.player.playorder == bp.AudioPlayer.Player.PLAYORDER_SHUFFLE);
+        }
+
+        function button_clicked()
+        {
+            if (bp.player.playorder == bp.AudioPlayer.Player.PLAYORDER_NORMAL)
+                bp.player.playorder = bp.AudioPlayer.Player.PLAYORDER_SHUFFLE;
+            else
+                bp.player.playorder = bp.AudioPlayer.Player.PLAYORDER_NORMAL;
+        }
+    }());
+
+    (function init_volume_button()
+    {
+        var $volume = $("#volume"), $volume_wrapper = $volume.parent();
+
+        $("#volume-bar .scale").slider({
+            orientation : 'vertical',
+            range       : 'max',
+            min         : 0,
+            max         : 1,
+            step        : 0.01,
+            value       : bp.player.audio.volume,
+            animate     : true,
+            slide       : function (event, ui) {
+                bp.player.audio.volume = ui.value;
+                bp.player.audio.muted = bp.player.audio.volume == 0;
+
+                update_button();
+        }}).focus(function () { return false; });
+
+        $volume_wrapper.click(function () { return false; });
+
+        $volume.click(function () {
+            $volume_wrapper.toggleClass('active');
+            return false;
+        });
+
+        $('body').click(function () {
+            $volume_wrapper.removeClass('active');
+        });
+
+        update_button();
+
+        function update_button()
+        {
+            $volume.text(Math.round(bp.player.audio.volume * 100));
+
+            $volume.removeClass('muted');
+            $volume.removeClass('range_1-9');
+            $volume.removeClass('range_10-50');
+
+            if (bp.player.audio.volume == 0)        $volume.addClass('muted');
+            else if (bp.player.audio.volume < 0.25) $volume.addClass('range_1-9');
+            else if (bp.player.audio.volume < 0.75) $volume.addClass('range_10-50');
+        }
+    }());
+}());
+
+
+//*****************************************************************************
+
+
+function activateTabElement(tab_chooser, title)
+{
+    var $tab_chooser = $(tab_chooser), $tabs_view = $tab_chooser.parents('.content');
+
+    $tab_chooser.parent().find('.active').removeClass('active');
+    $tab_chooser.addClass('active');
+
+    $tabs_view.find('.tab').css('display', 'none');
+    $tabs_view.find('.tab:eq(' + $tab_chooser.index() + ')').css('display', 'block');
+
+    title && $(tab_chooser).text(title);
+}
+
+function activateViewElement(button)
+{
+    $('.content').stop().animate({'opacity' : '0'}, bp.POPUP_VIEW_ACTIVATION_TIME).css({'display' : 'none'});
+    $('.tab-switcher.active').removeClass('active');
+
+    $('#' + button.id + '-view').stop().css({'display' : 'block'}).animate({'opacity' : '1'}, bp.POPUP_VIEW_DEACTIVATION_TIME);
+    $(button).addClass('active');
+
+    bp.popup_active_view = button.id;
+}
+
+
+//*****************************************************************************
+
+
+ContextMenu = {
+    download: function (item, playlist, tracklist) {
+        this.innerText = "Скачать";
+        this.title = "Скачать";
+        this.href = item.url;
+        this.target = '_blank';
+    },
+
+    add: function (item, playlist, tracklist) {
+        this.innerText = "Добавить";
+        this.title = "Добавить в мои аудиозаписи";
+
+        $(this).click(function () {
+            bp.helper.vk.addAudio(item);
+        });
+    },
+
+    delete: function (item, playlist, tracklist) {
+        this.innerText = "Удалить";
+        this.title = "Удалить из моих аудиозаписей";
+
+        $(this).click(function () {
+            bp.helper.vk.deleteAudio(item, function (result, record) {
+                if (result)
+                    deleted_audio_items[item.id] = item.owner_id;
+
+                tracklist.refreshView(playlist);
+            });
+        });
+    },
+
+    addToHistory: function (item, playlist, tracklist) {
+        this.innerText = "В очередь";
+        this.title = "Добавить в очередь";
+
+        $(this).click(function () {
+            bp.player.addToHistory(item, playlist);
+        });
+    },
+
+    removeFromHistory: function (item, playlist, tracklist) {
+        this.innerText = "Забыть";
+        this.title = "Удалить из истории";
+
+        $(this).click(function () {
+            bp.player.removeFromHistory(item);
+            tracklist.updateView(playlist);
         });
     }
+};
 
-    refreshAudioProgress();
-}
-
-
-//*****************************************************************************
-
-
-var qs_found_index = -1;
-
-function qsSearchRegExp()
+function Tracklist(tracklist_element, context_menu_actions, binded_playlist)
 {
-    var search_str = quick_search_input.value.trim();
+    var self = this;
 
-    if (search_str != '') {
-        var search_words = search_str.split(/\s+/);
-        for (var i =0, len = search_words.length; i < len; i++)
-            search_words[i] = bp.regExpEscape(search_words[i]);
-
-        return new RegExp(search_words.join('.+'), 'i');
-    }
-    else
-        return undefined;
-}
-
-function qsItemMatch(re, item)
-{
-    return re.test(item.artist + " - " + item.title);
-}
-
-function qsSelectFounded(index)
-{
-    qsResetSearch();
-    qs_found_index = index;
-
-    tracklist_mgr.scrollTo(index);
-    tracklist_mgr.getItem(index, function () {
-        $(this).addClass('found');
+    var tracklist_view = new bp.DynamicListView(tracklist_element, function (index) {
+        draw_tracklist_item.call(this, get_playlist(), index);
     });
-}
 
-function qsResetSearch()
-{
-    var now_playing = bp.my_audio.currentAlbum.playlist.nowPlaying;
+    tracklist_element.tracklist = this;
 
-    qs_found_index = now_playing && now_playing.index != null ? now_playing.index : -1;
+    elc.add(bp.player.audio, 'play', refresh_view);
+    elc.add(bp.player.audio, 'pause', refresh_view);
+    elc.add(bp.player.audio, 'ended', refresh_view);
 
-    $(tracklist.children).removeClass('found');
-}
+    this.__defineGetter__('view', function () { return tracklist_view; });
+    this.__defineGetter__('playlist', function () { return get_playlist(); });
+    this.__defineGetter__('contextMenuActions', function () { return context_menu_actions; });
 
-function makeQsId()
-{
-    return (new Date()).getTime() + '_' + Math.round(1000000 * Math.random());
-}
+    this.refreshView = function (playlist)
+    {
+        var current_playlist = get_playlist(), playlist = playlist || current_playlist;
 
-var current_qs_id;
+        if (playlist == current_playlist)
+            tracklist_view.refresh();
+    };
 
-function qsFind(order)
-{
-    var pattern = qsSearchRegExp();
+    this.updateView = function (updated_playlist)
+    {
+        var current_playlist = get_playlist(), updated_playlist = updated_playlist || current_playlist;
 
-    if (typeof pattern != 'undefined') {
-        var my_qs_id = makeQsId();
-        current_qs_id = my_qs_id;
+        if (updated_playlist == current_playlist)
+            tracklist_view.itemsCount = updated_playlist.items.length;
+    };
 
-        order = order || 1;
+    this.scrollToNowPlaying = function (playlist)
+    {
+        var current_playlist = get_playlist(), playlist = playlist || current_playlist;
 
-        var list = bp.my_audio.currentAlbum.playlist.items, founded = false;
+        if (playlist == current_playlist)
+            tracklist_view.scrollTo((playlist.nowPlaying && playlist.nowPlaying.index != null) ? playlist.nowPlaying.index : 0);
+    };
 
-        for (var i = qs_found_index + order, len = list.length; i > -1 && i < len; i += order) {
-            if (my_qs_id != current_qs_id)
-                return;
+    this.applyToPlaylist = function (playlist)
+    {
+        elc.add(playlist, bp.AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, update_view);
+        elc.add(playlist, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, playlist == bp.player.history ? update_view : refresh_view);
 
-            if (qsItemMatch(pattern, list[i])) {
-                founded = true;
-                break;
+        this.updateView(playlist);
+        this.scrollToNowPlaying(playlist);
+    };
+
+    function get_playlist()
+    {
+        return (binded_playlist instanceof bp.AudioPlayer.Playlist) ? binded_playlist : binded_playlist();
+    }
+
+    function update_view()
+    {
+        self.updateView(this);
+    }
+
+    function refresh_view()
+    {
+        self.refreshView((this instanceof bp.AudioPlayer.Playlist) ? this : undefined);
+    }
+
+    function set_audio_progress(event, ui)
+    {
+        bp.player.audio.currentTime = ui.value;
+    }
+
+    function draw_tracklist_item(playlist, index)
+    {
+        var $this = $(this), item = playlist.items[index];
+
+        this.playlist = playlist;
+        this.item     = item;
+        this.title    = item.artist + " - " + item.title;
+
+        $this.toggleClass('deleted', playlist != bp.player.history && deleted_audio_items[item.id] == item.owner_id);
+        $this.toggleClass('search-highlighted', index == tracklist_search.foundedIndex);
+
+        $this.removeClass('active');
+        $this.removeClass('paused');
+
+        $this.find(".progress-wrapper, .progress-setter-wrapper").remove();
+
+        $this.find('.track span').html("<strong>" + item.artist + " &ndash; " + item.title + "</strong>");
+
+        if (playlist.nowPlaying && index == playlist.nowPlaying.index) {
+            var current_time, duration,
+                history_np  = bp.player.history.nowPlaying,
+                item_loaded = (playlist.nowPlaying == history_np) ||
+                              (history_np && history_np.original && playlist.nowPlaying == history_np.original.item);
+
+            if (item_loaded && bp.player.audio.readyState > 0) {
+                current_time = bp.player.audio.currentTime;
+                duration = bp.player.audio.duration;
+            }
+            else {
+                current_time = item.ended ? item.duration : (item.currentTime ? item.currentTime : 0);
+                duration = item.duration;
+            }
+
+            if (item_loaded && !bp.player.audio.paused && !bp.player.audio.ended) {
+                $this.addClass('active');
+
+                $this.find('.track span').html(item.artist + " &ndash; " + item.title);
+
+                var sliders_elements = $('<div class="progress-wrapper"></div><div class="progress-setter-wrapper"></div>');
+                $this.append(sliders_elements);
+
+                $(sliders_elements[0]).slider({
+                    orientation : 'horizontal',
+                    range       : 'min',
+                    min         : 0,
+                    max         : duration,
+                    step        : 1,
+                    value       : current_time
+                });
+
+                $(sliders_elements[1]).slider({
+                    orientation : 'horizontal',
+                    range       : 'min',
+                    min         : 0,
+                    max         : duration,
+                    step        : 1,
+                    value       : current_time,
+                    slide       : set_audio_progress
+                });
+            }
+            else {
+                $this.addClass('paused');
+
+                var slider_element = $('<div class="progress-wrapper"></div>');
+                $this.append(slider_element);
+
+                slider_element.slider({
+                    orientation : 'horizontal',
+                    range       : 'min',
+                    min         : 0,
+                    max         : duration,
+                    step        : 1,
+                    value       : current_time,
+                });
             }
         }
 
-        if (founded) {
-            qsSelectFounded(i);
-            return i;
+        $this.find(".time").text(bp.secondsToTime(item.duration));
+
+        $this.find(".actions").text('');
+        $this.find(".actions").removeClass('active top bottom');
+    }
+}
+
+tracklist_search = new (function () {
+    var founded_index = null, tracklist;
+
+    this.__defineGetter__('foundedIndex', function () { return founded_index; });
+
+    document.addEventListener('keydown', function (event) {
+        var tracklist_container;
+
+        if (event.ctrlKey && event.keyCode == 70 && (tracklist_container = $("div.content > div.tracklist").filter(":visible")[0])) { // Ctrl + F
+            var search_input = $("#local-search input[type=search]")[0];
+
+            if ( ! search_input) {
+                tracklist = $(tracklist_container).find("ol")[0].tracklist;
+
+                $(tracklist_container).append('<div id="local-search"><input type="search" incremental="incremental" autosave="audio" placeholder="Что найти?" results="7" /></div>');
+                search_input = $("#local-search input[type=search]")[0];
+
+                search_input.addEventListener('blur', destroy_search);
+                search_input.addEventListener('search', start_search);
+                search_input.addEventListener('keydown', control_search);
+
+                tracklist.localSearchQuery && (search_input.value = tracklist.localSearchQuery);
+            }
+
+            search_input.focus();
+            search_input.select();
+
+            start_search.call(search_input);
         }
+    });
+
+    function destroy_search()
+    {
+        this.removeEventListener('blur', destroy_search);
+        this.removeEventListener('search', start_search);
+        this.removeEventListener('keydown', control_search);
+
+        $(this.parentElement).remove();
+
+        set_founded_index(null);
+
+        tracklist = undefined;
     }
 
-    return false;
-}
+    function start_search()
+    {
+        tracklist.localSearchQuery = this.value;
+        var current_index = tracklist.playlist.nowPlaying ? tracklist.playlist.nowPlaying.index : -1;
+        set_founded_index(do_search(this.value, current_index, tracklist.playlist, false));
+    }
 
-function qsFindPrevious()
-{
-    return qsFind(-1);
-}
+    function control_search(event)
+    {
+        if (founded_index == null)
+            return;
 
-function qsFindNext()
-{
-    return qsFind(1);
-}
-
-
-//*****************************************************************************
-
-
-function assignVariables()
-{
-    volume_slider         = $('#volume-control .slider')[0];
-    volume_mute           = $('#volume-control .mute')[0];
-
-    progress_slider       = $('#progress .slider')[0];
-    progress_info_played  = $('#progress .info .played')[0];
-    progress_info_total   = $('#progress .info .total')[0];
-
-    toggle_play_button    = $('#buttons .play')[0];
-    previous_button       = $('#buttons .previous')[0];
-    next_button           = $('#buttons .next')[0];
-    update_session_button = $('#buttons .refresh')[0];
-
-    meta_title            = $('#track-info .title')[0];
-    meta_artist           = $('#artist')[0];
-    meta_album            = '#album';
-    meta_total            = $('#metadata')[0];
-    meta_cover            = $('#album-art img')[0];
-
-    tracklist             = $('#tracklist')[0];
-    tracklist_container   = $('#body')[0];
-
-    player                = $('#player')[0];
-    playorder_input       = $('#playorder_input')[0];
-
-    quick_search          = $('#quick-search')[0];
-    quick_search_input    = $('#quick-search input')[0];
-}
-
-
-//*****************************************************************************
-
-
-function initVolumeControl()
-{
-    volume_slider.sliding = false;
-
-    $(volume_slider).slider({
-        orientation : 'horizontal',
-        range       : 'min',
-        min         : 0,
-        max         : 1,
-        step        : 0.01,
-        value       : 1,
-        animate     : true,
-        start       : registerSliding,
-        stop        : unregisterSliding,
-        slide       : updateVolume
-    });
-
-    volume_slider_range = $('#volume-control .slider .ui-slider-range')[0];
-
-    $(volume_mute).click(function () { toggleMute(); });
-
-    elc.add(bp.player.audio, 'volumechange', function () { refreshAudioVolume(); });
-
-    refreshAudioVolume();
-}
-
-function initProgressControl()
-{
-    progress_slider.sliding = false;
-
-    $(progress_slider).slider({
-        orientation : 'horizontal',
-        range       : 'min',
-        min         : 0,
-        max         : 0,
-        step        : 1,
-        value       : 0,
-        animate     : true,
-        start       : registerSliding,
-        stop        : unregisterSliding,
-        slide       : updateProgress
-    });
-
-    elc.add(bp.player.audio, 'timeupdate', function () { refreshAudioProgress(); });
-
-    refreshAudioProgress();
-}
-
-function initPlayerControls()
-{
-    $(toggle_play_button).click(function () { bp.player.togglePlay(); });
-    $(previous_button).click(function () { bp.player.previous(); });
-    $(next_button).click(function () { bp.player.next(); });
-
-    $(update_session_button).click(function () { bp.vk_session.refresh(); });
-
-    elc.add(bp.player.audio, 'play', updatePlayStatus);
-    elc.add(bp.player.audio, 'pause', updatePlayStatus);
-
-    updatePlayStatus();
-}
-
-function initAudioMeta()
-{
-    elc.add(bp.player.history, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, updateAudioMeta);
-    updateAudioMeta();
-}
-
-function initAudioRecords()
-{
-    var playlist = bp.my_audio.currentAlbum.fetchPlaylist();
-
-    tracklist_mgr = new bp.DynamicListView(tracklist, function (index) {
-        var $this = $(this);
-        var record = bp.my_audio.currentAlbum.playlist.items[index];
-
-        this.playlist   = playlist;
-        this.trackindex = index;
-        this.title      = record.artist + " - " + record.title;
-
-        if (playlist.nowPlaying && index == playlist.nowPlaying.index)
-            $this.addClass('now-playing');
-        else
-            $this.removeClass('now-playing');
-
-        $this.find('.artist')[0].innerText   = record.artist;
-        $this.find('.title')[0].innerText    = record.title;
-        $this.find('.duration')[0].innerText = bp.secondsToTime(record.duration);
-        $this.find('a.download')[0].href     = record.url;
-    }, tracklist.children[0]);
-
-    tracklist_mgr.activate();
-
-    tracklist_mgr.itemsCount = playlist.items.length;
-
-    elc.add(playlist, bp.AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, function (event) {
-        tracklist_mgr.itemsCount = event.items.length;
-    });
-
-    elc.add(playlist, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
-        tracklist_mgr.refresh();
-    });
-
-    $(document).ready(function () {
-        var now_playing = playlist.nowPlaying;
-
-        if (now_playing)
-            tracklist_mgr.scrollTo(now_playing.index == null ? now_playing.prev_index : now_playing.index);
-    });
-}
-
-function initPlayOrder()
-{
-    $(playorder_input).change(function () { bp.playorder(bp.player, this.value); });
-    $(playorder_input).val(bp.playorder(bp.player));
-}
-
-function initQuickSearch()
-{
-    document.addEventListener('keydown', function (event) {
-        if (event.ctrlKey && event.keyCode == 70) { // Ctrl + F
-            event.preventDefault();
-            event.stopPropagation();
-
-            $(quick_search).removeClass('unvisible');
-            quick_search_input.focus();
-
-            qsResetSearch();
-        }
-    });
-
-    quick_search_input.addEventListener('blur', function () {
-        qsResetSearch();
-        $(quick_search).addClass('unvisible');
-        quick_search_input.value = '';
-    });
-
-    quick_search_input.addEventListener('keydown', function (event) {
         switch (event.keyCode) {
-            case 37: case 38:
-                if (qsFindPrevious() === false) {
-                    qs_found_index = bp.my_audio.currentAlbum.playlist.items.length;
-                    qsFindPrevious();
-                }
+            case 38:
+                set_founded_index(do_search(this.value, founded_index, tracklist.playlist, true));
                 break;
 
-            case 39: case 40:
-                if (qsFindNext() === false) {
-                    qs_found_index = -1;
-                    qsFindNext();
-                }
+            case 40:
+                set_founded_index(do_search(this.value, founded_index, tracklist.playlist, false));
                 break;
 
             case 13:
-                if (qs_found_index >= 0 && qs_found_index < bp.my_audio.currentAlbum.playlist.items.length)
-                    bp.player.togglePlay(qs_found_index, bp.my_audio.currentAlbum.playlist);
-                $(this).trigger('blur');
+                bp.player.togglePlay(founded_index, tracklist.playlist);
+                event.preventDefault();
                 break;
-
-            default:
-                event.stopPropagation();
-                this.dispatchEvent(event);
-                qsResetSearch();
-                qsFindNext();
         }
-    });
+    }
 
-    quick_search_input.addEventListener('keypress', function (event) {
-        event.stopPropagation();
-        this.dispatchEvent(event);
+    function set_founded_index(index)
+    {
+        founded_index = index;
+        (index != null) && tracklist.view.scrollTo(index);
+        tracklist.view.refresh();
+    }
 
-        qsResetSearch();
+    function do_search(query, current_index, playlist, backward)
+    {
+        var pattern = get_search_pattern(query);
 
-        if (qsFindNext() === false) {
-            qs_found_index = -1;
-            qsFindNext();
+        if ( ! pattern)
+            return null;
+
+        var direction   = backward ? -1 : 1,
+            items       = playlist.items,
+            items_count = items.length,
+            start_i     = current_index + direction,
+            min_i       = current_index - items_count,
+            max_i       = current_index + items_count;
+
+        for (var i = start_i; i >= min_i && i <= max_i; i += direction) {
+            var index = (i + items_count) % items_count, item = items[index];
+
+            if (pattern.test(item.artist + " - " + item.title))
+                return index;
         }
-    });
-}
+
+        return null;
+    }
+
+    function get_search_pattern(str)
+    {
+        str = str.trim();
+
+        if (str.length > 0) {
+            var words = str.split(/\s+/);
+
+            for (var i in words)
+                words[i] = bp.regExpEscape(words[i]);
+
+            return new RegExp(words.join('.+'), 'i');
+        }
+        else
+            return null;
+    }
+})();
 
 
 //*****************************************************************************
 
-assignVariables();
 
-initVolumeControl();
-initProgressControl();
-initPlayerControls();
-initAudioRecords();
-initAudioMeta();
-initPlayOrder();
-initQuickSearch();
+(function init_tracklists_commons()
+{
+    elc.add(bp.player.audio, 'timeupdate', function () {
+        var slider_element = $("div.content > div.tracklist > ol > li.active > div.progress-wrapper");
 
-$(window).unload(function () { elc.unloadAllListeners(); });
+        slider_element.slider('option', 'max', bp.player.audio.duration);
+        slider_element.slider('value', bp.player.audio.currentTime);
+    });
+
+    $("div.content > div.tracklist > ol > li > .play-pause").live('click', function () {
+        if (this.parentElement.playlist == bp.player.history)
+            bp.player.togglePlayFromHistory(this.parentElement.item);
+        else
+            bp.player.togglePlay(this.parentElement.item, this.parentElement.playlist);
+    });
+}());
+
+(function init_context_menu()
+{
+    $('body').click(function () {
+        var $actions = $(".content > .tracklist > ol > li > .actions.active");
+
+        $actions.text('');
+        $actions.removeClass('active top bottom');
+    });
+
+    $('.content > .tracklist > ol > li > .actions').live('click', function () {
+        var $this = $(this), li = this.parentElement, playlist = li.playlist,
+            item = li.item, tracklist = li.parentElement.tracklist;
+
+        if ($(li).hasClass('deleted'))
+            bp.helper.vk.restoreAudio(item, function (result, record) {
+                if (result)
+                    playlist.updateItem(item, bp.VK.Audio.Utils.recordsForPlaylist([record])[0]);
+                else if (deleted_audio_items[item.id] != undefined)
+                    playlist.removeFromPlaylist(item);
+
+                delete deleted_audio_items[item.id];
+
+                tracklist.refreshView(playlist);
+            });
+        else if ($this.hasClass('active'))
+            $('body').click();
+        else {
+            var menu = $('<span class="actions-list"></span>'), actions = tracklist.contextMenuActions;
+            for (var i in actions) {
+                var menu_item = document.createElement('a');
+                menu_item.href = '#' + actions[i];
+                ContextMenu[actions[i]].call(menu_item, item, playlist, tracklist);
+                menu.append(menu_item);
+            }
+
+            $this.html(menu);
+
+            $this.addClass((item.index - tracklist.view.minIndex <= tracklist.view.maxVisibleItems / 2) ? 'bottom' : 'top');
+            $this.addClass('active');
+        }
+    });
+}());
+
+
+//*****************************************************************************
+
+
+var history_tracklist, my_tracklist, search_tracklist;
+
+
+(function init_history_view()
+{
+    history_tracklist = new Tracklist($("#history-view > .tracklist > ol")[0], ['removeFromHistory', 'download'], bp.player.history);
+
+    $("#history").click(function () {
+        history_tracklist.applyToPlaylist(bp.player.history);
+        activateViewElement(this);
+        history_tracklist.view.activate();
+    });
+}());
+
+
+(function init_my_tracklist_view()
+{
+    (function init_my_tracklist()
+    {
+        my_tracklist = new Tracklist($("#my-tracklist-view > .tracklist > ol")[0], ['addToHistory', 'download', 'delete'], function () {
+            return bp.my_audio.currentAlbum.playlist;
+        });
+
+        $("#my-tracklist-chooser").click(function () {
+            var album = bp.my_audio.currentAlbum;
+
+            my_tracklist.applyToPlaylist(album.fetchPlaylist());
+
+            activateTabElement(this, album.title);
+            my_tracklist.view.activate();
+        });
+    }());
+
+    (function init_my_albums()
+    {
+        var albums = [];
+
+        var albums_view = new bp.DynamicListView($("#my-albums-tab")[0], function (index) {
+            this.album = albums[index];
+            this.innerText = this.album.title;
+        });
+
+        $("#my-albums-tab > li").live('click', function () {
+            bp.my_audio.currentAlbum = this.album;
+            $("#my-tracklist-chooser").click();
+        });
+
+        $("#my-albums-chooser").click(function () {
+            bp.my_audio.fetchAlbums(set_albums);
+            activateTabElement(this);
+            albums_view.activate();
+        });
+
+        function set_albums(new_albums)
+        {
+            albums = new_albums;
+            albums_view.itemsCount = albums.length;
+        }
+    }());
+
+    $("#my-tracklist").click(function () {
+        activateViewElement(this);
+        $("#my-tracklist-chooser").click();
+    });
+}());
+
+
+(function init_search_view()
+{
+    var $search_controls = $("#search-view > #search-controls"),
+        $search_input    = $search_controls.find("input[type=search]"),
+        $search_button   = $search_controls.find("button");
+
+    (function init_controls()
+    {
+        $search_input.bind('search', do_search);
+        $search_button.bind('click', do_search);
+
+        function do_search()
+        {
+            bp.audio_search.search($search_input.val());
+        }
+    }());
+
+    search_tracklist = new Tracklist($("#search-view > .tracklist > ol")[0], ['addToHistory', 'download', 'add'], bp.audio_search.playlist);
+
+    elc.add(bp.audio_search.playlist, bp.AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, update_view);
+
+    $("#search").click(function () {
+        search_tracklist.applyToPlaylist(bp.audio_search.playlist);
+        $search_input.val(bp.audio_search.query);
+        activateViewElement(this);
+        update_view();
+    });
+
+    function update_view()
+    {
+        $("#search-view > .tracklist").toggleClass('empty', bp.audio_search.playlist.items.length == 0);
+
+        search_tracklist.scrollToNowPlaying();
+
+        if (bp.audio_search.playlist.items.length > 0)
+            search_tracklist.view.activate();
+    }
+}());
+
+
+(function init_track_info_view()
+{
+    var $track_info_view   = $("#track-info-view"),
+        $track_info_button = $("#track-info"),
+        $album_container   = $track_info_view.find("#album-container"),
+        $albumart_wrapper  = $track_info_view.find("#album-cover-wrapper");
+
+    (function init_metadata()
+    {
+        $track_info_view.find("#artist-name").click(function () {
+            bp.audio_search.search(this.innerText);
+            $("#search").click();
+        });
+
+        $track_info_view.find("#add-track-to-my-audio").click(function () {
+            if (bp.player.history.nowPlaying) {
+                var add_button = this;
+
+                $(add_button).hide();
+
+                bp.helper.vk.addAudio(bp.player.history.nowPlaying, function (result) {
+                    $(add_button).toggle( ! result);
+                });
+            }
+        });
+
+        elc.add(bp.player.history, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
+            set_now_playing_metadata();
+        });
+
+        set_now_playing_metadata();
+
+        function set_now_playing_metadata()
+        {
+            var now_playing = bp.player.history.nowPlaying;
+
+            if (now_playing) {
+                set_metadata(now_playing.title, now_playing.artist, null, {}, null);
+                bp.helper.lastfm.getTrackInfo(now_playing.title, now_playing.artist, set_metadata);
+
+                $track_info_view.find("#download-track")[0].href = now_playing.url;
+                $track_info_view.find("#add-track-to-my-audio").toggle( ! bp.helper.vk.isOwerOf(now_playing));
+                $track_info_view.find("#track-download-add-controls").show();
+            }
+            else {
+                set_metadata('', '', null, {}, null);
+                $track_info_view.find("#track-download-add-controls").hide();
+            }
+        }
+
+        function set_metadata(title, artist, album, images, largest_image, track_hash)
+        {
+            var now_playing = bp.player.history.nowPlaying;
+
+            if (track_hash && (!now_playing || now_playing && track_hash != now_playing.title + now_playing.artist))
+                return;
+
+            $track_info_view.find("h1 span strong").text(title);
+            $track_info_view.find("#artist-name").text(artist);
+
+            if (album) {
+                $album_container.find("#album").text(album);
+                $album_container.show();
+            }
+            else
+                $album_container.hide();
+
+            if (largest_image) {
+                $albumart_wrapper.removeClass('no-albumart');
+
+                $albumart_wrapper[0].href = largest_image;
+                $albumart_wrapper.find("img")[0].src  = ('extralarge' in images) ? images.extralarge : largest_image;
+            }
+            else {
+                $albumart_wrapper.addClass('no-albumart');
+                $albumart_wrapper[0].href = '#';
+            }
+        }
+    }());
+
+    (function init_time()
+    {
+        var slider_element = $track_info_view.find("#progress-bar").slider({
+            orientation : 'horizontal',
+            range       : 'min',
+            min         : 0,
+            max         : 0,
+            step        : 1,
+            value       : 0,
+            animate     : true,
+            slide       : function (event, ui) { bp.player.audio.currentTime = ui.value; }
+        }).focus(function () { return false; });
+
+        elc.add(bp.player.history, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
+            if (event.nowPlaying)
+                update_time_data(0, event.nowPlaying.duration);
+            else
+                update_time_data(0, 0);
+        });
+
+        elc.add(bp.player.audio, 'timeupdate', function () {
+            update_time_data(bp.player.audio.currentTime, bp.player.audio.duration, bp.player.history.nowPlaying);
+        });
+
+        update_time_data(bp.player.audio.currentTime, bp.player.audio.duration, bp.player.history.nowPlaying);
+
+        function update_time_data(current_time, duration, item)
+        {
+            var $time_data = $track_info_view.find("#progress-time");
+
+            current_time = current_time || 0;
+            duration = duration || (item && item.duration) || 0;
+
+            slider_element.slider('value', current_time);
+            slider_element.slider('option', 'max', duration);
+
+            $time_data.find("#current-time").text(bp.secondsToTime(current_time));
+            $time_data.find("#track-length").text(bp.secondsToTime(duration));
+        }
+    }());
+
+    elc.add(bp.player.history, bp.AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
+        $track_info_button.toggle(!!event.nowPlaying);
+    });
+
+    $track_info_button.click(function () { activateViewElement(this); });
+
+    $track_info_button.toggle(!!bp.player.history.nowPlaying);
+}());
+
+
+//*****************************************************************************
+
+
+$('#' + bp.popup_active_view).click();
 

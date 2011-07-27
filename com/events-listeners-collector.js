@@ -20,9 +20,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function EventsListenersCollector()
+function EventsListenersCollector(window)
 {
-    var collection = [];
+    var collection = [], self = this;
+
+    if (window)
+        window.addEventListener('unload', function () { self.unload(); }, false);
 
     this.add = function (obj, type, listener)
     {
@@ -30,7 +33,12 @@ function EventsListenersCollector()
         return obj.addEventListener(type, listener, false);
     };
 
-    this.unloadAllListeners = function ()
+    this.remove = function (obj, type, listener)
+    {
+        return obj.removeEventListener(type, listener, false);
+    };
+
+    this.unload = function ()
     {
         while (collection.length > 0) {
             var item = collection.pop();

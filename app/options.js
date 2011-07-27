@@ -17,28 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 var bp = chrome.extension.getBackgroundPage();
 
-var options = bp.options;
+(function init_notification_option()
+{
+    $('#notification-show-behavior').val(bp.options.get('notification.show-behavior', 'show-on-update'));
 
-$('#notification-show-behavior').val(options.get('notification.show-behavior', 'show-on-update'));
+    $('#notification-show-behavior').change(function () {
+        bp.options.set('notification.show-behavior', $(this).val());
+    });
+}());
 
-$('#notification-show-behavior').change(function () {
-    options.set('notification.show-behavior', $(this).val());
-});
 
+(function init_lastfm_option()
+{
+    $('#use-lastfm')[0].checked = bp.options.get('lastfm', false);
 
-$('#use-lastfm')[0].checked = options.get('lastfm', false);
+    $('#use-lastfm').change(function () {
+        this.checked ? bp.options.set('lastfm', true) : bp.options.delete('lastfm');
+    });
 
-$('#use-lastfm').change(function () {
-    if (this.checked)
-        options.set('lastfm', true);
-    else {
-        options.delete('lastfm');
-        options.delete('lastfm.session');
-    }
-});
-
-$(window).unload(function () { bp.checkLastfmSession(); });
+    $(window).unload(function () { bp.checkLastfmSession(); });
+}());
 

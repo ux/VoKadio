@@ -17,11 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var bp = chrome.extension.getBackgroundPage();
-
-var elc = new bp.EventsListenersCollector();
-
-$(window).unload(function () { elc.unloadAllListeners(); });
+var bp = chrome.extension.getBackgroundPage(),
+    elc = new bp.EventsListenersCollector(window);
 
 
 function updateAudioMeta()

@@ -17,33 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function playorder(player, new_playorder)
-{
-    if (new_playorder) {
-        switch (new_playorder) {
-            case 'normal':
-                player.playorder = AudioPlayer.Player.PLAYORDER_NORMAL;
-                player.repeatMode = AudioPlayer.Player.REPEAT_PLAYLIST;
-                break;
-            case 'loop':
-                player.playorder = AudioPlayer.Player.PLAYORDER_NORMAL;
-                player.repeatMode = AudioPlayer.Player.REPEAT_TRACK;
-                break;
-            case 'shuffle':
-                player.playorder = AudioPlayer.Player.PLAYORDER_SHUFFLE;
-                player.repeatMode = AudioPlayer.Player.REPEAT_PLAYLIST;
-                break;
-        }
-    }
-
-    return (player.playorder == AudioPlayer.Player.PLAYORDER_SHUFFLE)
-        ? 'shuffle'
-        : (player.repeatMode == AudioPlayer.Player.REPEAT_TRACK ? 'loop' : 'normal');
-}
-
-
-//*****************************************************************************
-
 var options = new Options();
 
 var DEBUG = options.get('debug', false);
@@ -77,12 +50,16 @@ var vk_session = new VkAPI.Session(VK_APP_ID, VK_SETTINGS, function (session, si
 
 var vk_query = new VkAPI.Query(vk_session);
 
-var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET});
-var lastfm_session = null;
+var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET}),
+    lastfm_session = null;
 
-var player = new AudioPlayer.Player(),
-    helper = new PlayerHelper(lastfm),
-    my_audio = new VK.Audio(null, player, vk_query, helper);
+var player  = new AudioPlayer.Player(),
+    helper  = new PlayerHelper(lastfm, vk_query);
+
+var my_audio     = new VK.Audio(null, player, vk_query),
+    audio_search = new VK.Audio.Search(player, vk_query);
+
+var popup_active_view = 'my-tracklist';
 
 
 //*****************************************************************************
@@ -114,59 +91,54 @@ function checkLastfmSession()
                 cb: chrome.extension.getURL('/auth/lastfm.html')
             })});
     }
+    else {
+        lastfm_session = null;
+        options.delete('lastfm.session');
+    }
 }
 
 
 //*****************************************************************************
 
 
-(function initPlayer()
+(function init_player()
 {
-    player.currentPlaylist = my_audio.currentAlbum.createPlaylist();
+    VK.Audio.bindHistory(player, vk_query);
+
+    player.currentPlaylist = my_audio.currentAlbum.playlist;
 
     player.audio.volume = options.get('player.volume', 1);
     player.audio.addEventListener('volumechange', function () {
         options.set('player.volume', player.audio.volume);
     });
 
-    playorder(player, options.get('player.playorder', 'normal'));
-    player.addEventListener(AudioPlayer.Player.EVENT_PLAYORDER_CHANGED, store_playorder);
-    player.addEventListener(AudioPlayer.Player.EVENT_REPEAT_MODE_CHANGED, store_playorder);
-
-    vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, function () {
-        var history_items = player.history.items;
-
-        if (history_items.length > 0) {
-            var audios_list = [];
-            for (var i in history_items)
-                audios_list.push(history_items[i].owner_id + '_' + history_items[i].aid);
-
-            vk_query.call('audio.getById', {audios: audios_list.join(',')}, function (records) {
-                player.history.items = helper.vk.tracksForPlaylist(records);
-            });
-        }
+    player.playorder = options.get('player.playorder', AudioPlayer.Player.PLAYORDER_NORMAL);
+    player.addEventListener(AudioPlayer.Player.EVENT_PLAYORDER_CHANGED, function () {
+        options.set('player.playorder', player.playorder);
     });
 
-    function store_playorder() { options.set('player.playorder', playorder(player)); }
+    player.repeatMode = options.get('player.repeatMode', AudioPlayer.Player.REPEAT_PLAYLIST);
+    player.addEventListener(AudioPlayer.Player.EVENT_REPEAT_MODE_CHANGED, function () {
+        options.set('player.repeatMode', player.repeatMode);
+    });
 }());
 
-(function initNotification()
+(function init_notification()
 {
     var has_notification = false;
-    var notification = null;
 
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
-        if (has_notification || options.get('notification.show-behavior') == 'hide' || !event.nowPlaying)
-            return;
+        if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && !has_notification) {
+            has_notification = true;
 
-        has_notification = true;
-        notification = webkitNotifications.createHTMLNotification('/notification.html');
-        notification.onclose = function () { has_notification = false; };
-        notification.show();
+            var notification = webkitNotifications.createHTMLNotification('/notification.html');
+            notification.onclose = function () { has_notification = false; };
+            notification.show();
+        }
     });
 }());
 
-(function initPopupIcon()
+(function init_popup_icon()
 {
     var icon_rotator = new RotateAnimation(
         $('<img src="icons/popup.png" alt="" />')[0],
@@ -180,8 +152,9 @@ function checkLastfmSession()
     player.audio.addEventListener('ended', function () { icon_rotator.rotateTo(0); });
 
     player.audio.addEventListener('timeupdate', function (event) {
-        if ( ! isNaN(this.duration))
-            chrome.browserAction.setBadgeText({text: secondsToTime(this.duration - this.currentTime)});
+        chrome.browserAction.setBadgeText({
+            text: (isNaN(this.duration) || this.ended) ? '' : secondsToTime(this.duration - this.currentTime)
+        });
     });
 
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
@@ -194,10 +167,10 @@ function checkLastfmSession()
     });
 }());
 
-(function initLastfmScrobbling()
+(function init_lastfm_scrobbling()
 {
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
-        helper.lastfm.scrobbler.stop(lastfm_session);  // is used, when track was switched and was not ended
+        helper.lastfm.scrobbler.stop(lastfm_session);
 
         if (event.nowPlaying)
             helper.lastfm.scrobbler.start(event.nowPlaying);
@@ -218,7 +191,7 @@ function checkLastfmSession()
 
 $(document).ready(function () { checkLastfmSession(); });
 
-(function initVkSession()
+(function init_vk_session()
 {
     vk_session.addEventListener(VkAPI.Session.EVENT_SESSION_UPDATED, function (event) {
         options.set('vk.session', {data: event.data, updated_at: event.target.updatedAt});

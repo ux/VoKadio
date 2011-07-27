@@ -1,0 +1,1754 @@
+html, body, div, h1, h2, h3, ul, ol, li, p, blockquote, form, fieldset, button
+{
+    margin: 0;
+    padding: 0;
+}
+
+body
+{
+    width: 393px;
+    height: 486px;
+    padding: 7px 15px;
+    background: #e6e6e6;
+    font: normal 16px Tahoma, 'Droid Sans', Geneva, sans-serif;
+}
+
+button
+{
+    background: none;
+    border: 0 none;
+    cursor: pointer;
+    vertical-align: top;
+}
+
+button.active
+{
+    cursor: default;
+}
+
+input, button
+{
+    font-family: Arial, Tahoma, 'Droid Sans', Geneva, sans-serif;
+}
+
+/*button styles*/
+    #previous-track
+    {
+        width: 47px;
+        height: 49px;
+        margin: 0 0 0 -2px;
+        background: url('../images/sprite.png') no-repeat 0 -120px;
+    }
+
+    #previous-track:hover
+    {
+        background-position: 0 -201px;
+    }
+
+    #previous-track:active
+    {
+        background-position: 0 -260px;
+    }
+
+    #play-pause
+    {
+        width: 47px;
+        height: 49px;
+        background: url('../images/sprite.png') no-repeat -47px -120px;
+    }
+
+    #play-pause:hover
+    {
+        background-position: -47px -201px;
+    }
+
+    #play-pause:active
+    {
+        background-position: -47px -260px;
+    }
+
+    #play-pause.pause
+    {
+        background-position: -271px -120px;
+    }
+
+    #play-pause.pause:hover
+    {
+        background-position: -271px -201px;
+    }
+
+    #play-pause.pause:active
+    {
+        background-position: -271px -260px;
+    }
+
+    #next-track
+    {
+        width: 47px;
+        height: 49px;
+        background: url('../images/sprite.png') no-repeat -94px -120px;
+    }
+
+    #next-track:hover
+    {
+        background-position: -94px -201px;
+    }
+
+    #next-track:active
+    {
+        background-position: -94px -260px;
+    }
+
+    #repeat
+    {
+        margin: 0 0 0 30px;
+        width: 49px;
+        height: 49px;
+        background: url('../images/sprite.png') no-repeat -160px -120px;
+    }
+
+    #repeat:hover
+    {
+        width: 49px;
+        height: 49px;
+        background-position: -160px -201px;
+    }
+
+    #repeat:active
+    {
+        width: 49px;
+        height: 49px;
+        background-position: -160px -260px;
+    }
+
+    #repeat.cycle_one
+    {
+        width: 49px;
+        height: 49px;
+        background-position: -211px -260px;
+    }
+
+    #repeat.cycle_one:hover
+    {
+        background-position: -160px -201px;
+    }
+
+    #repeat.cycle_one:active
+    {
+        background: url('../images/sprite.png') no-repeat -159px -260px;
+    }
+
+    #repeat.cycle_all
+    {
+        background-position: -159px -260px;
+    }
+
+    #repeat.cycle_all:hover
+    {
+        background-position: -211px -201px;
+    }
+
+    #repeat.cycle_all:active
+    {
+        background-position: -211px -260px;
+    }
+
+    #shuffle
+    {
+        margin: 0 0 0 3px;
+        width: 49px;
+        height: 49px;
+        background: url('../images/sprite.png') no-repeat -340px -120px;
+    }
+
+    #shuffle:hover, #shuffle.shuffle:hover
+    {
+        background-position: -341px -202px;
+    }
+
+    #shuffle:active, #shuffle.shuffle
+    {
+        background-position: -341px -259px;
+    }
+
+    #shuffle.shuffle_author
+    {
+        background-position: -401px -259px;
+    }
+
+    #shuffle.shuffle_author:hover
+    {
+        background-position: -340px -202px;
+    }
+
+    #shuffle.shuffle_author:active
+    {
+        background-position: -340px -259px;
+    }
+
+    #refresh-session
+    {
+        margin: 0 -1px 0 22px;
+        width: 49px;
+        height: 49px;
+        background: url('../images/sprite.png') no-repeat -460px -120px;
+    }
+
+    #refresh-session:hover
+    {
+        background-position: -460px -202px;
+    }
+
+    #refresh-session:active
+    {
+        background-position: -460px -259px;
+    }
+
+    #volume-wrapper
+    {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 9px;
+        margin: -2px 0 0 3px;
+        width: 49px;
+        position: relative;
+    }
+
+        #volume
+        {
+            font-size: 9px;
+            line-height: 9px;
+            padding: 22px 0 20px 11px;
+            width: 49px;
+            text-align: left;
+            color: #fff;
+            background: url('../images/sprite.png') no-repeat -549px 2px;
+        }
+
+        #volume:active, .active #volume
+        {
+            background-position: -600px 2px;
+        }
+
+        #volume.range_10-50
+        {
+            background-position: -550px -51px;
+        }
+
+        #volume.range_10-50:active, .active #volume.range_10-50
+        {
+            background-position: -600px -51px;
+        }
+
+        #volume.range_1-9
+        {
+            background-position: -550px -104px;
+        }
+
+        #volume.range_1-9:active, .active #volume.range_1-9
+        {
+            background-position: -600px -104px;
+        }
+
+        #volume.muted
+        {
+            background-position: -550px -157px;
+        }
+
+        #volume.muted:active, .active #volume.muted
+        {
+            background-position: -601px -157px;
+        }
+
+        #volume-bar
+        {
+            background: url('../images/sprite.png') no-repeat -550px -220px;
+            width: 50px;
+            height: 140px;
+            position: absolute;
+            top: 90%;
+            left: 0;
+            z-index: 10;
+            display: none;
+        }
+
+        .active #volume-bar
+        {
+            display: block;
+        }
+
+            #volume-bar .scale
+            {
+                width: 16px;
+                margin: 0 auto;
+                cursor: pointer;
+                height: 74px;
+                position: relative;
+                top: 45px;
+            }
+
+            #volume-bar .scale .ui-slider-handle
+            {
+                position: absolute;
+                left: 0;
+                cursor: pointer;
+                display: block;
+                width: 16px;
+                height: 28px;
+                background: url('../images/sprite.png') no-repeat -610px -220px;
+            }
+/*/button styles*/
+
+    .content
+    {
+        background: #d0d0d0;
+        box-shadow: 0 0 3px #666;
+        border-radius: 4px;
+        position: relative;
+        padding: 7px 0 10px;
+        margin: 11px 0 8px;
+        opacity: 0;
+    }
+/*----------------track-info styles--------------*/
+#track-info-view
+{
+    padding-bottom: 12px;
+    line-height: 1.1em;
+}
+
+        #artist-and-album
+        {
+            font-size: 13px;
+            margin: 0 0 6px 15px;
+            width: 1000px;
+            position: relative;
+        }
+
+        #artist-and-album:after
+        {
+            background: url('../images/sprite.png') no-repeat 0 0;
+            content: '';
+            width: 54px;
+            height: 17px;
+            position: absolute;
+            top: 0;
+            left: 324px;
+        }
+
+            #artist-name
+            {
+                color: #000;
+                font-weight: 900;
+            }
+
+            #artist-and-album .splitter
+            {
+                color: #bdbdbd;
+                display: inline-block;
+                font-size: 20px;
+                vertical-align: middle;
+                margin: -5px 5px 0;
+            }
+
+        #album-cover-wrapper
+        {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+            display: block;
+            position: relative;
+            z-index: 9;
+            text-decoration: none;
+        }
+
+        #album-cover-wrapper.no-albumart
+        {
+            background: url('../images/no-albumart.png') no-repeat 0 0;
+        }
+
+            #album-cover-wrapper.no-albumart img
+            {
+                display: none;
+            }
+
+        #album-cover-wrapper:hover:before
+        {
+            position: absolute;
+            content: '';
+            top: 0px;
+            left: 1px;
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5)
+        }
+
+        #album-cover-wrapper:hover:after
+        {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            margin-left: -60px;
+            content: '';
+            display: block;
+            width: 120px;
+            height: 70px;
+            background: url('../images/sprite.png') no-repeat -400px 0;
+        }
+
+        #album-cover-wrapper.no-albumart:hover:before, #album-cover-wrapper.no-albumart:hover:after
+        {
+            content: none;
+            background: none;
+        }
+
+            #track-info-view img
+            {
+                max-height: 250px;
+                max-width: 250px;
+                display: block;
+                border: 1px solid #a5a5a5;
+                margin: auto;
+            }
+
+        #track-download-add-controls
+        {
+            text-align: right;
+            margin: -29px 4px 0 0;
+        }
+
+            #download-track
+            {
+                width: 28px;
+                height: 28px;
+                background: url('../images/sprite.png') no-repeat -270px 0;
+                margin: 0 5px 0 0;
+
+                /* iherited from button */
+                border: 0 none;
+                cursor: pointer;
+                vertical-align: top;
+                display: inline-block;
+            }
+
+            #download-track:hover
+            {
+                background-position: -270px -29px;
+            }
+
+            #download-track:active
+            {
+                background-position: -270px -59px;
+            }
+
+            #add-track-to-my-audio
+            {
+                width: 28px;
+                height: 28px;
+                background: url('../images/sprite.png') no-repeat -300px 0;
+            }
+
+            #add-track-to-my-audio:hover
+            {
+                background-position: -300px -29px;
+            }
+
+            #add-track-to-my-audio:active
+            {
+                background-position: -300px -59px;
+            }
+
+        #track-info-view h1
+        {
+            font-size: 15px;
+            width: 100%;
+            position: relative;
+            margin: 10px 0 0;
+            height: 20px;
+            overflow: hidden;
+        }
+
+            #track-info-view h1 span
+            {
+                position: absolute;
+                left: 50px;
+                display: inline-block;
+                width: 2000px;
+                top: 0;
+            }
+
+                #track-info-view h1 span
+                {
+                    display: inline-block;
+                }
+
+        #track-info-view h1:before
+        {
+            background: url('../images/sprite.png') no-repeat -54px 0;
+            width: 54px;
+            height: 17px;
+            position: absolute;
+            content: '';
+            top: 0;
+            left: 0;
+        }
+
+        #track-info-view h1:after
+        {
+            background: url('../images/sprite.png') no-repeat 0 0;
+            width: 54px;
+            height: 17px;
+            position: absolute;
+            content: '';
+            top: 0;
+            right: 0;
+        }
+
+    #progress-bar
+    {
+        width: 253px;
+        height: 18px;
+        margin: 12px auto 0;
+        overflow: visible;
+        background: url('../images/sprite.png') no-repeat 0 -36px;
+        cursor: pointer;
+        position: relative;
+    }
+
+        #progress-bar .ui-slider-range
+        {
+            content: '';
+            width: 253px;
+            height: 22px;
+            background: url('../images/sprite.png') no-repeat 0 -96px;
+            cursor: pointer;
+            z-index: 0;
+        }
+
+        #progress-bar .ui-slider-handle
+        {
+            position: absolute;
+            display: inline-block;
+            left: 50%;
+            top: -4px;
+            margin-left: -14px;
+            width: 27px;
+            height: 33px;
+            background: url('../images/sprite.png') no-repeat 0 -60px;
+            cursor: pointer;
+            z-index: 9;
+        }
+
+    #progress-time
+    {
+        width: 253px;
+        text-align: right;
+        margin: 0 auto;
+        font-size: 10px;
+        font-weight: 100;
+        color: #636363;
+    }
+
+        #progress-time span
+        {
+            display: inline-block;
+            margin: 0 2px;
+        }
+
+        #progress-time #current-time
+        {
+            color: #007ea6;
+        }
+/*----------------end of track-info styles--------------*/
+
+/*----------------playlists styles--------------*/
+        .tabs
+        {
+            margin: -7px 0 0;
+            background: #dbdbdb;
+            border-bottom: 1px solid #a3a3a3;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            font-size: 13px;
+            height: 31px;
+            overflow: visible;
+        }
+
+            .tabs span
+            {
+                display: inline-block;
+                vertical-align: top;
+                padding: 8px 10px 8px;
+                margin-top: -1px;
+                cursor: pointer;
+                border: 1px solid #a3a3a3;
+                border-top: 1px solid #818181;
+                border-bottom: 0 none;
+                background: url('../images/sprite.png') no-repeat -20px -560px;
+            }
+
+            .tabs span:last-child
+            {
+                max-width: 285px;
+            }
+
+            .tabs span:first-child
+            {
+                border-top-left-radius: 4px;
+                background-position: 0 -560px;
+            }
+
+            .tabs span:hover
+            {
+                background-position: -20px -601px;
+                border-color: #00ceff;
+            }
+
+            .tabs span:first-child:hover
+            {
+                background-position: -2px -601px;
+                border-color: #00ceff;
+            }
+
+            .tabs span:active
+            {
+                background-position: -20px -652px;
+                border-color: #3c869b;
+            }
+
+            .tabs span:first-child:active
+            {
+                background-position: -3px -652px;
+                border-color: #3c869b;
+            }
+
+            .tabs span.active, .tabs span.active:hover
+            {
+                position: relative;
+                z-index: 4;
+                background: url('../images/sprite.png') no-repeat -20px -698px;
+                border: 1px solid #00a7d9;
+                box-shadow: 0 0 5px #444;
+                cursor: default;
+            }
+
+            .tabs span:first-child:active
+            {
+                background-position: 0 -698px;
+            }
+
+            .tabs span.active:after
+            {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                content: '';
+                background: url('../images/sprite.png') no-repeat 0 -740px;
+                width: 11px;
+                margin-left: -6px;
+                height: 10px;
+                z-index: 5;
+            }
+
+        #my-albums-tab
+        {
+            list-style-type: none;
+            background: #e9e9e9;
+            height: 325px;
+            overflow: auto;
+            border-bottom: 1px solid #a3a3a3;
+        }
+
+            #my-albums-tab li
+            {
+                cursor: pointer;
+                font-size: 13px;
+                padding: 3px 9px;
+                color: #555;
+            }
+
+            #my-albums-tab li:nth-child(odd)
+            {
+                background-image: -webkit-gradient(
+                    linear,
+                    left top,
+                    left bottom,
+                    color-stop(0, #dbdbdb),
+                    color-stop(0.5, #d4d4d4),
+                    color-stop(0.97, #cccccc)
+                );
+            }
+
+            #my-albums-tab li:hover
+            {
+                background: #b0d4e1;
+            }
+
+        .tracklist
+        {
+            background: #e9e9e9;
+            height: 325px;
+            /*overflow-y: scroll;*/
+            border-bottom: 1px solid #a3a3a3;
+            max-width: 100%;
+        }
+
+            .tracklist ol
+            {
+                list-style-position: inside;
+                width: 100%;
+                min-height: 325px;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            .tracklist > ol > .scrollbar {
+                z-index: 9;
+            }
+
+            .tracklist li
+            {
+                cursor: pointer;
+                font-size: 10px;
+                padding: 4px 26px 4px 30px;
+                position: relative;
+                color: #939393;
+                background: #e9e9e9;
+            }
+
+            body .tracklist li.active
+            {
+                background-image: -webkit-gradient(
+                    linear,
+                    left bottom,
+                    left top,
+                    color-stop(0, rgb(190,190,190)),
+                    color-stop(0.18, rgb(234,234,234)),
+                    color-stop(0.84, rgb(236,236,236)),
+                    color-stop(0.89, rgb(234,234,234)),
+                    color-stop(1, rgb(190,190,190))
+                );
+                color: #000;
+            }
+
+            li.search-highlighted
+            {
+                outline: 2px solid #66b9ec;
+                margin: 2px 0;
+            }
+
+            .tracklist li.search-highlighted:after
+            {
+                content: '';
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 1px;
+                height: 100%;
+                background: #68bdeb;
+                z-index: 9;
+            }
+
+            .tracklist li.search-highlighted:before
+            {
+                content: '';
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 1px;
+                height: 100%;
+                background: #68bdeb;
+                z-index: 9;
+            }
+
+            .tracklist li:nth-child(odd)
+            {
+                background-image: -webkit-gradient(
+                    linear,
+                    left top,
+                    left bottom,
+                    color-stop(0, #dbdbdb),
+                    color-stop(0.5, #d4d4d4),
+                    color-stop(0.97, #cccccc)
+                );
+            }
+
+            .tracklist li:hover
+            {
+                background: #cae2ea;
+            }
+
+                .tracklist li .progress-wrapper, .tracklist li .progress-setter-wrapper
+                {
+                    position: absolute;
+                    left: 25px;
+                    top: 0;
+                    height: 23px;
+                    width: 331px;
+                    z-index: 1;
+                }
+
+                .tracklist li .progress-setter-wrapper
+                {
+                    z-index: 5;
+                }
+
+                    .tracklist li .progress-wrapper .ui-slider-range
+                    {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        height: 23px;
+                        background-image: -webkit-gradient(
+                            linear,
+                            left top,
+                            left bottom,
+                            color-stop(0, rgb(61,228,250)),
+                            color-stop(0.55, rgb(62,202,230)),
+                            color-stop(0.6, rgb(17,156,194)),
+                            color-stop(1, rgb(17,156,194))
+                        );
+                        z-index: 1;
+                    }
+
+                    .tracklist li.paused .progress-wrapper .ui-slider-range
+                    {
+                        background-image: -webkit-gradient(
+                            linear,
+                            left top,
+                            left bottom,
+                            color-stop(0, rgb(229,229,229)),
+                            color-stop(0.55, rgb(212,212,212)),
+                            color-stop(0.6, rgb(183,183,183)),
+                            color-stop(1, rgb(183,183,183))
+                        );
+                    }
+
+                .tracklist span.track
+                {
+                    color: #000;
+                    font-size: 12px;
+                    position: relative;
+                    z-index: 3;
+                    display: block;
+                    width: 1000px;
+                }
+
+                .tracklist span.track span
+                {
+                    position: relative;
+                    width:288px;
+                    height: 15px;
+                    overflow: hidden;
+                    display: block;
+                }
+
+                    .tracklist span.track span strong
+                    {
+                        width: 10000px;
+                        font-weight: 100;
+                        display: block;
+                    }
+
+                .tracklist .deleted span.track:after
+                {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 12px;
+                    width: 100%;
+                    height: 0;
+                    display: block;
+                    border-top: 1px solid red;
+                }
+
+                .tracklist .play-pause
+                {
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 25px;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    border-right: 1px solid rgba(125, 125, 125, 0.5);
+                    background: url('../images/sprite.png') no-repeat -204px -315px;
+                }
+
+                .tracklist .play-pause:hover
+                {
+                    background-position: -230px -315px;
+                    box-shadow: 0 0 4px #00d7eb;
+                }
+
+                .tracklist .play-pause:active
+                {
+                    background-position: -230px -344px;
+                    box-shadow: 0 0 4px #00d7eb;
+                }
+
+                .tracklist .active .play-pause
+                {
+                    background-position: -230px -374px;
+                    box-shadow: none;
+                }
+
+                .tracklist .active .play-pause:hover
+                {
+                    box-shadow: 0 0 4px #00d7eb;
+                }
+
+                .tracklist .active .play-pause:active
+                {
+                    background-position: -230px -405px;
+                }
+
+                .tracklist .paused .play-pause
+                {
+                    background-color: #bababa;
+                }
+
+                .tracklist .time
+                {
+                    position: absolute;
+                    right: 23px;
+                    bottom: 0px;
+                    padding: 6px 4px 4px 50px;
+                    z-index: 5;
+                    display: inline-block;
+                    background: url('../images/sprite.png') no-repeat -330px -428px;
+                }
+
+                .tracklist li:nth-child(odd) .time
+                {
+                    background: url('../images/sprite.png') no-repeat -330px -405px;
+                }
+
+                .tracklist li.active .time, .tracklist li.paused .time
+                {
+                    background: none;
+                }
+
+                body .tracklist li:hover .time
+                {
+                    background-image: none;
+                }
+
+                .tracklist .actions
+                {
+                    width: 22px;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    z-index: 8;
+                    line-height: 1.4em;
+                    border-left: 1px solid rgba(125, 125, 125, 0.5);
+                    background: #e9e9e9 url('../images/sprite.png') no-repeat -260px -315px;
+                }
+
+                .tracklist li:nth-child(odd) .actions
+                {
+                    background-color: #cecece;
+                }
+
+                .tracklist .actions:hover
+                {
+                    background-position: -290px -315px;
+                    box-shadow: 0 0 4px #00d7eb;
+                }
+
+                .tracklist .actions:active, .tracklist .actions.active
+                {
+                    background-position: -290px -344px;
+                    box-shadow: 0 0 4px #00d7eb;
+                }
+
+                .tracklist .deleted .actions
+                {
+                    background-position: -335px -315px;
+                }
+
+                .tracklist li:nth-child(odd) .actions
+                {
+                    background-color: #cecece;
+                }
+
+                .tracklist .deleted .actions:hover
+                {
+                    background-position: -360px -315px;
+                    box-shadow: 0 0 4px #00d7eb;
+                }
+
+                .tracklist .deleted .actions:active
+                {
+                    background-position: -360px -344px;
+                    box-shadow: 0 0 4px #00d7eb;
+                }
+
+                    .tracklist .actions.active
+                    {
+                        z-index: 11;
+                        color: #000;
+                    }
+
+                    .tracklist .actions .actions-list
+                        border-radius: 5px;
+                    {
+                        display: none;
+                    }
+
+                    .tracklist .actions.active .actions-list
+                    {
+                        position: absolute;
+                        display: block;
+                        right: 0px;
+                        top: 16px;
+                        z-index: 7;
+                    }
+
+
+                    .tracklist .actions.bottom .actions-list
+                    {
+                        /*background: url('../images/sprite.png') no-repeat -360px -600px;*/
+                        box-shadow: 0 3px 6px #888;
+                    }
+
+                    .tracklist .actions.top .actions-list
+                    {
+                        /*background: url('../images/sprite.png') no-repeat -360px -500px;*/
+                        bottom: 16px;
+                        top: auto;
+                        box-shadow: 0 -3px 6px #888;
+                    }
+
+                        .tracklist .actions.active .actions-list a
+                        {
+                            display: block;
+                            font-size: 11px;
+                            padding: 3px 0 2px 6px;
+                            width: 101px;
+                            background: #dadada;
+                            text-decoration: none;
+                            color: #000;
+                        }
+
+                        .tracklist .actions.bottom .actions-list a
+                        {
+                            border-top: 1px solid #afafaf;
+                        }
+
+                        .tracklist .actions.top .actions-list a
+                        {
+                            border-bottom: 1px solid #afafaf;
+                        }
+
+                        .tracklist .actions.bottom .actions-list a:first-child, .tracklist .actions.top .actions-list a:last-child
+                        {
+                            border-color: transparent;
+                        }
+
+                        .tracklist .actions.bottom .actions-list a:first-child
+                        {
+                            background: url('../images/sprite.png') no-repeat -362px -602px;
+                        }
+
+                        .tracklist .actions.bottom .actions-list a:first-child:hover
+                        {
+                            background: url('../images/sprite.png') no-repeat -480px -501px;
+                        }
+
+                        .tracklist .actions.active .actions-list a:hover
+                        {
+                            background: #ececec;
+                        }
+
+                        .tracklist .actions.bottom .actions-list a:last-child
+                        {
+                        }
+
+                        .tracklist .actions.top .actions-list a:last-child
+                        {
+                            background: url('../images/sprite.png') no-repeat -362px -561px;
+                            border-bottom-left-radius: 5px;
+                            border-bottom-right-radius: 5px;
+                        }
+
+                        .tracklist .actions.top .actions-list a:last-child:hover
+                        {
+                            background: url('../images/sprite.png') no-repeat -480px -523px;
+                        }
+
+                        .tracklist .actions.top .actions-list a:first-child
+                        {
+                            border-top-left-radius: 5px;
+                            border-top-right-radius: 5px;
+                        }
+/*----------------end of playlists styles--------------*/
+
+/*----------------friends styles--------------*/
+.friendlist
+{
+    height: 325px;
+    width: 100%;
+    overflow-y: scroll;
+    border-bottom: 1px solid #a3a3a3;
+    color: #5d5d5d;
+    font-size: 13px;
+}
+
+#friends-view .tracklist
+{
+    margin-bottom: 24px;
+    height: 301px;
+}
+
+    .friendlist li
+    {
+        padding: 9px 0 9px 20px;
+        cursor: pointer;
+    }
+
+    ul.friendlist li:hover
+    {
+        background: #b0d4e1;
+    }
+
+    .friendlist li:nth-child(even)
+    {
+        background: #e9e9e9;
+    }
+
+    .friendlist li:nth-child(odd)
+    {
+        background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #dddddd),
+            color-stop(0.5, #d2d2d2),
+            color-stop(1, #cccccc)
+        );
+    }
+
+        .friendlist img, .friendlist span
+        {
+            vertical-align: middle;
+        }
+
+        .friendlist img
+        {
+            margin: 0 15px 0 0;
+        }
+
+.bottom-tabs
+{
+    position: absolute;
+    z-index: 11;
+    bottom: 10px;
+    left: 0;
+    font-size: 13px;
+}
+
+    .bottom-tabs a
+    {
+        display: inline-block;
+        max-width: 275px;
+        color: #000;
+        text-decoration: none;
+        border: 1px solid #ababab;
+        background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #c2c2c2),
+            color-stop(0.6, #c5c5c5),
+            color-stop(0.61, #b3b3b3),
+            color-stop(1, #b3b3b3)
+        );
+        overflow: hidden;
+        padding: 4px 13px;
+    }
+
+        .bottom-tabs a span
+        {
+            display: inline-block;
+            width: 1000px;
+        }
+
+    .bottom-tabs .back-to-root
+    {
+        width: 88px;
+        padding: 4px 0;
+        text-align: center;
+    }
+
+    .bottom-tabs a:hover
+    {
+        background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #3bf8ff),
+            color-stop(0.6, #3ccee3),
+            color-stop(0.61, #01b8d6),
+            color-stop(1, #0198c1)
+        );
+        box-shadow: 0 0 3px #3bf3fc;
+    }
+
+    .bottom-tabs a:active
+    {
+        background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #3c8ca2),
+            color-stop(0.1, #3ca5c2),
+            color-stop(0.11, #3cb4d2),
+            color-stop(0.6, #3cd7e9),
+            color-stop(0.61, #01d3e8),
+            color-stop(0.98, #00e6f2),
+            color-stop(0.981, #00dae4),
+            color-stop(1, #00abb2)
+        );
+        box-shadow: 0 0 3px #3bf3fc;
+    }
+
+    .bottom-tabs a.active
+    {
+        border-color: #0088df;
+        background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #e2e2e2),
+            color-stop(0.6, #dddddd),
+            color-stop(0.61, #d2d2d2),
+            color-stop(1, #cfcfcf)
+        );
+        position: relative;
+        box-shadow: 0 0 3px #666;
+    }
+
+    .bottom-tabs:after
+    {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 1px;
+        right: 0;
+        height: 95%;
+        width: 53px;
+        background-image: -webkit-gradient(
+            linear,
+            left top,
+            right top,
+            color-stop(0, rgba(225, 225, 225, 0)),
+            color-stop(1, rgba(225, 225, 225, 1))
+        );
+    }
+
+/*----------------end of friends styles--------------*/
+
+    .tab-switcher
+    {
+        height: 49px;
+        vertical-align: bottom;
+    }
+
+    .tab-switcher.active
+    {
+        position: relative;
+    }
+
+    .tab-switcher.active:before
+    {
+        content: '';
+        width: 11px;
+        height: 8px;
+        display: inline-block;
+        background: url('../images/sprite.png') no-repeat -126px 0;
+        position: absolute;
+        bottom: 55px;
+        left: 50%;
+        margin-left: -7px;
+    }
+
+    #track-info
+    {
+        float: right;
+        width: 49px;
+        height: 49px;
+        background: url('../images/sprite.png') no-repeat -670px -119px;
+    }
+
+    #track-info:hover
+    {
+        background-position: -670px -201px;
+    }
+
+    #track-info:active
+    {
+        background-position: -670px -258px;
+    }
+
+    #track-info.active
+    {
+        background-position: -725px -119px;
+    }
+
+    #history
+    {
+        width: 48px;
+        background: url('../images/sprite.png') no-repeat -1px -321px;
+    }
+
+    #history:hover
+    {
+        background-position: -1px -381px;
+    }
+
+    #history:active
+    {
+        background-position: -1px -441px;
+    }
+
+    #history.active
+    {
+        background-position: -1px -501px;
+    }
+
+    #my-tracklist
+    {
+        width: 46px;
+        background: url('../images/sprite.png') no-repeat -49px -321px;
+    }
+
+    #my-tracklist:hover
+    {
+        background-position: -49px -381px;
+    }
+
+    #my-tracklist:active
+    {
+        background-position: -49px -441px;
+    }
+
+    #my-tracklist.active
+    {
+        background-position: -49px -501px;
+    }
+
+    #friends
+    {
+        width: 46px;
+        background: url('../images/sprite.png') no-repeat -95px -321px;
+    }
+
+    #friends:hover
+    {
+        background-position: -95px -381px;
+    }
+
+    #friends:active
+    {
+        background-position: -95px -441px;
+    }
+
+    #friends.active
+    {
+        background-position: -95px -501px;
+    }
+
+    #search
+    {
+        width: 48px;
+        background: url('../images/sprite.png') no-repeat -141px -321px;
+    }
+
+    #search:hover
+    {
+        background-position: -141px -381px;
+    }
+
+    #search:active
+    {
+        background-position: -141px -441px;
+    }
+
+    #search.active
+    {
+        background-position: -141px -501px;
+    }
+
+/* global-search styles*/
+#search-controls
+{
+    height: 30px;
+    margin: -5px 0 0;
+    font-size: 13px;
+    position: relative;
+}
+
+    #search-controls input[type="search"]
+    {
+        width: 97%;
+        font-family: 'Trebuchet MS', Trebuchet, Tahoma, 'Droid Sans', Geneva, sans-serif;
+        font-style: italic;
+        color: #493c3c;
+        background: #d6d6d6;
+        border-radius: 4px;
+        border: 2px solid #d6d6d6;
+        padding: 5px 0 5px 0px;
+        margin: -2px 0 0 -1px;
+        outline: none;
+        box-shadow: 0 0 6px #c0c0c0;
+    }
+
+    #search-controls input[type="search"]:hover, #search-controls:hover input[type="search"]
+    {
+        border-color: #58d3f1;
+    }
+
+    #search-controls input[type="search"]:focus
+    {
+        border-color: #20c1e9;
+        box-shadow: 0 0 6px #34b1d1;
+    }
+
+    #search-controls button
+    {
+        width: 42px;
+        height: 34px;
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        border: 0 none;
+        background: url('../images/sprite.png') no-repeat -670px 0;
+    }
+
+    #search-controls button:hover, #search-controls:hover button
+    {
+        background-position: -671px -40px;
+    }
+
+    #search-controls button:active
+    {
+        background-position: -671px -80px;
+    }
+
+.tracklist.empty
+{
+    background: #d0d0d0;
+    overflow: hidden;
+    border-color: #d0d0d0;
+    position: relative;
+}
+
+    .tracklist.empty:after
+    {
+        content: 'Ничего не найдено';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        color: #766d6d;
+        font-size: 13px;
+    }
+
+    .tracklist.empty ol
+    {
+        display: none;
+    }
+/* /global-search styles*/
+
+/* local-search styles*/
+#local-search
+{
+    position: absolute;
+    z-index: 15;
+    bottom: 10px;
+    right: 10px;
+}
+
+    #local-search input
+    {
+        font-size: 13px;
+        font-style: italic;
+        color: #493c3c;
+        background: #d8d8d8;
+        border-radius: 4px;
+        border: 2px solid #34b2d1;
+        box-shadow: 0 0 3px #444;
+        padding: 4px 0px 3px 3px;
+    }
+/*/local-search styles*/
+
+/*notificator styles*/
+body#notificator
+{
+    width: 290px;
+    height: 150px;
+    padding: 5px;
+    font-size: 10px;
+    color: #414141;
+    position: relative;
+}
+
+    #notificator h1
+    {
+        font-size: 14px;
+        overflow: hidden;
+        color: #000;
+        margin: 5px 0 6px;
+        position: relative;
+    }
+
+    #notificator h1:after
+    {
+        position: absolute;
+        content: '';
+        display: block;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 50px;
+        background-image: -webkit-gradient(
+            linear,
+            left top,
+            right top,
+            color-stop(0, rgba(225, 225, 225, 0)),
+            color-stop(1, rgba(225, 225, 225, 1))
+        );
+    }
+
+        #notificator h1 span
+        {
+            display: block;
+            width: 1000px;
+        }
+
+    #notificator #progress-bar
+    {
+        width: 285px;
+        margin: 0 auto;
+        background-position: -719px 4px;
+    }
+
+        #notificator #progress-current
+        {
+            width: 100%;
+            background-position: -718px -76px;
+        }
+
+        #notificator #progress-time
+        {
+            width: 97%;
+        }
+
+    #notificator #download-track
+    {
+        position: absolute;
+        bottom: 6px;
+        left: 4px;
+    }
+
+    #notificator #add-track-to-my-audio
+    {
+        position: absolute;
+        bottom: 36px;
+        left: 5px;
+    }
+
+    #notificator #album-wrapper
+    {
+        position: absolute;
+        bottom: 6px;
+        left: 50%;
+        margin: 0 0 0 -42px;
+        width: 80px;
+        height: 80px;
+        border: 1px solid #a9a9a9;
+    }
+
+        #notificator #album-wrapper img
+        {
+            display: block;
+            width: 80px;
+            height: 80px;
+        }
+
+        #notificator #album-wrapper button
+        {
+            position: absolute;
+            left: 16px;
+            top: 18px;
+            background: url('../images/sprite.png') no-repeat -656px -368px;
+        }
+
+        #notificator #album-wrapper button:hover
+        {
+            background-position: -656px -461px;
+        }
+
+        #notificator #album-wrapper button.pause
+        {
+            background-position: -775px -368px;
+        }
+
+        #notificator #album-wrapper button.pause:hover
+        {
+            background-position: -775px -461px;
+        }
+
+        #notificator #previous-track
+        {
+            position: absolute;
+            left: 55px;
+            bottom: 20px;
+            width: 49px;
+            height: 49px;
+            background: url('../images/sprite.png') no-repeat -800px -140px;
+        }
+
+        #notificator #previous-track:hover
+        {
+            background-position: -800px -200px;
+        }
+
+        #notificator #previous-track:active
+        {
+            background-position: -800px -260px;
+        }
+
+        #notificator #next-track
+        {
+            position: absolute;
+            right: 55px;
+            bottom: 20px;
+            width: 49px;
+            height: 49px;
+            background: url('../images/sprite.png') no-repeat -860px -140px;
+        }
+
+        #notificator #next-track:hover
+        {
+            background-position: -860px -200px;
+        }
+
+        #notificator #next-track:active
+        {
+            background-position: -860px -260px;
+        }
+
+    #notificator #repeat
+    {
+        position: absolute;
+        bottom: 40px;
+        right: 4px;
+        width: 32px;
+        height: 32px;
+        background: url('../images/sprite.png') no-repeat -860px -363px;
+    }
+
+    #notificator #repeat:hover
+    {
+        background-position: -908px -363px;
+    }
+
+    #notificator #repeat:active
+    {
+        background-position: -943px -363px;
+    }
+
+    #notificator #repeat.repeat-one
+    {
+        background-position: -943px -400px;
+    }
+
+    #notificator #repeat.repeat-one:hover
+    {
+        background-position: -908px -400px;
+    }
+
+    #notificator #repeat.repeat-one:active
+    {
+        background-position: -943px -363px;
+    }
+
+
+    #notificator #shuffle
+    {
+        position: absolute;
+        bottom: 6px;
+        right: 4px;
+        width: 32px;
+        height: 32px;
+        background: url('../images/sprite.png') no-repeat -859px -447px;
+    }
+
+    #notificator #shuffle:hover, #notificator #shuffle.shuffle:hover
+    {
+        background-position: -908px -447px;
+    }
+
+    #notificator #shuffle:active, #notificator #shuffle.shuffle
+    {
+        background-position: -943px -447px;
+    }
+
+    #notificator #shuffle.shuffle-one
+    {
+        background-position: -943px -486px;
+    }
+
+    #notificator #shuffle.shuffle-one:hover
+    {
+        background-position: -908px -486px;
+    }
+
+    #notificator #shuffle.shuffle-one:active
+    {
+        background-position: -943px -447px;
+    }
+
+    #notificator #volume-wrapper
+    {
+        position: absolute;
+        top: 0;
+        right: 0;
+        text-align: right;
+    }
+
+    #notificator #volume
+    {
+
+        width: 38px;
+        height: 28px;
+        padding: 0;
+        background-position: -600px -554px;
+    }
+
+    #notificator #volume:hover
+    {
+        background-position: -600px -594px;
+    }
+
+    #notificator #volume:active, #notificator #volume-wrapper.active #volume
+    {
+        background-position: -657px -562px;
+    }
+
+    #notificator #volume-bar
+    {
+        height: 135px;
+        width: 40px;
+        right: -1px;
+        left: auto;
+        background-position: -656px -587px;
+    }
+/*/notificator styles*/

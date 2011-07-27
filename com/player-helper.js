@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function PlayerHelper(lastfm)
+function PlayerHelper(lastfm, vk_query)
 {
     var self = this;
 
@@ -71,66 +71,70 @@ function PlayerHelper(lastfm)
             }
         })(),
 
-        imagesToObject: function (images) {
-            if (images) {
-                if ( ! (images instanceof Array))
-                    images = [images];
-
-                var imgs_obj = {};
-                var imgs_obj_not_empty = false;
-                for (var i in images) {
-                    if (images[i]['#text']) {
-                        imgs_obj[images[i].size] = images[i]['#text'];
-                        imgs_obj_not_empty = true;
-                    }
-                }
-
-                return imgs_obj_not_empty ? imgs_obj : null;
-            }
+        extractLargestImage: function (image) {
+            if (image instanceof Array)
+                return image[image.length - 1]['#text'];
+            else if (image['#text'])
+                return image['#text'];
+            else if (image)
+                return image;
             else
                 return null;
         },
 
-        getTrackId: function (artist, track) {
-            return artist + track;
+        extractImages: function (images) {
+            var images_object = {};
+
+            if (images)
+                for (var i in (images = (images instanceof Array) ? images : [images]))
+                    images_object[images[i].size] = images[i]['#text'];
+
+            return images_object;
         },
 
-        getArtistImages: function (artist, set_artist_photo) {
+        getArtistInfo: function (artist, callback) {
             lastfm.artist.getInfo({artist: artist, autocorrect: '1'}, {
-                success: function (data) {
-                    set_artist_photo(self.lastfm.imagesToObject(data.artist.image));
+                success: function (response) {
+                    callback(response.artist.name,
+                             self.lastfm.extractImages(response.artist.image),
+                             self.lastfm.extractLargestImage(response.artist.image),
+                             artist);
                 },
 
-                error: function () { set_artist_photo(undefined); }
+                error: function () { callback(artist, null, null, artist); }
             });
         },
 
-        getAlbumInfo: function (artist, track, set_album_info) {
-            var track_id = self.lastfm.getTrackId(artist, track);
+        getTrackInfo: function (track, artist, callback) {
+            var track_hash = track + artist;
 
             lastfm.track.getInfo({artist: artist, track: track, autocorrect: '1'}, {
-                success: function (data) {
-                    var album = data.track.album;
+                success: function (response) {
+                    var track_info = response.track, album_info = track_info.album,
+                        track = track_info.name, artist = track_info.artist.name;
 
-                    if (album) {
-                        var cover = self.lastfm.imagesToObject(album.image);
+                    if (album_info) {
+                        var album = album_info.title;
 
-                        if (cover)
-                            set_album_info(track_id, album.title, cover);
+                        if (album_info.image)
+                            callback(track, artist, album,
+                                     self.lastfm.extractImages(album_info.image),
+                                     self.lastfm.extractLargestImage(album_info.image),
+                                     track_hash);
                         else
-                            self.lastfm.getArtistImages(artist, function (photo) {
-                                set_album_info(track_id, album.title, photo);
+                            self.lastfm.getArtistInfo(artist, function (artist, images, largest_image) {
+                                callback(track, artist, album, images, largest_image, track_hash);
                             });
                     }
                     else
-                        self.lastfm.getArtistImages(artist, function (photo) {
-                            set_album_info(track_id, undefined, photo);
+                        self.lastfm.getArtistInfo(artist, function (artist, images, largest_image) {
+                            callback(track, artist, null, images, largest_image, track_hash);
                         });
                 },
 
                 error: function () {
-                    self.lastfm.getArtistImages(artist, function (photo) {
-                        set_album_info(track_id, undefined, photo);
+                    self.lastfm.getArtistInfo(artist, function (artist, images, largest_image) {
+                        callback(track, artist, null, images, largest_image, track_hash);
                     });
                 }
             });
@@ -138,18 +142,38 @@ function PlayerHelper(lastfm)
     };
 
     this.vk = {
-        tracksForPlaylist: function (records) {
-            records = jQuery.isEmptyObject(records) ? [] : records;
+        isOwerOf: function (track_item) {
+            return track_item.owner_id == vk_query.session.data.user_id;
+        },
 
-            for (var i in records) {
-                var track = records[i];
+        callAudioItemMethod: function (method, item, callback) {
+            callback = callback || function () {};
 
-                track.id     = track.aid;
-                track.artist = decodeHtml(track.artist);
-                track.title  = decodeHtml(track.title);
-            }
+            vk_query.call('audio.' + method, {aid: item.aid, oid: item.owner_id}, {
+                success: function (result) { callback(true, result); },
+                error: function (error) { callback(false, error); }
+            });
+        },
 
-            return records;
+        addAudio: function (item, callback) {
+            if (self.vk.isOwerOf(item))
+                callback && callback(false);
+            else
+                self.vk.callAudioItemMethod('add', item, callback);
+        },
+
+        deleteAudio: function (item, callback) {
+            if (self.vk.isOwerOf(item))
+                self.vk.callAudioItemMethod('delete', item, callback);
+            else
+                callback && callback(false);
+        },
+
+        restoreAudio: function (item, callback) {
+            if (self.vk.isOwerOf(item))
+                self.vk.callAudioItemMethod('restore', item, callback);
+            else
+                callback && callback(false);
         }
     };
 }

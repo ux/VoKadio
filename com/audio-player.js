@@ -27,7 +27,7 @@ AudioPlayer.Utils = {
 
         for (var object_index in arguments)
             for (var key in arguments[object_index])
-                if (arguments[object_index].hasOwnProperty(key))
+                if (arguments[object_index].hasOwnProperty(key) && arguments[object_index][key] !== undefined)
                     cloned_object[key] = arguments[object_index][key];
 
         return cloned_object;
@@ -44,7 +44,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     repeat_mode = repeat_mode || AudioPlayer.Player.REPEAT_PLAYLIST;
 
     var audio = new Audio();
-    audio.autoplay = true;
+    audio.autoplay = false;
     audio.loop     = false;
     audio.preload  = 'auto';
 
@@ -54,11 +54,19 @@ AudioPlayer.Player = function (playorder, repeat_mode)
 
     audio.addEventListener('emptied', function (event) { if ( ! this.paused && this.error) this.play(); });
     audio.addEventListener('stalled', function (event) { if ( ! this.paused) this.play(); });
+    audio.addEventListener('canplay', function (event) {
+        if (history.nowPlaying && history.nowPlaying.original && history.nowPlaying.original.item && history.nowPlaying.original.item.currentTime) {
+            this.currentTime = history.nowPlaying.original.item.currentTime;
+            delete history.nowPlaying.original.item.currentTime;
+        }
+
+        this.play();
+    });
 
     audio.addEventListener('ended', function (event) {
         if (repeat_mode == AudioPlayer.Player.REPEAT_TRACK)
             setTimeout(function () { self.playFromHistory(history.nowPlaying); }, 0);
-        else if (current_playlist && !(repeat_mode == AudioPlayer.Player.REPEAT_NONE && history_current_index() >= history.items.length - 1 && current_playlist.nowPlaying && (current_playlist.nowPlaying.index == null ? current_playlist.nowPlaying.prev_index : current_playlist.nowPlaying.index) >= current_playlist.items.length - 1))
+        else if (current_playlist && ! (repeat_mode == AudioPlayer.Player.REPEAT_NONE && playorder == AudioPlayer.Player.PLAYORDER_NORMAL && history_current_index() >= history.items.length - 1 && current_playlist.nowPlaying && (current_playlist.nowPlaying.index == null ? current_playlist.nowPlaying.prev_index : current_playlist.nowPlaying.index) >= current_playlist.items.length - 1))
             setTimeout(function () { self.next(); }, 0);
     });
 
@@ -197,8 +205,10 @@ AudioPlayer.Player = function (playorder, repeat_mode)
             playlist = this.getPlaylist(playlist);
             item = playlist.getItem(item);
 
-            if (item && item.ended)
+            if (item && item.ended) {
+                current_playlist = playlist;
                 return this.next(playlist);
+            }
             else if (item === undefined)
                 return null;
             else if (history.nowPlaying && history.nowPlaying.original && playlist == history.nowPlaying.original.playlist && item == playlist.nowPlaying) {
@@ -210,10 +220,14 @@ AudioPlayer.Player = function (playorder, repeat_mode)
                 }
             }
             else {
+                var time = item.currentTime, ended = item.ended;
+
                 var now_playing = this.play(item, playlist, false);
 
-                if (now_playing && playlist.nowPlaying.currentTime)
-                    audio.currentTime = playlist.nowPlaying.currentTime;
+                if (now_playing) {
+                    (time > 0) && (now_playing.original.item.currentTime = time);
+                    (ended)    && (now_playing.original.item.ended = true);
+                }
 
                 return now_playing;
             }
@@ -244,6 +258,24 @@ AudioPlayer.Player = function (playorder, repeat_mode)
             return null;
     };
 
+    this.togglePlayFromHistory = function(item)
+    {
+        item = history.getItem(item);
+
+        if (item == null)
+            return this.next();
+        else if (item == history.nowPlaying) {
+            if (audio.ended)
+                return this.next();
+            else {
+                audio.paused ? audio.play() : audio.pause();
+                return history.nowPlaying;
+            }
+        }
+        else
+            return this.playFromHistory(item);
+    };
+
     this.playFromHistory = function (item)
     {
         if ((audio.ended || audio.currentTime) && history.nowPlaying && history.nowPlaying.original) {
@@ -260,7 +292,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
         var now_playing = history.play(item);
 
         if (now_playing) {
-            if (now_playing.original)
+            if (now_playing.original && now_playing.original.item)
                 now_playing.original.playlist.play(now_playing.original.item);
 
             audio.src = now_playing.url;
@@ -314,7 +346,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
 
     function history_current_index(for_next_calculation)
     {
-        return history.nowPlaying ? (history.nowPlaying.index == null ? history.nowPlaying.prev_index - (for_next_calculation ? 1 : 0) : history.nowPlaying.index) : history.items.length - 1;
+        return history.nowPlaying ? (history.nowPlaying.index == null ? history.nowPlaying.prev_index - (for_next_calculation ? 1 : 0) : history.nowPlaying.index) : -1;
     }
 
     function history_original_item_getter()
@@ -345,8 +377,7 @@ AudioPlayer.Playlist = function (id)
             this.addToPlaylist(new_items[i]);
 
         if (now_playing) {
-            var time = now_playing.currentTime;
-            var ended = now_playing.ended;
+            var time = now_playing.currentTime, ended = now_playing.ended;
 
             var new_now_playing = this.getItem(now_playing);
 
@@ -357,8 +388,8 @@ AudioPlayer.Playlist = function (id)
                 now_playing.index = null;
             }
 
-            if (time > 0) now_playing.currentTime = time;
-            if (ended)    now_playing.ended = true;
+            (time > 0) && (now_playing.currentTime = time);
+            (ended)    && (now_playing.ended = true);
         }
 
         this.dispatchEvent({type: AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED,
@@ -388,7 +419,7 @@ AudioPlayer.Playlist = function (id)
     {
         item = this.getItem(item);
 
-        if (item && item.index) {
+        if (item && item.index != null) {
             var i;
 
             items.splice(item.index, 1);
@@ -415,12 +446,46 @@ AudioPlayer.Playlist = function (id)
             return null;
     };
 
+    this.updateItem = function(old_item, new_original_item)
+    {
+        if ( ! (old_item = this.getItem(old_item)))
+            return null;
+
+        var i, new_items = [];
+
+        for (i in items_ids[old_item.id]) {
+            var item = items_ids[old_item.id][i];
+
+            var new_item = AudioPlayer.Utils.cloneFrom(new_original_item, {
+                index: item.index,
+                currentTime: item.currentTime,
+                ended: item.ended
+            });
+
+            new_items.push(new_item);
+            items[new_item.index] = new_item;
+
+            item.prev_index = item.index;
+            item.index = null;
+
+            if (item == now_playing)
+                now_playing = new_item;
+        }
+
+        delete items_ids[old_item.id];
+        items_ids[new_original_item.id] = new_items;
+
+        return old_item;
+    };
+
     this.getItem = function (item)
     {
         if (item == undefined)
             return now_playing;
         else if (typeof item == 'object') {
-            if (item.index != null && items_ids[item.id]) {
+            if (item.index != undefined && item.id != undefined) {
+                if (items_ids[item.id] == undefined)
+                    return undefined;
                 if (items[item.index] && items[item.index].id == item.id)
                     return items[item.index];
                 else {
@@ -433,10 +498,10 @@ AudioPlayer.Playlist = function (id)
                     return items[closest_index];
                 }
             }
-            else if (item.index != null)
-                return items[item.index];
             else if (items_ids[item.id])
                 return items_ids[item.id][0];
+            else if (item.index != undefined)
+                return items[item.index];
             else
                 return undefined;
         }
@@ -450,7 +515,6 @@ AudioPlayer.Playlist = function (id)
     {
         var new_now_playing = this.getItem(item);
 
-        //if (new_now_playing == now_playing) return now_playing; // I believe this is unnecessary. Moreover it could be buggy.
         if (new_now_playing) {
             if (now_playing) {
                 delete now_playing.currentTime;

@@ -21,77 +21,68 @@
 
 function DynamicListView(list_element, draw_item_callback)
 {
-    var item_height, scrollbar_element, scrollbar_height, height_element,
+    var item_height, scrollbar_element, scrollbar_height, scrollbar_height_element,
         self = this, activated = false, items_count = 0,
-        max_visible_items_count = 0, scroll_index = null, new_items_count = null,
-        document = list_element.ownerDocument,
+        max_visible_items_count = 0, scroll_index = null, current_scroll_top = 0,
+        new_items_count = null, document = list_element.ownerDocument,
         list_item_element_pattern = list_element.children[0] || document.createElement('li'),
         scrollbar_width = get_scrollbar_width();
 
     list_element.innerText = '';
     create_scrollbar();
 
-    scrollbar_element.addEventListener('scroll', function (event) { self.refresh(); });
+    scrollbar_element.addEventListener('scroll', function (event) {
+        current_scroll_top = scrollbar_element.scrollTop;
+        self.refresh();
+    });
+
     list_element.addEventListener('mousewheel', function (event) {
         event.stopPropagation();
         scrollbar_element.dispatchEvent(event);
     });
 
+    this.__defineGetter__('listElement', function () { return list_element; });
+
     this.__defineGetter__('itemsCount', function () { return items_count; });
     this.__defineSetter__('itemsCount', function (count) {
-        if (activated) {
-            items_count = count;
-
-            height_element.style.height = (items_count > 0 ? items_count * item_height - 1 : 0) + 'px';
-
-            var list_items_count = items_count < max_visible_items_count ? items_count : max_visible_items_count;
-
-            if (list_items_count > list_element.children.length - 1)
-                while (list_element.children.length - 1 != list_items_count)
-                    list_element.appendChild(jQuery(list_item_element_pattern).clone(true)[0]);
-
-            else if (list_items_count < list_element.children.length - 1)
-                while (list_element.children.length - 1 != list_items_count)
-                    list_element.removeChild(list_element.children[0]);
-
+        if (set_items_count(count) == count)
             this.refresh();
-
-            new_items_count = null;
-        }
-        else
-            new_items_count = count;
     });
+
+    this.__defineGetter__('active', function () { return activated && !!get_item_height(); });
+
+    this.__defineGetter__('minIndex', function () { return get_min_item_index(); });
+    this.__defineGetter__('maxIndex', function () { return get_max_item_index(); });
+
+    this.__defineGetter__('maxVisibleItems', function () { return max_visible_items_count; });
 
     this.activate = function ()
     {
-        var item = list_element.appendChild(list_item_element_pattern), $item = jQuery(item);
-
-        item_height = parseInt(($item.outerHeight(true) + $item.outerHeight(false)) / 2);
-        scrollbar_height = jQuery(scrollbar_element).height();
-
-        if ( ! item_height) {
-            item_height = undefined;
+        if ( ! (item_height = get_item_height()))
             throw new Error("List item height can not be retrieved. Can not activate list.");
-        }
 
-        max_visible_items_count = parseInt(scrollbar_height / item_height) +
-                                  (scrollbar_height % item_height > 0) + 1;
-
-        list_element.removeChild(item);
+        scrollbar_height = jQuery(scrollbar_element).height();
+        max_visible_items_count = parseInt(scrollbar_height / item_height) + (scrollbar_height % item_height > 0) + 1;
 
         activated = true;
 
-        if (new_items_count != null || scroll_index != null) {
-            if (new_items_count != null) this.itemsCount = new_items_count;
-            if (scroll_index != null) this.scroll(scroll_index);
-        }
+        (new_items_count == null) ? update_list_items_count() : set_items_count(new_items_count);
+
+        if (scroll_index != null && scrollbar_element.scrollTop != this.scrollTo(scroll_index)) {}
+        else if (scrollbar_element.scrollTop != current_scroll_top)
+            scrollbar_element.scrollTop = current_scroll_top;
         else
             this.refresh();
     };
 
+    this.deactivate = function ()
+    {
+        activated = false;
+    };
+
     this.refresh = function ()
     {
-        if ( ! activated)
+        if ( ! this.active)
             return;
 
         var min_item_index = get_min_item_index(), max_item_index = get_max_item_index();
@@ -114,7 +105,7 @@ function DynamicListView(list_element, draw_item_callback)
 
     this.getItem = function (item_index, callback)
     {
-        if ( ! activated)
+        if ( ! this.active)
             return;
 
         var min_item_index = get_min_item_index();
@@ -125,14 +116,54 @@ function DynamicListView(list_element, draw_item_callback)
 
     this.scrollTo = function (item_index)
     {
-        if (activated) {
-            var scroll_top = parseInt(item_index * item_height - (scrollbar_height - item_height) / 2);
-            scrollbar_element.scrollTop = scroll_top > 0 ? scroll_top : 0;
+        if (this.active) {
+            scrollbar_element.scrollTop = parseInt(item_index * item_height - (scrollbar_height - item_height) / 2);
+            current_scroll_top = scrollbar_element.scrollTop;
             scroll_index = null;
         }
         else
             scroll_index = item_index;
+
+        return scrollbar_element.scrollTop;
     };
+
+    function set_items_count(count)
+    {
+        if (count != null) {
+            if (activated) {
+                items_count = count, new_items_count = null;
+                update_list_items_count();
+            }
+            else
+                new_items_count = count;
+        }
+
+        return items_count;
+    }
+
+    function update_list_items_count()
+    {
+        scrollbar_height_element.style.height = (items_count > 0 ? items_count * item_height - 1 : 0) + 'px';
+
+        var list_items_count = items_count < max_visible_items_count ? items_count : max_visible_items_count;
+
+        if (list_items_count > list_element.children.length - 1)
+            while (list_element.children.length - 1 != list_items_count)
+                list_element.appendChild(jQuery(list_item_element_pattern).clone(true)[0]);
+
+        else if (list_items_count < list_element.children.length - 1)
+            while (list_element.children.length - 1 != list_items_count)
+                list_element.removeChild(list_element.children[1]);
+    }
+
+    function get_item_height()
+    {
+        var item = list_element.appendChild(list_item_element_pattern), $item = jQuery(item);
+        var item_height = parseInt(($item.outerHeight(false) + $item.outerHeight(true)) / 2);
+        list_element.removeChild(item);
+
+        return item_height;
+    }
 
     function get_min_item_index()
     {
@@ -167,8 +198,8 @@ function DynamicListView(list_element, draw_item_callback)
         scrollbar_element.style.overflowY = 'scroll';
         list_element.appendChild(scrollbar_element);
 
-        height_element = create_min_div();
-        scrollbar_element.appendChild(height_element);
+        scrollbar_height_element = create_min_div();
+        scrollbar_element.appendChild(scrollbar_height_element);
     }
 
     function get_scrollbar_width()

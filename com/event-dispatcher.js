@@ -29,10 +29,10 @@ function EventDispatcher()
             event_listeners[type] = [];
 
         if (get_event_Listener_index(type, listener) === false) {
-            if (typeof listener == 'function')
+            if (typeof listener.call == 'function')
                 event_listeners[type].push(listener);
             else
-                throw new Error('Incorrect event listener type (listener must be a function).');
+                throw new Error("Incorrect event listener. Listener must be a function.");
         }
     };
 
