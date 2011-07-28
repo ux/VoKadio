@@ -2,39 +2,39 @@
 <head>
     <title>VoKadio Notification Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <link rel="stylesheet" type="text/css" href="/css/main.css" />
-
+    <link rel="stylesheet" type="text/css" href="/css/application.css" />
     <script type="text/javascript" src="/lib/jquery.js"></script>
+    <script type="text/javascript" src="/lib/jquery-ui.js"></script>
 </head>
 
-<body>
-<div id="notification">
-    <div id="now-playing">
-        <div id="album-art">
-            <img src="images/album-art.png" alt="" />
-        </div><!--
+<body id="notificator">
+    <span class="artist-name">Muse</span><span id="album-container"><span class="splitter"> / </span><span class="album">The Resistance</span></span>
+    <h1><span>Exogenesis: Symphony, Part 2: Cross-Polation</span></h1>
 
-     --><div id="track-info">
-            <h1 class="title"></h1>
+    <div id="progress-bar"></div>
 
-            <ul id="metadata">
-                <li id="artist"></li><!--
-             --><li id="album"></li>
-            </ul>
+    <div id="progress-time"><span id="current-time">1:25</span><span class="splitter">/</span><span id="track-length">3:56</span></div>
 
-            <div id="controls">
-                <ul id="buttons">
-                    <li><a class="previous" href="#previous" onclick="bp.player.previous();"></a></li>
-                    <li><a class="play" href="#toggle-play" onclick="bp.player.togglePlay();"></a></li>
-                    <li><a class="next" href="#next" onclick="bp.player.next();"></a></li>
-                </ul>
-            </div>
-        </div>
+    <a href="#" id="download-track" target="_blank" title="Скачать аудиозапись"></a>
+    <button id="add-track-to-my-audio" type="button"></button>
+
+    <button id="previous-track" type="button"></button>
+
+    <div id="album-wrapper">
+        <img src="/images/no-albumart.png" alt="" />
+        <button id="play-pause" type="button"></button>
     </div>
-</div>
 
-<script type="text/javascript" src="/app/notification.js"></script>
+    <button id="next-track" type="button"></button>
 
+    <button id="repeat" type="button"></button>
+    <button id="shuffle" type="button"></button>
+
+    <div id="volume-wrapper">
+        <button id="volume" type="button"></button>
+        <div id="volume-bar"><div class="scale"></div></div>
+    </div>
+
+    <script type="text/javascript" src="/app/notification.js"></script>
 </body>
 </html>

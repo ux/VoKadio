@@ -107,50 +107,24 @@ input, button
         background: url('../images/sprite.png') no-repeat -160px -120px;
     }
 
-    #repeat:hover
+    #repeat:hover, #repeat.cycle_all:hover
     {
-        width: 49px;
-        height: 49px;
         background-position: -160px -201px;
     }
 
-    #repeat:active
+    #repeat:active, #repeat.cycle_all, #repeat.cycle_all:active
     {
-        width: 49px;
-        height: 49px;
         background-position: -160px -260px;
     }
 
-    #repeat.cycle_one
+    #repeat.cycle_one, #repeat.cycle_one:active
     {
-        width: 49px;
-        height: 49px;
         background-position: -211px -260px;
     }
 
     #repeat.cycle_one:hover
     {
-        background-position: -160px -201px;
-    }
-
-    #repeat.cycle_one:active
-    {
-        background: url('../images/sprite.png') no-repeat -159px -260px;
-    }
-
-    #repeat.cycle_all
-    {
-        background-position: -159px -260px;
-    }
-
-    #repeat.cycle_all:hover
-    {
         background-position: -211px -201px;
-    }
-
-    #repeat.cycle_all:active
-    {
-        background-position: -211px -260px;
     }
 
     #shuffle
@@ -166,7 +140,7 @@ input, button
         background-position: -341px -202px;
     }
 
-    #shuffle:active, #shuffle.shuffle
+    #shuffle:active, #shuffle.shuffle, #shuffle.shuffle:active
     {
         background-position: -341px -259px;
     }
@@ -375,7 +349,7 @@ input, button
         {
             position: absolute;
             content: '';
-            top: 0px;
+            top: 1px;
             left: 1px;
             display: block;
             width: 100%;
@@ -1497,6 +1471,7 @@ body#notificator
     font-size: 10px;
     color: #414141;
     position: relative;
+    overflow: hidden;
 }
 
     #notificator h1
@@ -1539,7 +1514,7 @@ body#notificator
         background-position: -719px 4px;
     }
 
-        #notificator #progress-current
+        #notificator #progress-bar .ui-slider-range
         {
             width: 100%;
             background-position: -718px -76px;
@@ -1555,6 +1530,12 @@ body#notificator
         position: absolute;
         bottom: 6px;
         left: 4px;
+
+        /* iherited from button */
+        border: 0 none;
+        cursor: pointer;
+        vertical-align: top;
+        display: inline-block;
     }
 
     #notificator #add-track-to-my-audio
@@ -1655,17 +1636,17 @@ body#notificator
         background: url('../images/sprite.png') no-repeat -860px -363px;
     }
 
-    #notificator #repeat:hover
+    #notificator #repeat:hover, #notificator #repeat.repeat-all:hover
     {
         background-position: -908px -363px;
     }
 
-    #notificator #repeat:active
+    #notificator #repeat:active, #notificator #repeat.repeat-all, #notificator #repeat.repeat-all:active
     {
         background-position: -943px -363px;
     }
 
-    #notificator #repeat.repeat-one
+    #notificator #repeat.repeat-one, #notificator #repeat.repeat-one:active
     {
         background-position: -943px -400px;
     }
@@ -1674,12 +1655,6 @@ body#notificator
     {
         background-position: -908px -400px;
     }
-
-    #notificator #repeat.repeat-one:active
-    {
-        background-position: -943px -363px;
-    }
-
 
     #notificator #shuffle
     {
@@ -1750,5 +1725,10 @@ body#notificator
         right: -1px;
         left: auto;
         background-position: -656px -587px;
+    }
+
+    #notificator  #volume-bar .scale
+    {
+        top: 42px;
     }
 /*/notificator styles*/

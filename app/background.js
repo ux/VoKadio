@@ -125,16 +125,9 @@ function checkLastfmSession()
 
 (function init_notification()
 {
-    var has_notification = false;
-
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
-        if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && !has_notification) {
-            has_notification = true;
-
-            var notification = webkitNotifications.createHTMLNotification('/notification.html');
-            notification.onclose = function () { has_notification = false; };
-            notification.show();
-        }
+        if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && chrome.extension.getViews({type:"notification"}).length == 0)
+            webkitNotifications.createHTMLNotification('/notification.html').show();
     });
 }());
 
