@@ -254,7 +254,7 @@ if (bp.options.get('notification.show-behavior') != 'show-always')
 
     (function init_time()
     {
-        var slider_element = $("#progress-bar").slider({
+        var slider_element = $("#progress-bar .slider").slider({
             orientation : 'horizontal',
             range       : 'min',
             min         : 0,

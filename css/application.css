@@ -1514,10 +1514,21 @@ body#notificator
         background-position: -719px 4px;
     }
 
+        #notificator #progress-bar .slider
+        {
+            width: 260px;
+            position: relative;
+        }
+
         #notificator #progress-bar .ui-slider-range
         {
             width: 100%;
             background-position: -718px -76px;
+        }
+
+        #notificator #progress-bar .ui-slider-handle
+        {
+            margin-left: 0px;
         }
 
         #notificator #progress-time
