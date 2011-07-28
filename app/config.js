@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const EXTENSION_NAME = "VoKadio 2.0";
+const EXTENSION_NAME = "VoKadio 2.1";
 
 const VK_APP_ID    = 1918960;
 const VK_SETTINGS  = 10;
