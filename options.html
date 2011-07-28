@@ -4,16 +4,167 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <style type="text/css">
-
-        #options label {
-            display: inline-block;
-            width: 300px;
+        html, body, div, h1, h2, h3, ul, ol, li, p, input, blockquote, form, fieldset, button
+        {
+            margin: 0;
+            padding: 0;
         }
 
-        #options>dt>* {
-            display: inline-block;
-            vertical-align: middle;
-            margin: 5px;
+        body
+        {
+            background: #ebebeb url('/images/background.png') no-repeat 100% 0;
+            font: normal 16px Arial, sans-serif;
+        }
+
+        #container
+        {
+            width: 0.6132%;
+            min-width: 785px;
+            margin: 0 auto;
+            padding: 32px 0;
+        }
+
+        #content
+        {
+            margin: 30px 0 0;
+        }
+
+        .box
+        {
+            background: rgba(255,255, 255, 0.66);
+            padding: 5px 7.4% 40px 7.4%;
+            font-size: 13px;
+            border-radius: 3px;
+            margin: 0 0 12px;
+        }
+
+            .box .section
+            {
+                margin: 30px 0 0;
+            }
+
+                .box h2
+                {
+                    margin: 0 0 14px;
+                }
+
+                .box .group
+                {
+                    margin: 4px 0 8px;
+                }
+
+                .box .label *
+                {
+                    vertical-align: middle;
+                }
+
+                    .box h2
+                    {
+                        font-size: 18px;
+                        padding: 0 0 3px;
+                        border-bottom: 1px solid #bebebe;
+                    }
+
+                    .box ul
+                    {
+                        list-style-type: none;
+                    }
+
+                        .box li
+                        {
+                            margin: 0 0 5px;
+                        }
+
+                .disclaimer
+                {
+                    background: rgba(255, 228, 0, 0.49);
+                    display: block;
+                    text-align: center;
+                    width: 90%;
+                    color: #000;
+                    font-size: 30px;
+                    font-weight: 900;
+                    text-decoration: none;
+                    padding: 30px 5%;
+                    border-radius: 3px;
+                    margin: 0 0 -1px;
+                    position: relative;
+                }
+
+                    .disclaimer:after
+                    {
+                        position: absolute;
+                        top: 100%;
+                        left: 50%;
+                        margin: 0 0 0 -7px;
+                        width: 14px;
+                        height: 11px;
+                        background: url('/images/sprite.png') no-repeat -246px -750px;
+                        content: '';
+                        display: block;
+                    }
+
+                    .disclaimer span
+                    {
+                        border-bottom: 1px dashed #000;
+                    }
+
+                    .disclaimer:hover span
+                    {
+                        border: 0 none;
+                    }
+
+        #donate-box
+        {
+            padding-top: 30px;
+        }
+
+            #donate-box p
+            {
+                font-size: 16px;
+                text-indent: 44px;
+            }
+
+            #donate-box h3
+            {
+                margin: 40px 0 20px;
+                font-size: 24px;
+            }
+
+            #donate
+            {
+                margin: 0 0 0 44px;
+            }
+
+                #donate button
+                {
+                    margin: 0px 10px 30px 0;
+                }
+
+                #donate-now button
+                {
+                    margin-left: 10px;
+                }
+
+            .box hr
+            {
+                margin: 40px 0 30px;
+            }
+
+            #donate-box ul
+            {
+                margin: 0 0 0 44px;
+            }
+
+    #footer
+    {
+        margin-top: 30px;
+    }
+
+        #footer h1
+        {
+            text-align: center;
+            font-size: 30px;
         }
 
     </style>
@@ -22,34 +173,73 @@
 </head>
 
 <body>
+    <div id="container">
+        <div id="header">
+            <img id="logo" src="/images/logo.png" alt="Vokadio" />
+        </div><!--/header-->
 
-<dl id="options">
-    <dt>
-        <img src="icons/48x48.png" alt="VoKadio" />
-        <h1>Настройка VoKadio</h1>
-    </dt>
+        <div id="content">
+            <div class="box">
+                <div class="section">
+                    <h2>Настройки</h2>
 
-    <dd>
-        <ul>
-            <li>
-                <label for="notification-show-behavior">Как показывать окно уведомления?</label>
+                    <div class="group">
+                        <label><input id="use-lastfm" type="checkbox" /> Скробблинг на Last.fm</label>
+                    </div>
 
-                <select id="notification-show-behavior">
-                    <option value="hide">Не показывать</option>
-                    <option value="show-on-update">Показать на несколько секунд (по умолчанию)</option>
-                    <option value="show-always">Всегда показывать</option>
-                </select>
-            </li>
+                    <div class="group">
+                        <label>
+                            Как показывать окно уведомления?
+                            <select id="notification-show-behavior">
+                                <option value="hide">Не показывать</option>
+                                <option value="show-on-update">Показать на несколько секунд</option>
+                                <option value="show-always">Всегда показывать</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
 
-            <li>
-                <input id="use-lastfm" type="checkbox" />
-                <label for="use-lastfm">last.fm скробблинг</label>
-            </li>
-        </ul>
-    </dd>
-</dl>
+                <div class="section">
+                    <h2>Горячие клавиши</h2>
+                    <ul>
+                        <li><strong>Ctrl+Пробел</strong> &mdash; Играть / Пауза</li>
+                        <li><strong>Ctrl+Вправо</strong> &mdash; Следующий трек</li>
+                        <li><strong>Ctrl+Влево</strong> &mdash; Предыдущий трек</li>
+                        <li><strong>Ctrl+Вверх</strong> &mdash; Громче</li>
+                        <li><strong>Ctrl+Вниз</strong> &mdash; Тише</li>
+                        <li><strong>Ctrl+F</strong> &mdash; Поиск по треклисту</li>
+                    </ul>
+                </div>
+            </div>
 
-<script type="text/javascript" src="/app/options.js"></script>
+            <a href="#donate-box" class="disclaimer" name="donate"><span>Ваша поддержка может помочь развитию данного проекта</span></a>
+            <div id="donate-box" class="box">
+                <p>Your support of any amount helps us stay on the air, providing free music that can't be found anywhere else. You can donate as little as $2.99 or as much as you'd like. Donating $10-$20 really, really helps us! We accept all major credit cards as well as PayPal.</p>
+                <h3>Now you can support us with PayPal or Credit card!</h3>
+                <div id="donate">
+                    <button type="button">$2.99 donation</button><!--
+                 --><button type="button">$9.99 donation</button><!--
+                 --><button type="button">$12.99 donation</button><!--
+                 --><button type="button">$22.99 donation</button><!--
+                 --><button type="button">$42.99 donation</button>
+                    <div id="donate-now">
+                        <label>Amount: <input type="text" value="10"/>$</label><button type="button">Donate</button>
+                    </div>
+                </div>
+                <hr/>
+                <h3>Other payment methods:</h3>
+                <ul>
+                    <li><strong>Yandex.Money</strong> 41001903998889</li>
+                    <li><strong>Webmoney</strong> Z466954938255, R296708374313</li>
+                </ul>
+            </div>
+        </div><!--/content-->
 
+        <div id="footer">
+            <h1>Спасибо!</h1>
+        </div><!--/footer-->
+    </div>
+
+    <script type="text/javascript" src="/app/options.js"></script>
 </body>
 </html>
