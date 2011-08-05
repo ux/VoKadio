@@ -26,7 +26,7 @@ VkAPI.DEBUG = DEBUG;
 var vk_session = new VkAPI.Session(VK_APP_ID, VK_SETTINGS, function (session, silent) {
     var session_updated = session.updatedAt;
 
-    var auth_url = buildUri('http://api.vkontakte.ru/oauth/authorize', {
+    var auth_url = buildUri('http://api.vk.com/oauth/authorize', {
         client_id: session.appId,
         scope: session.settings,
         response_type: 'token',
