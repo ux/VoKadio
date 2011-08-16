@@ -38,7 +38,7 @@ function DynamicListView(list_element, draw_item_callback)
 
     list_element.addEventListener('mousewheel', function (event) {
         event.stopPropagation();
-        scrollbar_element.dispatchEvent(event);
+        scrollbar_element.scrollTop -= event.wheelDelta;
     });
 
     this.__defineGetter__('listElement', function () { return list_element; });
