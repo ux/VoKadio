@@ -79,6 +79,8 @@ VK.Audio = function (owner_id, player, query)
             for (i in (albums_list = albums_list.slice(1))) {
                 var album_obj = albums_list[i];
 
+                album_obj.title = VK.Utils.decodeHTML(album_obj.title);
+
                 if (album = self.getAlbum(album_obj.album_id)) {
                     album.title = album_obj.title;
                     album.index = albums_count;
