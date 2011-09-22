@@ -221,11 +221,17 @@ if (bp.options.get('notification.show-behavior') != 'show-always')
         {
             var now_playing = bp.player.history.nowPlaying;
 
-            set_metadata(now_playing.title, now_playing.artist, null, {}, null);
-            bp.helper.lastfm.getTrackInfo(now_playing.title, now_playing.artist, set_metadata);
+            if (now_playing) {
+                set_metadata(now_playing.title, now_playing.artist, null, {}, null);
+                bp.helper.lastfm.getTrackInfo(now_playing.title, now_playing.artist, set_metadata);
 
-            $("#download-track")[0].href = now_playing.url;
-            $("#add-track-to-my-audio").toggle( ! bp.helper.vk.isOwerOf(now_playing));
+                $("#download-track")[0].href = now_playing.url;
+                $("#add-track-to-my-audio").toggle( ! bp.helper.vk.isOwerOf(now_playing));
+
+                $("#track-container").css('visibility', 'visible');
+            }
+            else
+                $("#track-container").css('visibility', 'hidden');
         }
 
         function set_metadata(title, artist, album, images, largest_image, track_hash)

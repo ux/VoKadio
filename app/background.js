@@ -125,10 +125,18 @@ function checkLastfmSession()
 
 (function init_notification()
 {
+    if (options.get('notification.show-behavior') == 'show-always')
+        show_notification();
+
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
         if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && chrome.extension.getViews({type:"notification"}).length == 0)
-            webkitNotifications.createHTMLNotification('/notification.html').show();
+            show_notification();
     });
+
+    function show_notification()
+    {
+        webkitNotifications.createHTMLNotification('/notification.html').show();
+    }
 }());
 
 (function init_popup_icon()

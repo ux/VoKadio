@@ -23,7 +23,7 @@
         {"matches": ["http://*/*", "https://*/*"], "js": ["app/hotkeys.js"], "run_at": "document_start"}
     ],
 
-    "permissions": ["notifications", "https://api.vk.com/", "http://ws.audioscrobbler.com/"],
+    "permissions": ["notifications", "background", "https://api.vk.com/", "http://ws.audioscrobbler.com/"],
 
     "minimum_chrome_version": "9"
 }
