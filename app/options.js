@@ -19,16 +19,6 @@
 
 var bp = chrome.extension.getBackgroundPage();
 
-(function init_notification_option()
-{
-    $('#notification-show-behavior').val(bp.options.get('notification.show-behavior', 'show-on-update'));
-
-    $('#notification-show-behavior').change(function () {
-        bp.options.set('notification.show-behavior', $(this).val());
-    });
-}());
-
-
 (function init_lastfm_option()
 {
     $('#use-lastfm')[0].checked = bp.options.get('lastfm', false);
@@ -38,5 +28,23 @@ var bp = chrome.extension.getBackgroundPage();
     });
 
     $(window).unload(function () { bp.checkLastfmSession(); });
+}());
+
+(function init_disable_hotkeys_option()
+{
+    $('#disable-hotkeys')[0].checked = bp.options.get('hotkeys.disabled', false);
+
+    $('#disable-hotkeys').change(function () {
+        this.checked ? bp.options.set('hotkeys.disabled', true) : bp.options.delete('hotkeys.disabled');
+    });
+}());
+
+(function init_notification_option()
+{
+    $('#notification-show-behavior').val(bp.options.get('notification.show-behavior', 'show-on-update'));
+
+    $('#notification-show-behavior').change(function () {
+        bp.options.set('notification.show-behavior', $(this).val());
+    });
 }());
 

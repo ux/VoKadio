@@ -193,6 +193,8 @@ function checkLastfmSession()
 (function init_global_hotkeys()
 {
     chrome.extension.onRequest.addListener(function(request) {
+        if (options.get('hotkeys.disabled', false)) return;
+
         switch (request.command) {
             case 'toggle-play':
                 player.togglePlay();

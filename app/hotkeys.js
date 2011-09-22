@@ -18,7 +18,11 @@
  */
 
 document.addEventListener('keydown', function (event) {
-    if (event.ctrlKey && document.activeElement.tagName != 'INPUT' && document.activeElement.tagName != 'TEXTAREA' && document.activeElement.getAttribute('contenteditable') == null) {
+    if (document.activeElement.tagName == 'INPUT' ||
+        document.activeElement.tagName == 'TEXTAREA' ||
+        document.activeElement.getAttribute('contenteditable')) return;
+
+    if (event.ctrlKey) {
         switch (event.keyCode) {
             case 32: // Space
                 chrome.extension.sendRequest({command: 'toggle-play'});
