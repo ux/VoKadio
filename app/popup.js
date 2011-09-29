@@ -679,10 +679,9 @@ var history_tracklist, my_tracklist, search_tracklist;
 
     search_tracklist = new Tracklist($("#search-view > .tracklist > ol")[0], ['addToHistory', 'download', 'add'], bp.audio_search.playlist);
 
-    elc.add(bp.audio_search.playlist, bp.AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, update_view);
-
     $("#search").click(function () {
         search_tracklist.applyToPlaylist(bp.audio_search.playlist);
+        elc.add(bp.audio_search.playlist, bp.AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED, update_view);
         $search_input.val(bp.audio_search.query);
         activateViewElement(this);
         update_view();
