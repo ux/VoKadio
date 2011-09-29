@@ -26,11 +26,51 @@ var bp  = chrome.extension.getBackgroundPage(),
 //*****************************************************************************
 
 
+function activateTabElement(tab_chooser, title)
+{
+    var $tab_chooser = $(tab_chooser), $tabs_view = $tab_chooser.parents('.content');
+
+    $tab_chooser.parent().find('.active').removeClass('active');
+    $tab_chooser.addClass('active');
+
+    $tabs_view.find('.tab').css('display', 'none');
+    $tabs_view.find('.tab:eq(' + $tab_chooser.index() + ')').css('display', 'block');
+
+    title && $(tab_chooser).text(title);
+}
+
+function activateViewElement(button)
+{
+    $('.content').stop().animate({'opacity' : '0'}, bp.POPUP_VIEW_ACTIVATION_TIME).css({'display' : 'none'});
+    $('.tab-switcher.active').removeClass('active');
+
+    $('#' + button.id + '-view').stop().css({'display' : 'block'}).animate({'opacity' : '1'}, bp.POPUP_VIEW_DEACTIVATION_TIME);
+    $(button).addClass('active');
+
+    bp.popup_active_view = button.id;
+}
+
+function updateCurrentView()
+{
+    $('#' + bp.popup_active_view).click();
+}
+
+
+//*****************************************************************************
+
+
 (function init_player_buttons()
 {
-    $("#previous-track").click(function () { bp.player.previous(); });
-    $("#next-track").click(function () { bp.player.next(); });
     $("#refresh-session").click(function () { bp.vk_session.refresh(); });
+
+    $("#previous-track").click(function () {
+        (bp.player.history.nowPlaying != bp.player.previous()) && updateCurrentView();
+    });
+
+    $("#next-track").click(function () {
+        bp.player.next();
+        updateCurrentView();
+    });
 
     (function init_toggle_play_button()
     {
@@ -166,34 +206,6 @@ var bp  = chrome.extension.getBackgroundPage(),
         }
     }());
 }());
-
-
-//*****************************************************************************
-
-
-function activateTabElement(tab_chooser, title)
-{
-    var $tab_chooser = $(tab_chooser), $tabs_view = $tab_chooser.parents('.content');
-
-    $tab_chooser.parent().find('.active').removeClass('active');
-    $tab_chooser.addClass('active');
-
-    $tabs_view.find('.tab').css('display', 'none');
-    $tabs_view.find('.tab:eq(' + $tab_chooser.index() + ')').css('display', 'block');
-
-    title && $(tab_chooser).text(title);
-}
-
-function activateViewElement(button)
-{
-    $('.content').stop().animate({'opacity' : '0'}, bp.POPUP_VIEW_ACTIVATION_TIME).css({'display' : 'none'});
-    $('.tab-switcher.active').removeClass('active');
-
-    $('#' + button.id + '-view').stop().css({'display' : 'block'}).animate({'opacity' : '1'}, bp.POPUP_VIEW_DEACTIVATION_TIME);
-    $(button).addClass('active');
-
-    bp.popup_active_view = button.id;
-}
 
 
 //*****************************************************************************
@@ -833,5 +845,5 @@ var history_tracklist, my_tracklist, search_tracklist;
 //*****************************************************************************
 
 
-$('#' + bp.popup_active_view).click();
+updateCurrentView();
 
