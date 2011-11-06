@@ -23,12 +23,12 @@ var DEBUG = options.get('debug', false);
 
 VkAPI.DEBUG = DEBUG;
 
-var vk_session = new VkAPI.Session(VK_APP_ID, VK_SETTINGS, function (session, silent) {
+var vk_session = new VkAPI.Session(function (session, silent) {
     var session_updated = session.updatedAt;
 
     var auth_url = buildUri('http://api.vk.com/oauth/authorize', {
-        client_id: session.appId,
-        scope: session.settings,
+        client_id: VK_APP_ID,
+        scope: VK_SETTINGS,
         response_type: 'token',
         display: 'popup',
         redirect_uri: 'http://vokadio.infostyle.com.ua/auth/vk/' + chrome.extension.getURL('').match(/:\/\/(.*)\//)[1]
@@ -48,7 +48,7 @@ var vk_session = new VkAPI.Session(VK_APP_ID, VK_SETTINGS, function (session, si
     });
 });
 
-var vk_query = new VkAPI.Query(vk_session);
+var vk_query = new VkAPI.Query(vk_session, 'https://api.vk.com/method/');
 
 var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET}),
     lastfm_session = null;
