@@ -23,29 +23,40 @@ var DEBUG = options.get('debug', false);
 
 VkAPI.DEBUG = DEBUG;
 
-var vk_session = new VkAPI.Session(function (session, silent) {
-    var session_updated = session.updatedAt;
+const VK_AUTH_URL = buildUri('http://api.vk.com/oauth/authorize', {
+    client_id:     VK_APP_ID,
+    scope:         VK_SETTINGS,
+    response_type: 'token',
+    display:       'popup',
+    redirect_uri:  'http://vokadio.infostyle.com.ua/auth/vk/' + chrome.extension.getURL('').match(/:\/\/(.*)\//)[1]
+});
 
-    var auth_url = buildUri('http://api.vk.com/oauth/authorize', {
-        client_id: VK_APP_ID,
-        scope: VK_SETTINGS,
-        response_type: 'token',
-        display: 'popup',
-        redirect_uri: 'http://vokadio.infostyle.com.ua/auth/vk/' + chrome.extension.getURL('').match(/:\/\/(.*)\//)[1]
-    });
-
-    var iframe = $('<iframe src="' + auth_url + '" style="display: none"></iframe>');
-    $('body').append(iframe);
-
-    iframe.load(function () {
-        if ( ! silent && session.updatedAt == session_updated)
-            window.open(auth_url, 'vk-auth-dialog',
-                'left='   + parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2) + ',' +
-                'top='    + parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2) + ',' +
-                'width='  + VK_AUTH_WINDOW_WIDTH + ',' +
-                'height=' + VK_AUTH_WINDOW_HEIGHT);
-        iframe.remove();
-    });
+var vk_session = new VkAPI.Session(function (silent, finished_cb) {
+    if (silent) {
+        $('<iframe></iframe>').attr('src', VK_AUTH_URL).load(function () {
+            $(this).remove();
+            finished_cb();
+        }).appendTo('body');
+    }
+    else {
+        chrome.windows.create({
+            url:     VK_AUTH_URL,
+            left:    parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2),
+            top:     parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2),
+            width:   VK_AUTH_WINDOW_WIDTH,
+            height:  VK_AUTH_WINDOW_HEIGHT,
+            focused: true,
+            type:    'popup'
+        }, function (window) {
+            var removed_listener = function(window_id) {
+                if (window_id == window.id) {
+                    chrome.windows.onRemoved.removeListener(removed_listener);
+                    finished_cb();
+                }
+            };
+            chrome.windows.onRemoved.addListener(removed_listener);
+        });
+    }
 });
 
 var vk_query = new VkAPI.Query(vk_session, 'https://api.vk.com/method/');
