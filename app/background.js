@@ -19,9 +19,7 @@
 
 var options = new Options();
 
-var DEBUG = options.get('debug', false);
-
-VkAPI.DEBUG = DEBUG;
+const DEBUG = options.get('debug', false);
 
 const VK_AUTH_URL = buildUri('http://api.vk.com/oauth/authorize', {
     client_id:     VK_APP_ID,
@@ -31,6 +29,8 @@ const VK_AUTH_URL = buildUri('http://api.vk.com/oauth/authorize', {
     redirect_uri:  'http://vokadio.infostyle.com.ua/auth/vk/' + chrome.extension.getURL('').match(/:\/\/(.*)\//)[1]
 });
 
+VkAPI.logger.debugMode = DEBUG;
+
 var vk_session = new VkAPI.Session(function (silent, finished_cb) {
     if (silent) {
         $('<iframe></iframe>').attr('src', VK_AUTH_URL).load(function () {
@@ -39,23 +39,29 @@ var vk_session = new VkAPI.Session(function (silent, finished_cb) {
         }).appendTo('body');
     }
     else {
-        chrome.windows.create({
-            url:     VK_AUTH_URL,
-            left:    parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2),
-            top:     parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2),
-            width:   VK_AUTH_WINDOW_WIDTH,
-            height:  VK_AUTH_WINDOW_HEIGHT,
-            focused: true,
-            type:    'popup'
-        }, function (window) {
-            var removed_listener = function(window_id) {
-                if (window_id == window.id) {
-                    chrome.windows.onRemoved.removeListener(removed_listener);
-                    finished_cb();
+        chrome.windows.create(
+            {
+                url:     VK_AUTH_URL,
+                left:    parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2),
+                top:     parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2),
+                width:   VK_AUTH_WINDOW_WIDTH,
+                height:  VK_AUTH_WINDOW_HEIGHT,
+                focused: true,
+                type:    'popup'
+            },
+            function (window)
+            {
+                chrome.windows.onRemoved.addListener(removed_listener);
+
+                function removed_listener(window_id)
+                {
+                    if (window_id == window.id) {
+                        chrome.windows.onRemoved.removeListener(removed_listener);
+                        finished_cb();
+                    }
                 }
-            };
-            chrome.windows.onRemoved.addListener(removed_listener);
-        });
+            }
+        );
     }
 });
 
