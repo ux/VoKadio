@@ -41,10 +41,26 @@ var bp = chrome.extension.getBackgroundPage();
 
 (function init_notification_option()
 {
-    $('#notification-show-behavior').val(bp.options.get('notification.show-behavior', 'show-on-update'));
+    $('#notification-show-behavior').val(bp.options.get('notification.show-behavior', bp.NOTIFICATION_DEFAULT_SHOW_BEHAVIOR));
 
     $('#notification-show-behavior').change(function () {
         bp.options.set('notification.show-behavior', $(this).val());
+    });
+}());
+
+(function init_vk_auth_domain_option()
+{
+    $('#vk-auth-domain').val(bp.options.get('vk.auth_domain', bp.VK_DEFAULT_AUTH_DOMAIN));
+
+    $('#vk-auth-domain').change(function () {
+        bp.options.set('vk.auth_domain', $(this).val());
+    });
+
+    $(window).unload(function () {
+        if (bp.vk_query.apiUrl != bp.get_vk_auth_domain().api_url) {
+            bp.vk_query.apiUrl = bp.get_vk_auth_domain().api_url;
+            bp.vk_session.refresh();
+        }
     });
 }());
 

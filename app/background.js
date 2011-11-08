@@ -21,19 +21,24 @@ var options = new Options();
 
 const DEBUG = options.get('debug', false);
 
-const VK_AUTH_URL = buildUri('http://api.vk.com/oauth/authorize', {
-    client_id:     VK_APP_ID,
-    scope:         VK_SETTINGS,
-    response_type: 'token',
-    display:       'popup',
-    redirect_uri:  'http://vokadio.infostyle.com.ua/auth/vk/' + chrome.extension.getURL('').match(/:\/\/(.*)\//)[1]
-});
-
 VkAPI.logger.debugMode = DEBUG;
 
+function get_vk_auth_domain()
+{
+    return VK_AUTH_DOMAINS[options.get('vk.auth_domain', VK_DEFAULT_AUTH_DOMAIN)];
+}
+
 var vk_session = new VkAPI.Session(function (silent, finished_cb) {
+    var vk_auth_url = buildUri(get_vk_auth_domain().auth_url, {
+        client_id:     VK_APP_ID,
+        scope:         VK_SETTINGS,
+        response_type: 'token',
+        display:       'popup',
+        redirect_uri:  'http://vokadio.infostyle.com.ua/auth/vk/' + chrome.extension.getURL('').match(/:\/\/(.*)\//)[1]
+    });
+
     if (silent) {
-        $('<iframe></iframe>').attr('src', VK_AUTH_URL).load(function () {
+        $('<iframe></iframe>').attr('src', vk_auth_url).load(function () {
             $(this).remove();
             finished_cb();
         }).appendTo('body');
@@ -41,7 +46,7 @@ var vk_session = new VkAPI.Session(function (silent, finished_cb) {
     else {
         chrome.windows.create(
             {
-                url:     VK_AUTH_URL,
+                url:     vk_auth_url,
                 left:    parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2),
                 top:     parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2),
                 width:   VK_AUTH_WINDOW_WIDTH,
@@ -65,7 +70,7 @@ var vk_session = new VkAPI.Session(function (silent, finished_cb) {
     }
 });
 
-var vk_query = new VkAPI.Query(vk_session, 'https://api.vk.com/method/');
+var vk_query = new VkAPI.Query(vk_session, get_vk_auth_domain().api_url);
 
 var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET}),
     lastfm_session = null;
@@ -142,11 +147,11 @@ function checkLastfmSession()
 
 (function init_notification()
 {
-    if (options.get('notification.show-behavior') == 'show-always')
+    if (options.get('notification.show-behavior', NOTIFICATION_DEFAULT_SHOW_BEHAVIOR) == 'show-always')
         show_notification();
 
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
-        if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && chrome.extension.getViews({type:"notification"}).length == 0)
+        if (event.nowPlaying && options.get('notification.show-behavior', NOTIFICATION_DEFAULT_SHOW_BEHAVIOR) != 'hide' && chrome.extension.getViews({type:"notification"}).length == 0)
             show_notification();
     });
 
