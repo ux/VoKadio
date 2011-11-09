@@ -43,24 +43,20 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     playorder = playorder || AudioPlayer.Player.PLAYORDER_NORMAL;
     repeat_mode = repeat_mode || AudioPlayer.Player.REPEAT_PLAYLIST;
 
-    var audio = new Audio();
-    audio.autoplay = false;
-    audio.loop     = false;
+    var audio = document.createElement('audio');
     audio.preload  = 'auto';
+    audio.autoplay = true;
+    audio.loop     = false;
 
     var playlists = {}, current_playlist = null, history_playlists = {};
 
     var history = new AudioPlayer.Playlist('history');
 
-    audio.addEventListener('emptied', function (event) { if ( ! this.paused && this.error) this.play(); });
-    audio.addEventListener('stalled', function (event) { if ( ! this.paused) this.play(); });
     audio.addEventListener('canplay', function (event) {
         if (history.nowPlaying && history.nowPlaying.original && history.nowPlaying.original.item && history.nowPlaying.original.item.currentTime) {
             this.currentTime = history.nowPlaying.original.item.currentTime;
             delete history.nowPlaying.original.item.currentTime;
         }
-
-        this.play();
     });
 
     audio.addEventListener('ended', function (event) {
