@@ -11,6 +11,7 @@ body
     padding: 7px 15px;
     background: #e6e6e6;
     font: normal 16px Tahoma, 'Droid Sans', Geneva, sans-serif;
+    overflow: hidden;
 }
 
 button
