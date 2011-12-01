@@ -226,6 +226,7 @@ if (bp.options.get('notification.show-behavior', bp.NOTIFICATION_DEFAULT_SHOW_BE
                 bp.helper.lastfm.getTrackInfo(now_playing.title, now_playing.artist, set_metadata);
 
                 $("#download-track")[0].href = now_playing.url;
+                $("#download-track")[0].download = bp.helper.common.getDownloadName(now_playing);
                 $("#add-track-to-my-audio").toggle( ! bp.helper.vk.isOwerOf(now_playing));
 
                 $("#track-container").css('visibility', 'visible');
@@ -294,9 +295,8 @@ if (bp.options.get('notification.show-behavior', bp.NOTIFICATION_DEFAULT_SHOW_BE
             slider_element.slider('value', current_time);
             slider_element.slider('option', 'max', duration);
 
-            $time_data.find("#current-time").text(bp.secondsToTime(current_time));
-            $time_data.find("#track-length").text(bp.secondsToTime(duration));
+            $time_data.find("#current-time").text(bp.helper.common.secondsToTime(current_time));
+            $time_data.find("#track-length").text(bp.helper.common.secondsToTime(duration));
         }
     }());
 }());
-

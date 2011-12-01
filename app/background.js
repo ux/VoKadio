@@ -176,7 +176,7 @@ function checkLastfmSession()
 
     player.audio.addEventListener('timeupdate', function (event) {
         chrome.browserAction.setBadgeText({
-            text: (isNaN(this.duration) || this.ended) ? '' : secondsToTime(this.duration - this.currentTime)
+            text: (isNaN(this.duration) || this.ended) ? '' : helper.common.secondsToTime(this.duration - this.currentTime)
         });
     });
 
@@ -257,4 +257,3 @@ $(document).ready(function () { checkLastfmSession(); });
     if ( ! (cached_session && vk_session.updateData(cached_session.data, new Date(cached_session.updated_at))))
         vk_session.refresh(true);
 }());
-

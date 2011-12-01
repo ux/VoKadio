@@ -21,6 +21,21 @@ function PlayerHelper(lastfm, vk_query)
 {
     var self = this;
 
+    this.common = {
+        secondsToTime: function (microtime) {
+            if (isNaN(microtime))
+                return '0:00';
+            else {
+                var seconds = parseInt(microtime % 60);
+                return parseInt(microtime / 60) + ':' + (seconds < 10 ? '0' : '') + seconds;
+            }
+        },
+
+        getDownloadName: function (track) {
+            return track.artist + ' - ' + track.title;
+        }
+    };
+
     this.lastfm = {
         scrobbler: new (function () {
             var now_playing = null;
@@ -177,4 +192,3 @@ function PlayerHelper(lastfm, vk_query)
         }
     };
 }
-

@@ -216,7 +216,7 @@ ContextMenu = {
         this.innerText = "Скачать";
         this.title = "Скачать";
         this.href = item.url;
-        this.target = '_blank';
+        this.download = bp.helper.common.getDownloadName(item);
     },
 
     add: function (item, playlist, tracklist) {
@@ -410,7 +410,7 @@ function Tracklist(tracklist_element, context_menu_actions, binded_playlist)
             }
         }
 
-        $this.find(".time").text(bp.secondsToTime(item.duration));
+        $this.find(".time").text(bp.helper.common.secondsToTime(item.duration));
 
         $this.find(".actions").text('');
         $this.find(".actions").removeClass('active top bottom');
@@ -752,6 +752,7 @@ var history_tracklist, my_tracklist, search_tracklist;
                 bp.helper.lastfm.getTrackInfo(now_playing.title, now_playing.artist, set_metadata);
 
                 $track_info_view.find("#download-track")[0].href = now_playing.url;
+                $track_info_view.find("#download-track")[0].download = bp.helper.common.getDownloadName(now_playing);
                 $track_info_view.find("#add-track-to-my-audio").toggle( ! bp.helper.vk.isOwerOf(now_playing));
                 $track_info_view.find("#track-download-add-controls").show();
             }
@@ -827,8 +828,8 @@ var history_tracklist, my_tracklist, search_tracklist;
             slider_element.slider('value', current_time);
             slider_element.slider('option', 'max', duration);
 
-            $time_data.find("#current-time").text(bp.secondsToTime(current_time));
-            $time_data.find("#track-length").text(bp.secondsToTime(duration));
+            $time_data.find("#current-time").text(bp.helper.common.secondsToTime(current_time));
+            $time_data.find("#track-length").text(bp.helper.common.secondsToTime(duration));
         }
     }());
 
@@ -846,4 +847,3 @@ var history_tracklist, my_tracklist, search_tracklist;
 
 
 updateCurrentView();
-
