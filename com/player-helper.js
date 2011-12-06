@@ -32,7 +32,7 @@ function PlayerHelper(lastfm, vk_query)
         },
 
         getDownloadName: function (track) {
-            return track.artist + ' - ' + track.title;
+            return track.artist + ' - ' + track.title + track.url.replace(/^.+\/.+?\./, '.');
         }
     };
 

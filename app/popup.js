@@ -216,6 +216,7 @@ ContextMenu = {
         this.innerText = "Скачать";
         this.title = "Скачать";
         this.href = item.url;
+        this.target = '_blank';
         this.download = bp.helper.common.getDownloadName(item);
     },
 
