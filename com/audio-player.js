@@ -57,6 +57,8 @@ AudioPlayer.Player = function (playorder, repeat_mode)
             this.currentTime = history.nowPlaying.original.item.currentTime;
             delete history.nowPlaying.original.item.currentTime;
         }
+
+        this.play();
     });
 
     audio.addEventListener('ended', function (event) {
@@ -540,4 +542,3 @@ AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED = 'now-playing-changed';
 AudioPlayer.Playlist.EVENT_PLAYLIST_UPDATED    = 'playlist-updated';
 AudioPlayer.Player.EVENT_PLAYORDER_CHANGED     = 'playorder-changed';
 AudioPlayer.Player.EVENT_REPEAT_MODE_CHANGED   = 'repeat-mode-changed';
-
