@@ -20,13 +20,7 @@
 const EXTENSION_NAME = "VoKadio 2.1";
 
 const VK_APP_ID    = 1918960;
-const VK_SETTINGS  = 'friends,audio';
-
-const VK_AUTH_DOMAINS = {
-    'vkontakte.ru': {auth_url: 'http://api.vkontakte.ru/oauth/authorize', api_url: 'https://api.vkontakte.ru/method/'},
-    'vk.com':       {auth_url: 'http://api.vk.com/oauth/authorize',       api_url: 'https://api.vk.com/method/'}};
-
-const VK_DEFAULT_AUTH_DOMAIN = 'vk.com';
+const VK_SETTINGS  = 8 + 2 + 1024;
 
 const VK_AUTH_WINDOW_WIDTH  = 620;
 const VK_AUTH_WINDOW_HEIGHT = 357;
@@ -43,4 +37,3 @@ const NOTIFICATION_MOUSEOUT_TIMEOUT = 500;
 
 const ICON_ANIMATION_FRAMES = 36;
 const ICON_ANIMATION_SPEED  = 10;
-

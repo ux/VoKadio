@@ -19,41 +19,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function Options(prefix)
+function Options(defaults)
 {
-    prefix = (prefix || 'vokadio').toString();
-
-    this.getKeyFqn = function (key)
-    {
-        return prefix + '.' + key.toString();
-    }
+    this.defaults = defaults || {};
 
     this.get = function (key, default_value)
     {
-        var key_fqn = this.getKeyFqn(key);
-
-        if (localStorage[key_fqn] == undefined)
-            return default_value;
-        else {
-            try {
-                return JSON.parse(localStorage[key_fqn]);
-            }
-            catch (e) {
-                return localStorage[key_fqn];
-            }
+        try {
+            return JSON.parse(localStorage[key]);
+        }
+        catch (e) {
+            return default_value || this.defaults[key];
         }
     }
 
     this.set = function (key, value)
     {
-        localStorage[this.getKeyFqn(key)] = JSON.stringify(value);
+        localStorage[key] = JSON.stringify(value);
 
         return value;
     }
 
     this.delete = function (key)
     {
-        delete localStorage[this.getKeyFqn(key)];
+        delete localStorage[key];
     }
 }
-

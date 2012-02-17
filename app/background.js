@@ -17,19 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var options = new Options();
+var options = new Options({
+    'lastfm': false,
+    'notification.show-behavior': NOTIFICATION_DEFAULT_SHOW_BEHAVIOR,
+    'hotkeys.disabled': false
+});
 
 const DEBUG = options.get('debug', false);
 
 VkAPI.logger.debugMode = DEBUG;
 
-function get_vk_auth_domain()
-{
-    return VK_AUTH_DOMAINS[options.get('vk.auth_domain', VK_DEFAULT_AUTH_DOMAIN)];
-}
-
 var vk_session = new VkAPI.Session(function (silent, finished_cb) {
-    var vk_auth_url = buildUri(get_vk_auth_domain().auth_url, {
+    var vk_auth_url = buildUri('http://api.vk.com/oauth/authorize', {
         client_id:     VK_APP_ID,
         scope:         VK_SETTINGS,
         response_type: 'token',
@@ -70,7 +69,7 @@ var vk_session = new VkAPI.Session(function (silent, finished_cb) {
     }
 });
 
-var vk_query = new VkAPI.Query(vk_session, get_vk_auth_domain().api_url);
+var vk_query = new VkAPI.Query(vk_session, 'https://api.vk.com/method/');
 
 var lastfm = new LastFM({apiKey: LASTFM_API_KEY, apiSecret: LASTFM_API_SECRET}),
     lastfm_session = null;
@@ -147,11 +146,11 @@ function checkLastfmSession()
 
 (function init_notification()
 {
-    if (options.get('notification.show-behavior', NOTIFICATION_DEFAULT_SHOW_BEHAVIOR) == 'show-always')
+    if (options.get('notification.show-behavior') == 'show-always')
         show_notification();
 
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
-        if (event.nowPlaying && options.get('notification.show-behavior', NOTIFICATION_DEFAULT_SHOW_BEHAVIOR) != 'hide' && chrome.extension.getViews({type:"notification"}).length == 0)
+        if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && chrome.extension.getViews({type: 'notification'}).length == 0)
             show_notification();
     });
 
@@ -215,7 +214,7 @@ function checkLastfmSession()
 (function init_global_hotkeys()
 {
     chrome.extension.onRequest.addListener(function(request) {
-        if (options.get('hotkeys.disabled', false)) return;
+        if (options.get('hotkeys.disabled')) return;
 
         switch (request.command) {
             case 'toggle-play':

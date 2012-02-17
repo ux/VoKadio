@@ -59,7 +59,7 @@ function init_notification_close_countdown()
     }
 }
 
-if (bp.options.get('notification.show-behavior', bp.NOTIFICATION_DEFAULT_SHOW_BEHAVIOR) != 'show-always')
+if (bp.options.get('notification.show-behavior') != 'show-always')
     init_notification_close_countdown();
 
 
