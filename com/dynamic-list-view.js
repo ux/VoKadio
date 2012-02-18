@@ -41,6 +41,36 @@ function DynamicListView(list_element, draw_item_callback)
         scrollbar_element.scrollTop -= event.wheelDelta;
     });
 
+    document.addEventListener('keydown', function (event) {
+        if (document.activeElement != document.body) return;
+
+        switch (event.keyCode) {
+            case 38: // Up
+                scrollbar_element.scrollTop -= item_height;
+                break;
+
+            case 40: // Down
+                scrollbar_element.scrollTop += item_height;
+                break;
+
+            case 33: // PageUp
+                scrollbar_element.scrollTop -= scrollbar_height;
+                break;
+
+            case 34: // PageDown
+                scrollbar_element.scrollTop += scrollbar_height;
+                break;
+
+            case 36: // Home
+                scrollbar_element.scrollTop = 0;
+                break;
+
+            case 35: // End
+                scrollbar_element.scrollTop = scrollbar_height_element.offsetHeight;
+                break;
+        }
+    });
+
     this.__defineGetter__('listElement', function () { return list_element; });
 
     this.__defineGetter__('itemsCount', function () { return items_count; });
