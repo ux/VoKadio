@@ -76,11 +76,13 @@ function PlayerHelper(lastfm, vk_query)
             this.stop = function (lastfm_session)
             {
                 if (now_playing && lastfm_session) {
+                    var track = now_playing;
+
                     this.pause();
 
-                    if (now_playing.duration > 30 && (now_playing.play_duration >= now_playing.duration / 2 || now_playing.play_duration >= 4 * 60))
-                        track_to_params(now_playing, function (params) {
-                            lastfm.track.scrobble(jQuery.extend(params, {timestamp: parseInt(now_playing.started_at.getTime() / 1000)}), lastfm_session);
+                    if (track.duration > 30 && (track.play_duration >= track.duration / 2 || track.play_duration >= 4 * 60))
+                        track_to_params(track, function (params) {
+                            lastfm.track.scrobble(jQuery.extend(params, {timestamp: parseInt(track.started_at.getTime() / 1000)}), lastfm_session);
                         });
                 }
 
