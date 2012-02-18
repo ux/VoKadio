@@ -38,7 +38,9 @@ function PlayerHelper(lastfm, vk_query)
 
     this.lastfm = {
         scrobbler: new (function () {
-            var now_playing = null;
+            var now_playing = null, self = this;
+
+            this.autocorrect = true;
 
             this.start = function (track)
             {
@@ -47,12 +49,20 @@ function PlayerHelper(lastfm, vk_query)
                 now_playing.play_duration = 0;
             };
 
+            var now_playing_timeout;
+
             this.play = function (lastfm_session)
             {
                 now_playing.continued_at = new Date();
 
-                if (lastfm_session)
-                    lastfm.track.updateNowPlaying(track_to_params(now_playing), lastfm_session);
+                if (lastfm_session) {
+                    clearTimeout(now_playing_timeout);
+                    now_playing_timeout = setTimeout(function () {
+                        track_to_params(now_playing, function (params) {
+                            lastfm.track.updateNowPlaying(params, lastfm_session);
+                        });
+                    }, 3000);
+                }
             };
 
             this.pause = function ()
@@ -69,15 +79,35 @@ function PlayerHelper(lastfm, vk_query)
                     this.pause();
 
                     if (now_playing.duration > 30 && (now_playing.play_duration >= now_playing.duration / 2 || now_playing.play_duration >= 4 * 60))
-                        lastfm.track.scrobble(jQuery.extend(track_to_params(now_playing), {timestamp: parseInt(now_playing.started_at.getTime() / 1000)}), lastfm_session);
+                        track_to_params(now_playing, function (params) {
+                            lastfm.track.scrobble(jQuery.extend(params, {timestamp: parseInt(now_playing.started_at.getTime() / 1000)}), lastfm_session);
+                        });
                 }
 
                 now_playing = null;
             };
 
-            function track_to_params(track)
+            function track_to_params(track, callback)
             {
-                return {track: track.title, artist: track.artist, duration: track.duration};
+                var params = {track: track.title, artist: track.artist, duration: track.duration};
+
+                lastfm.track.getInfo({artist: params.artist, track: params.track, autocorrect: self.autocorrect ? '1' : '0'}, {
+                    success: function (response) {
+                        var track = response.track, album = track.album;
+
+                        if (track.mbid)
+                            params.mbid = track.mbid;
+
+                        if (album) {
+                            params.album = album.title;
+                            params.trackNumber = album['@attr'].position;
+                        }
+
+                        callback(params);
+                    },
+
+                    error: function () { callback(params); }
+                });
             }
 
             function calc_duration(start_date)

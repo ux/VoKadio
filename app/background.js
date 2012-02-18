@@ -191,18 +191,10 @@ function checkLastfmSession()
 
 (function init_vk_audio_broadcast()
 {
-    player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function () {
-        broadcast_track(player.history.nowPlaying);
-    });
-
     player.audio.addEventListener('playing', function () {
-        broadcast_track(player.history.nowPlaying);
-    });
-
-    function broadcast_track(track)
-    {
+        var track = player.history.nowPlaying;
         vk_query.call('status.set', {audio: track.owner_id + '_' + track.aid});
-    }
+    });
 }());
 
 (function init_lastfm_scrobbling()
