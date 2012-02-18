@@ -187,7 +187,7 @@ function DynamicListView(list_element, draw_item_callback)
         list_element.style.position  = 'relative';
         list_element.style.overflowY = 'hidden';
 
-        scrollbar_element = create_min_div();
+        scrollbar_element = document.createElement('div');
         scrollbar_element.className       = 'scrollbar';
         scrollbar_element.style.width     = scrollbar_width + 'px';
         scrollbar_element.style.height    = '100%';
@@ -198,13 +198,13 @@ function DynamicListView(list_element, draw_item_callback)
         scrollbar_element.style.overflowY = 'scroll';
         list_element.appendChild(scrollbar_element);
 
-        scrollbar_height_element = create_min_div();
+        scrollbar_height_element = document.createElement('div');
         scrollbar_element.appendChild(scrollbar_height_element);
     }
 
     function get_scrollbar_width()
     {
-        var outer_div = create_min_div();
+        var outer_div = document.createElement('div');
         outer_div.style.width    = '100px';
         outer_div.style.height   = '100px';
         outer_div.style.overflow = 'auto';
@@ -213,7 +213,7 @@ function DynamicListView(list_element, draw_item_callback)
         outer_div.style.left     = '-1000px';
         document.body.appendChild(outer_div);
 
-        var inner_div = create_min_div();
+        var inner_div = document.createElement('div');
         inner_div.style.width  = '100%';
         inner_div.style.height = '200px';
         outer_div.appendChild(inner_div);
@@ -224,17 +224,4 @@ function DynamicListView(list_element, draw_item_callback)
 
         return scrollbar_width;
     }
-
-    function create_min_div()
-    {
-        var div = document.createElement('div');
-
-        div.style.width    = '0';
-        div.style.height   = '0';
-        div.style.margin   = '0';
-        div.style.padding  = '0';
-
-        return div;
-    }
 }
-
