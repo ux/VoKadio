@@ -2,7 +2,7 @@
     "name"         : "VoKadio",
     "version"      : "2.1.10",
     "description"  : "Проигрыватель аудиозаписей из сайта ВКонтакте",
-    "homepage_url" : "http://vkontakte.ru/vokadio",
+    "homepage_url" : "http://vk.com/vokadio",
 
     "icons": {
         "16"  : "icons/16x16.png",
@@ -28,7 +28,6 @@
         "notifications",
         "background",
         "https://api.vk.com/",
-        "https://api.vkontakte.ru/",
         "http://ws.audioscrobbler.com/"
     ],
 
