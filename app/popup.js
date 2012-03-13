@@ -424,28 +424,29 @@ tracklist_search = new (function () {
     this.__defineGetter__('foundedIndex', function () { return founded_index; });
 
     document.addEventListener('keydown', function (event) {
-        var tracklist_container;
-
-        if (event.ctrlKey && event.keyCode == 70 && (tracklist_container = $("div.content > div.tracklist").filter(":visible")[0])) { // Ctrl + F
-            var search_input = $("#local-search input[type=search]")[0];
-
-            if ( ! search_input) {
-                tracklist = $(tracklist_container).find("ol")[0].tracklist;
-
-                $(tracklist_container).append('<div id="local-search"><input type="search" incremental="incremental" autosave="audio" placeholder="Что найти?" results="7" /></div>');
+        if (event.keyCode == 114 || event.ctrlKey && event.keyCode == 70) { // «F3» or «Ctrl+F»
+            var tracklist_container = $("div.content > div.tracklist").filter(":visible")[0],
                 search_input = $("#local-search input[type=search]")[0];
 
-                search_input.addEventListener('blur', destroy_search);
-                search_input.addEventListener('search', start_search);
-                search_input.addEventListener('keydown', control_search);
+            if (tracklist_container) {
+                if ( ! search_input) {
+                    tracklist = $(tracklist_container).find("ol")[0].tracklist;
 
-                tracklist.localSearchQuery && (search_input.value = tracklist.localSearchQuery);
+                    $(tracklist_container).append('<div id="local-search"><input type="search" incremental="incremental" autosave="audio" placeholder="Что найти?" results="7" /></div>');
+                    search_input = $("#local-search input[type=search]")[0];
+
+                    search_input.addEventListener('blur', destroy_search);
+                    search_input.addEventListener('search', start_search);
+                    search_input.addEventListener('keydown', control_search);
+
+                    tracklist.localSearchQuery && (search_input.value = tracklist.localSearchQuery);
+                }
+
+                search_input.focus();
+                search_input.select();
+
+                start_search.call(search_input);
             }
-
-            search_input.focus();
-            search_input.select();
-
-            start_search.call(search_input);
         }
     });
 
@@ -475,17 +476,21 @@ tracklist_search = new (function () {
             return;
 
         switch (event.keyCode) {
-            case 38:
+            case 38: // Up
                 set_founded_index(do_search(this.value, founded_index, tracklist.playlist, true));
+                event.stopPropagation();
                 break;
 
-            case 40:
+            case 40: // Down
+            case 114: // F3
                 set_founded_index(do_search(this.value, founded_index, tracklist.playlist, false));
+                event.stopPropagation();
                 break;
 
-            case 13:
+            case 13: // Enter
                 bp.player.togglePlay(founded_index, tracklist.playlist);
                 event.preventDefault();
+                event.stopPropagation();
                 break;
         }
     }
