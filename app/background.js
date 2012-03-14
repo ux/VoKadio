@@ -80,7 +80,8 @@ var player  = new AudioPlayer.Player(),
 var my_audio     = new VK.Audio(null, player, vk_query),
     audio_search = new VK.Audio.Search(player, vk_query);
 
-var popup_active_view = 'my-tracklist';
+var popup_active_view   = 'my-tracklist',
+    popup_previous_view = popup_active_view;
 
 
 //*****************************************************************************

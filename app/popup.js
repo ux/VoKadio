@@ -47,7 +47,10 @@ function activateViewElement(button)
     $('#' + button.id + '-view').stop().css({'display' : 'block'}).animate({'opacity' : '1'}, bp.POPUP_VIEW_DEACTIVATION_TIME);
     $(button).addClass('active');
 
-    bp.popup_active_view = button.id;
+    if (button.id != bp.popup_active_view) {
+        bp.popup_previous_view = bp.popup_active_view;
+        bp.popup_active_view = button.id;
+    }
 }
 
 function updateCurrentView()
@@ -843,7 +846,9 @@ var history_tracklist, my_tracklist, search_tracklist;
         $track_info_button.toggle(!!event.nowPlaying);
     });
 
-    $track_info_button.click(function () { activateViewElement(this); });
+    $track_info_button.click(function () {
+        activateViewElement(this.id == bp.popup_active_view ? $("#" + bp.popup_previous_view)[0] : this);
+    });
 
     $track_info_button.toggle(!!bp.player.history.nowPlaying);
 }());

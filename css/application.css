@@ -1275,6 +1275,16 @@ input, button
         background-position: -725px -119px;
     }
 
+    #track-info.active:hover
+    {
+        background-position: -670px -201px;
+    }
+
+    #track-info.active:active
+    {
+        background-position: -670px -258px;
+    }
+
     #history
     {
         width: 48px;
