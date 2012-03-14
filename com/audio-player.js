@@ -236,7 +236,22 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     {
         playlist = this.getPlaylist(playlist);
 
-        return this.play({index: Math.floor(Math.random() * playlist.items.length)}, playlist, previous);
+        var history_min_index = history.items.length - Math.min(Math.round(2 / 3 * playlist.items.length), history.items.length, 33);
+
+        while (true) {
+            var found = false,
+                item = playlist.getItem({index: Math.floor(Math.random() * playlist.items.length)});
+
+            for (var i = history.items.length - 1; i > history_min_index; i--) {
+                if (history.items[i].id == item.id) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                return this.play(item, playlist, previous);
+        }
     };
 
     this.play = function(item, playlist, previous)
