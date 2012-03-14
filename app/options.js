@@ -39,6 +39,15 @@ var bp = chrome.extension.getBackgroundPage();
     });
 }());
 
+(function init_disable_scrollbars_option()
+{
+    $('#disable-scrollbars')[0].checked = bp.options.get('ui.disable-scrollbars');
+
+    $('#disable-scrollbars').change(function () {
+        bp.options.set('ui.disable-scrollbars', bp.DynamicListView.disableScrollbar = this.checked);
+    });
+}());
+
 (function init_notification_option()
 {
     $('#notification-show-behavior').val(bp.options.get('notification.show-behavior'));

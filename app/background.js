@@ -20,12 +20,15 @@
 var options = new Options({
     'lastfm': false,
     'notification.show-behavior': NOTIFICATION_DEFAULT_SHOW_BEHAVIOR,
-    'hotkeys.disabled': false
+    'hotkeys.disabled': false,
+    'ui.disable-scrollbars': false
 });
 
 const DEBUG = options.get('debug', false);
 
 VkAPI.logger.debugMode = DEBUG;
+
+DynamicListView.disableScrollbar = options.get('ui.disable-scrollbars');
 
 var vk_session = new VkAPI.Session(function (silent, finished_cb) {
     var vk_auth_url = buildUri('http://api.vk.com/oauth/authorize', {
