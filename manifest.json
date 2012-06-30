@@ -1,35 +1,59 @@
 {
-    "name"         : "VoKadio",
-    "version"      : "2.1.14",
-    "description"  : "Проигрыватель аудиозаписей из сайта ВКонтакте",
-    "homepage_url" : "http://vk.com/vokadio",
+	"manifest_version": 2,
 
-    "icons": {
-        "16"  : "icons/16x16.png",
-        "48"  : "icons/48x48.png",
-        "128" : "icons/128x128.png"
-    },
+	"name":         "VoKadio",
+	"version":      "2.1.14",
+	"description":  "Проигрыватель аудиозаписей из сайта ВКонтакте",
+	"homepage_url": "http://vk.com/vokadio",
 
-    "browser_action": {
-        "default_icon"  : "icons/popup.png",
-        "default_title" : "VoKadio",
-        "popup"         : "popup.html"
-    },
+	"icons": {
+		"16":  "icons/16x16.png",
+		"48":  "icons/48x48.png",
+		"128": "icons/128x128.png"
+	},
 
-    "background_page" : "background.html",
-    "options_page"    : "options.html",
+	"background": {
+		"scripts": [
+			"/lib/md5.js",
+			"/lib/vk.api.js",
+			"/lib/lastfm.api.js",
+			"/lib/jquery.js",
+			"/lib/utils.js",
 
-    "content_scripts": [
-        {"matches": ["http://*/*", "https://*/*"], "js": ["app/hotkeys.js"], "run_at": "document_start"}
-    ],
+			"/com/rotate-animation.js",
+			"/com/event-dispatcher.js",
+			"/com/audio-player.js",
+			"/com/player-helper.js",
+			"/com/vk.js",
+			"/com/options.js",
 
-    "permissions": [
-        "tabs",
-        "notifications",
-        "background",
-        "https://api.vk.com/",
-        "http://ws.audioscrobbler.com/"
-    ],
+			"/com/events-listeners-collector.js",
+			"/com/dynamic-list-view.js",
 
-    "minimum_chrome_version": "9"
+			"/app/config.js",
+			"/app/background.js"
+		]
+	},
+
+	"browser_action": {
+		"default_title": "VoKadio",
+		"default_icon":  "icons/popup.png",
+		"default_popup": "popup.html"
+	},
+
+	"options_page": "options.html",
+
+	"content_scripts": [
+		{"matches": ["http://*/*", "https://*/*"], "js": ["app/hotkeys.js"], "run_at": "document_start"}
+	],
+
+	"permissions": [
+		"tabs",
+		"notifications",
+		"background",
+		"https://api.vk.com/",
+		"http://ws.audioscrobbler.com/"
+	],
+
+	"minimum_chrome_version": "9"
 }

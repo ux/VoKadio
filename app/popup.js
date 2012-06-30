@@ -450,6 +450,8 @@ tracklist_search = new (function () {
 
                 start_search.call(search_input);
             }
+
+            event.preventDefault();
         }
     });
 
