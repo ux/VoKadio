@@ -35,41 +35,27 @@ var vk_session = new VkAPI.Session(function (silent, finished_cb) {
         client_id:     VK_APP_ID,
         scope:         VK_SETTINGS,
         response_type: 'token',
-        display:       'popup',
+        display:       'page',
         redirect_uri:  'http://vokadio.infostyle.com.ua/auth/vk/' + chrome.extension.getURL('').match(/:\/\/(.*)\//)[1]
     });
 
-    if (silent) {
+    if (silent)
         $('<iframe></iframe>').attr('src', vk_auth_url).load(function () {
             $(this).remove();
             finished_cb();
         }).appendTo('body');
-    }
-    else {
-        chrome.windows.create(
-            {
-                url:     vk_auth_url,
-                left:    parseInt((screen.width - VK_AUTH_WINDOW_WIDTH) / 2),
-                top:     parseInt((screen.height - VK_AUTH_WINDOW_HEIGHT) / 2),
-                width:   VK_AUTH_WINDOW_WIDTH,
-                height:  VK_AUTH_WINDOW_HEIGHT,
-                focused: true,
-                type:    'popup'
-            },
-            function (window)
-            {
-                chrome.windows.onRemoved.addListener(removed_listener);
+    else
+        chrome.tabs.create({url: vk_auth_url, active: true}, function (auth_tab) {
+            chrome.tabs.onRemoved.addListener(removed_listener);
 
-                function removed_listener(window_id)
-                {
-                    if (window_id == window.id) {
-                        chrome.windows.onRemoved.removeListener(removed_listener);
-                        finished_cb();
-                    }
+            function removed_listener(tab_id, remove_info)
+            {
+                if (tab_id == auth_tab.id) {
+                    chrome.tabs.onRemoved.removeListener(removed_listener);
+                    finished_cb();
                 }
             }
-        );
-    }
+        });
 });
 
 var vk_query = new VkAPI.Query(vk_session, 'https://api.vk.com/method/');

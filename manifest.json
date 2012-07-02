@@ -48,7 +48,6 @@
 	],
 
 	"permissions": [
-		"tabs",
 		"notifications",
 		"background",
 		"https://api.vk.com/",
