@@ -43,7 +43,7 @@ AudioPlayer.Player = function (playorder, repeat_mode)
     playorder = playorder || AudioPlayer.Player.PLAYORDER_NORMAL;
     repeat_mode = repeat_mode || AudioPlayer.Player.REPEAT_PLAYLIST;
 
-    var audio = document.createElement('audio');
+    var audio = new Audio();
     audio.preload  = 'auto';
     audio.autoplay = true;
     audio.loop     = false;
