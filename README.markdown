@@ -15,5 +15,5 @@
 * Возможность быстрой навигации по списку аудио записей, быстрого и удобного переключения между треками, как во время отображения главного окна проигрывателя, так и с помощью всплывающего уведомления (в правом нижнем углу экрана).
 * Отображает обложку и название альбома, при существовании его на last.fm.
 
-Галерея расширений Google Chrome: https://chrome.google.com/webstore/detail/fijadmjnempfbnkdnoomdfkbomikaich
-Наша группа ВКонтакте: http://vk.com/vokadio
+Галерея расширений Google Chrome: https://chrome.google.com/webstore/detail/fijadmjnempfbnkdnoomdfkbomikaich.
+Наша группа ВКонтакте: http://vk.com/vokadio.
