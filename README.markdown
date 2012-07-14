@@ -17,6 +17,5 @@
 * Отображает обложку и название альбома, при существовании его на last.fm.
 
 
-Галерея расширений Google Chrome: https://chrome.google.com/webstore/detail/fijadmjnempfbnkdnoomdfkbomikaich.
-
+Интернет-магазин Chrome: https://chrome.google.com/webstore/detail/fijadmjnempfbnkdnoomdfkbomikaich.  
 Наша группа ВКонтакте: http://vk.com/vokadio.
