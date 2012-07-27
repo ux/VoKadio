@@ -483,12 +483,14 @@ tracklist_search = new (function () {
         switch (event.keyCode) {
             case 38: // Up
                 set_founded_index(do_search(this.value, founded_index, tracklist.playlist, true));
+                event.preventDefault();
                 event.stopPropagation();
                 break;
 
             case 40: // Down
             case 114: // F3
                 set_founded_index(do_search(this.value, founded_index, tracklist.playlist, false));
+                event.preventDefault();
                 event.stopPropagation();
                 break;
 
