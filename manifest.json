@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 
 	"name":         "VoKadio — плеер для ВКонтакте",
-	"version":      "2.1.17",
+	"version":      "2.1.18",
 	"description":  "Проигрыватель аудиозаписей из сайта ВКонтакте",
 	"homepage_url": "http://vk.com/vokadio",
 
@@ -54,5 +54,5 @@
 		"http://ws.audioscrobbler.com/"
 	],
 
-	"minimum_chrome_version": "17"
+	"minimum_chrome_version": "18"
 }
