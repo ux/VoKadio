@@ -850,8 +850,15 @@ var history_tracklist, my_tracklist, search_tracklist;
         $track_info_button.toggle(!!event.nowPlaying);
     });
 
-    $track_info_button.click(function () {
-        activateViewElement(this.id == bp.popup_active_view ? $("#" + bp.popup_previous_view)[0] : this);
+    $track_info_button.click(function (e) {
+        if ( ! e.isTrigger && this.id == bp.popup_active_view) {
+            bp.popup_active_view = bp.popup_previous_view;
+            bp.popup_previous_view = this.id;
+            updateCurrentView();
+        }
+        else {
+            activateViewElement(this);
+        }
     });
 
     $track_info_button.toggle(!!bp.player.history.nowPlaying);
