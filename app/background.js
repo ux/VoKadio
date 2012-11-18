@@ -31,7 +31,7 @@ VkAPI.logger.debugMode = DEBUG;
 DynamicListView.disableScrollbar = options.get('ui.disable-scrollbars');
 
 var vk_session = new VkAPI.Session(function (silent, finished_cb) {
-    var vk_auth_url = buildUri('http://oauth.vk.com/authorize', {
+    var vk_auth_url = buildUri('https://oauth.vk.com/authorize', {
         client_id:     VK_APP_ID,
         scope:         VK_SETTINGS,
         response_type: 'token',
