@@ -44,7 +44,7 @@ function activateViewElement(button)
     $('.content').stop().animate({'opacity' : '0'}, bp.POPUP_VIEW_ACTIVATION_TIME).css({'display' : 'none'});
     $('.tab-switcher.active').removeClass('active');
 
-    $('#' + button.id + '-view').stop().css({'display' : 'block'}).animate({'opacity' : '1'}, bp.POPUP_VIEW_DEACTIVATION_TIME);
+    $('#' + button.id + '-view').stop().css({'display' : 'block'}).animate({'opacity' : '1'}, bp.POPUP_VIEW_ACTIVATION_TIME);
     $(button).addClass('active');
 
     if (button.id != bp.popup_active_view) {
