@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 
 	"name":         "VoKadio — плеер для ВКонтакте",
-	"version":      "2.1.18",
+	"version":      "2.1.19",
 	"description":  "Проигрыватель аудиозаписей из сайта ВКонтакте",
 	"homepage_url": "http://vk.com/vokadio",
 
@@ -15,6 +15,7 @@
 	"background": {
 		"scripts": [
 			"/lib/md5.js",
+			"/lib/json_parse_state.js",
 			"/lib/vk.api.js",
 			"/lib/lastfm.api.js",
 			"/lib/jquery.js",
