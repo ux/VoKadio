@@ -153,7 +153,7 @@ function checkLastfmSession()
 (function init_popup_icon()
 {
     var icon_rotator = new RotateAnimation(
-        $('<img src="icons/popup.png" alt="" />')[0],
+        $('<img src="/icons/popup.png" alt="">')[0],
         {framesCount: ICON_ANIMATION_FRAMES, speed: ICON_ANIMATION_SPEED},
         function (canvas, canvasContext) {
             chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0, canvas.width, 19)});
@@ -177,6 +177,9 @@ function checkLastfmSession()
             chrome.browserAction.setTitle({title: EXTENSION_NAME});
         }
     });
+
+    chrome.browserAction.setBadgeText({text: ''});
+    chrome.browserAction.setTitle({title: EXTENSION_NAME});
 }());
 
 (function init_vk_audio_broadcast()

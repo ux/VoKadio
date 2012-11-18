@@ -19,11 +19,13 @@
 
 function RotateAnimation(image, options, visualisator_callback)
 {
-    var defaults = {framesCount: 36, speed: 10};
+    var defaults = {framesCount: 36, speed: 10},
+        rotation = 0;
 
     if (options) {
         options.framesCount = options.framesCount || defaults.framesCount;
         options.speed = options.speed || defaults.speed;
+        rotation = options.rotation || 0;
     }
     else
         options = defaults;
@@ -31,16 +33,18 @@ function RotateAnimation(image, options, visualisator_callback)
     var canvas = document.createElement('canvas');
     var canvasContext = canvas.getContext('2d');
 
-    function updateCanvasSize()
+    if (image.complete)
+        imageCompleted();
+
+    image.addEventListener('load', imageCompleted);
+
+    function imageCompleted()
     {
         canvas.width  = image.width;
         canvas.height = image.height;
+
+        drawImageAtRotation(rotation);
     }
-
-    if (image.complete)
-        updateCanvasSize();
-
-    image.addEventListener('load', updateCanvasSize);
 
     function drawImageAtRotation(rotation)
     {
@@ -54,9 +58,7 @@ function RotateAnimation(image, options, visualisator_callback)
         visualisator_callback(canvas, canvasContext);
     }
 
-    var rotate_interval = 2 * Math.PI / options.framesCount;
-    var rotation = 0;
-    var rotation_timer = null;
+    var rotation_timer;
 
     this.rotateTo = function (rotate_to)
     {
@@ -64,23 +66,20 @@ function RotateAnimation(image, options, visualisator_callback)
 
         rotate_to = rotate_to % (2 * Math.PI);
 
-        var rotate_from = rotation;
-        var rotate_diff = rotate_to - rotate_from;
+        var rotate_from = rotation,
+            rotate_diff = rotate_to - rotate_from,
+            direction   = rotate_diff / Math.abs(rotate_diff);
 
-        if (rotate_diff != 0) {
-            var direction = rotate_diff / Math.abs(rotate_diff);
-
-            rotation_timer = setInterval(function () {
+        rotation_timer = setInterval(function () {
+            if ( ! isNaN(direction))
                 rotation += (direction * 2 * Math.PI / options.framesCount) % (2 * Math.PI);
 
-                if ( Math.abs(rotation - rotate_from) >= Math.abs(rotate_diff) ) {
-                    rotation = rotate_to;
-                    clearInterval(rotation_timer);
-                }
+            if (Math.abs(rotation - rotate_from) >= Math.abs(rotate_diff)) {
+                rotation = rotate_to;
+                clearInterval(rotation_timer);
+            }
 
-                drawImageAtRotation(rotation);
-            }, options.speed);
-        }
+            drawImageAtRotation(rotation);
+        }, options.speed);
     };
 }
-
