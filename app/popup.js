@@ -216,16 +216,16 @@ function updateCurrentView()
 
 ContextMenu = {
     download: function (item, playlist, tracklist) {
-        this.innerText = "Скачать";
-        this.title = "Скачать";
+        this.innerText = chrome.i18n.getMessage('context_menu_download');
+        this.title = chrome.i18n.getMessage('context_menu_download_title');
         this.href = item.url;
         this.target = '_blank';
         this.download = bp.helper.common.getDownloadName(item);
     },
 
     add: function (item, playlist, tracklist) {
-        this.innerText = "Добавить";
-        this.title = "Добавить в мои аудиозаписи";
+        this.innerText = chrome.i18n.getMessage('context_menu_add_track');
+        this.title = chrome.i18n.getMessage('context_menu_add_track_title');
 
         $(this).click(function () {
             bp.helper.vk.addAudio(item);
@@ -233,8 +233,8 @@ ContextMenu = {
     },
 
     delete: function (item, playlist, tracklist) {
-        this.innerText = "Удалить";
-        this.title = "Удалить из моих аудиозаписей";
+        this.innerText = chrome.i18n.getMessage('context_menu_del_track');
+        this.title = chrome.i18n.getMessage('context_menu_del_track_title');
 
         $(this).click(function () {
             bp.helper.vk.deleteAudio(item, function (result, record) {
@@ -247,8 +247,8 @@ ContextMenu = {
     },
 
     addToHistory: function (item, playlist, tracklist) {
-        this.innerText = "В очередь";
-        this.title = "Добавить в очередь";
+        this.innerText = chrome.i18n.getMessage('context_menu_add_history');
+        this.title = chrome.i18n.getMessage('context_menu_add_history_title');
 
         $(this).click(function () {
             bp.player.addToHistory(item, playlist);
@@ -256,8 +256,8 @@ ContextMenu = {
     },
 
     removeFromHistory: function (item, playlist, tracklist) {
-        this.innerText = "Забыть";
-        this.title = "Удалить из истории";
+        this.innerText = chrome.i18n.getMessage('context_menu_del_history');
+        this.title = chrome.i18n.getMessage('context_menu_del_history_title');
 
         $(this).click(function () {
             bp.player.removeFromHistory(item);
@@ -435,7 +435,7 @@ tracklist_search = new (function () {
                 if ( ! search_input) {
                     tracklist = $(tracklist_container).find("ol")[0].tracklist;
 
-                    $(tracklist_container).append('<div id="local-search"><input type="search" incremental="incremental" autosave="audio" placeholder="Что найти?" results="7" /></div>');
+                    $(tracklist_container).append('<div id="local-search"><input type="search" incremental="incremental"></div>').find("input").attr('placeholder', chrome.i18n.getMessage('local_search_placeholder'));
                     search_input = $("#local-search input[type=search]")[0];
 
                     search_input.addEventListener('blur', destroy_search);

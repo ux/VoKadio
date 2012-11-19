@@ -1435,7 +1435,7 @@ input, button
 
     .tracklist.empty:after
     {
-        content: 'Ничего не найдено';
+        content: '__MSG_search_nothing_found__';
         position: absolute;
         top: 50%;
         left: 0;
