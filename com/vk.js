@@ -34,7 +34,7 @@ VK.Audio = function (owner_id, player, query)
 {
     var all_audio, self = this, albums = {}, current_album = null, albums_count = 1;
 
-    all_audio = new VK.Audio.Album(null, owner_id, 0, "Все аудиозаписи", player, query);
+    all_audio = new VK.Audio.Album(null, owner_id, 0, chrome.i18n.getMessage('folder_all_music'), player, query);
 
     query.session.addEventListener(VkAPI.Session.EVENT_SESSION_RECEIVED, update_all_audio);
 
@@ -266,4 +266,3 @@ VK.Audio.bindHistory = function (player, query)
         }
     });
 };
-

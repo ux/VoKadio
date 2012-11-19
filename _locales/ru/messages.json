@@ -1,7 +1,6 @@
 {
 	"ext_name": 			{"message": "VoKadio — плеер для ВКонтакте"},
 	"ext_description":		{"message": "Слушайте и наслаждайтесь Вашей любимой музыкой на сайте ВКонтакте с помощью аудиоплеера VoKadio!"},
-	"search_nothing_found":	{"message": "Ничего не найдено"},
 
 	"context_menu_download":		{"message": "Скачать"},
 	"context_menu_download_title":	{"message": "Скачать"},
@@ -18,5 +17,7 @@
 	"context_menu_del_history":		{"message": "Забыть"},
 	"context_menu_del_history_title":{"message": "Удалить из истории"},
 
-	"local_search_placeholder":		{"message": "Что найти?"}
+	"local_search_placeholder":		{"message": "Что найти?"},
+
+	"folder_all_music":				{"message": "Все аудиозаписи"}
 }
