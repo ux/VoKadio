@@ -28,14 +28,14 @@ function init_notification_close_countdown()
 {
     var mouse_in_window = false, close_countdown;
 
-    $('body').mouseover(function () {
+    $('body').
+    mouseover(function () {
         mouse_in_window = true;
         cancel_close_countdown();
-    });
-
-    $('body').mouseout(function () {
+    }).
+    mouseout(function () {
         mouse_in_window = false;
-        start_close_countdown(bp.NOTIFICATION_MOUSEOUT_TIMEOUT);
+        start_close_countdown(bp.NOTIFICATION_TIMEOUT);
     });
 
     $(document).ready(function () {
