@@ -43,7 +43,7 @@
 	"disable_scrollbars":         {"message": "Disable scrollbars"},
 	"notification_show_behavior": {"message": "Notification behavior"},
 	"notification_hide":          {"message": "Hide always"},
-	"notification_auto":          {"message": "Show for a while, when song changes"},
+	"notification_auto":          {"message": "Show notification for a while, when current song is changed"},
 	"notification_show":          {"message": "Show always"},
 	"thanks":                     {"message": "Thanks!"},
 	"donate_disclaimer":          {"message": "Your support will help us<br> develop VoKadio"},
@@ -77,7 +77,7 @@
 			and have come to understand that this project is not just for us, as it was originally.
 			Everyday we see how you react, and what you like, getting a lot of feedback and suggestions on the project.
 			Everytime, all of this gives us the inspiration to do it much more better and eventually create
-			a real high-level project (<i>perhaps even more than an extension for Google Chrome browser</i>).
+			a real high-level project (<i>perhaps, even more than an extension for Google Chrome browser</i>).<br>
 			YOUR REWARDS for our work will not only help us to keep the project afloat,
 			but also to implement more and more <b>new ideas and opportunities</b>.
 		</p>
