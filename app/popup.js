@@ -26,6 +26,33 @@ var bp  = chrome.extension.getBackgroundPage(),
 //*****************************************************************************
 
 
+(function init_i18n() {
+    $("#previous-track").attr('title', chrome.i18n.getMessage('prev_track'));
+    $("#play-pause").attr('title', chrome.i18n.getMessage('play_pause'));
+    $("#next-track").attr('title', chrome.i18n.getMessage('next_track'));
+    $("#repeat").attr('title', chrome.i18n.getMessage('repeat_mode'));
+    $("#shuffle").attr('title', chrome.i18n.getMessage('play_order'));
+    $("#refresh-session").attr('title', chrome.i18n.getMessage('refresh_session'));
+    $("#volume").attr('title', chrome.i18n.getMessage('volume'));
+    $("#download-track").attr('title', chrome.i18n.getMessage('download'));
+    $("#add-track-to-my-audio").attr('title', chrome.i18n.getMessage('add_track'));
+
+    $("#history-view .tabs .active").text(chrome.i18n.getMessage('history'));
+    $("#my-albums-chooser").text(chrome.i18n.getMessage('folders'));
+    $("#my-tracklist-chooser").text(chrome.i18n.getMessage('all_music_folder'));
+    $(".all-music-folder").text(chrome.i18n.getMessage('all_music_folder'));
+    $("#search-controls input[type=search]").attr('placeholder', chrome.i18n.getMessage('search_placeholder'));
+
+    $("#history").attr('title', chrome.i18n.getMessage('history'));
+    $("#my-tracklist").attr('title', chrome.i18n.getMessage('my_music'));
+    $("#search").attr('title', chrome.i18n.getMessage('search'));
+    $("#track-info").attr('title', chrome.i18n.getMessage('track_info'));
+})();
+
+
+//*****************************************************************************
+
+
 function activateTabElement(tab_chooser, title)
 {
     var $tab_chooser = $(tab_chooser), $tabs_view = $tab_chooser.parents('.content');
@@ -216,16 +243,16 @@ function updateCurrentView()
 
 ContextMenu = {
     download: function (item, playlist, tracklist) {
-        this.innerText = chrome.i18n.getMessage('context_menu_download');
-        this.title = chrome.i18n.getMessage('context_menu_download_title');
+        this.innerText = chrome.i18n.getMessage('download_short');
+        this.title = chrome.i18n.getMessage('download');
         this.href = item.url;
         this.target = '_blank';
         this.download = bp.helper.common.getDownloadName(item);
     },
 
     add: function (item, playlist, tracklist) {
-        this.innerText = chrome.i18n.getMessage('context_menu_add_track');
-        this.title = chrome.i18n.getMessage('context_menu_add_track_title');
+        this.innerText = chrome.i18n.getMessage('add_track_short');
+        this.title = chrome.i18n.getMessage('add_track');
 
         $(this).click(function () {
             bp.helper.vk.addAudio(item);
@@ -233,8 +260,8 @@ ContextMenu = {
     },
 
     delete: function (item, playlist, tracklist) {
-        this.innerText = chrome.i18n.getMessage('context_menu_del_track');
-        this.title = chrome.i18n.getMessage('context_menu_del_track_title');
+        this.innerText = chrome.i18n.getMessage('del_track_short');
+        this.title = chrome.i18n.getMessage('del_track');
 
         $(this).click(function () {
             bp.helper.vk.deleteAudio(item, function (result, record) {
@@ -247,8 +274,8 @@ ContextMenu = {
     },
 
     addToHistory: function (item, playlist, tracklist) {
-        this.innerText = chrome.i18n.getMessage('context_menu_add_history');
-        this.title = chrome.i18n.getMessage('context_menu_add_history_title');
+        this.innerText = chrome.i18n.getMessage('history_add_short');
+        this.title = chrome.i18n.getMessage('history_add');
 
         $(this).click(function () {
             bp.player.addToHistory(item, playlist);
@@ -256,8 +283,8 @@ ContextMenu = {
     },
 
     removeFromHistory: function (item, playlist, tracklist) {
-        this.innerText = chrome.i18n.getMessage('context_menu_del_history');
-        this.title = chrome.i18n.getMessage('context_menu_del_history_title');
+        this.innerText = chrome.i18n.getMessage('history_del_short');
+        this.title = chrome.i18n.getMessage('history_del');
 
         $(this).click(function () {
             bp.player.removeFromHistory(item);

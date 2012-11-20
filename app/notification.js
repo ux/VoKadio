@@ -24,6 +24,21 @@ var bp = chrome.extension.getBackgroundPage(),
 //*****************************************************************************
 
 
+(function init_i18n() {
+    $("#download-track").attr('title', chrome.i18n.getMessage('download'));
+    $("#add-track-to-my-audio").attr('title', chrome.i18n.getMessage('add_track'));
+    $("#previous-track").attr('title', chrome.i18n.getMessage('prev_track'));
+    $("#play-pause").attr('title', chrome.i18n.getMessage('play_pause'));
+    $("#next-track").attr('title', chrome.i18n.getMessage('next_track'));
+    $("#repeat").attr('title', chrome.i18n.getMessage('repeat_mode'));
+    $("#shuffle").attr('title', chrome.i18n.getMessage('play_order'));
+    $("#volume").attr('title', chrome.i18n.getMessage('volume'));
+})();
+
+
+//*****************************************************************************
+
+
 function init_notification_close_countdown()
 {
     var mouse_in_window = false, close_countdown;
