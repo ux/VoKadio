@@ -1,0 +1,95 @@
+{
+	"ext_name":                   {"message": "VoKadio — player for VK.com"},
+	"ext_description":            {"message": "Listen and enjoy your favorite music on the site VK.com with the VoKadio audio player!"},
+
+	"download":                   {"message": "Download song"},
+	"download_short":             {"message": "Download"},
+
+	"add_track":                  {"message": "Add to my music"},
+	"add_track_short":            {"message": "Add"},
+
+	"del_track":                  {"message": "Delete song"},
+	"del_track_short":            {"message": "Delete"},
+
+	"history_add":                {"message": "Add song to queue"},
+	"history_add_short":          {"message": "Queue"},
+
+	"history_del":                {"message": "Delete song from history"},
+	"history_del_short":          {"message": "Forget"},
+
+	"prev_track":                 {"message": "Previous song"},
+	"play_pause":                 {"message": "Play / Pause"},
+	"next_track":                 {"message": "Next song"},
+	"repeat_mode":                {"message": "Repeat mode"},
+	"play_order":                 {"message": "Play order"},
+	"refresh_session":            {"message": "Refresh session"},
+	"volume":                     {"message": "Volume"},
+
+	"history":                    {"message": "History"},
+	"my_music":                   {"message": "My Music"},
+	"search":                     {"message": "Find songs"},
+	"track_info":                 {"message": "Information about current song"},
+
+	"folders":                    {"message": "Folders"},
+	"all_music_folder":           {"message": "All Music"},
+	"search_placeholder":         {"message": "Search for the song"},
+	"nothing_found":              {"message": "Nothing found"},
+	"local_search_placeholder":   {"message": "Find what?"},
+
+	"vokadio_options_title":      {"message": "VoKadio Settings"},
+	"settings":                   {"message": "Settings"},
+	"last_fm_scrobbling":         {"message": "Last.fm scrobbling"},
+	"disable_hotkeys":            {"message": "Disable hotkeys"},
+	"disable_scrollbars":         {"message": "Disable scrollbars"},
+	"notification_show_behavior": {"message": "Notification behavior"},
+	"notification_hide":          {"message": "Hide always"},
+	"notification_auto":          {"message": "Show for a while, when song changes"},
+	"notification_show":          {"message": "Show always"},
+	"thanks":                     {"message": "Thanks!"},
+	"donate_disclaimer":          {"message": "Your support will help us<br> develop VoKadio"},
+
+	"hotkeys_section": {"message": "
+		<h2>Hotkeys</h2>
+		<ul>
+			<li><strong>Ctrl+Space</strong> &mdash; Play / Pause</li>
+			<li><strong>Ctrl+⇨ (Right)</strong> &mdash; Next song</li>
+			<li><strong>Ctrl+⇦ (Left)</strong> &mdash; Previous song</li>
+			<li><strong>Ctrl+⇧ (Up)</strong> &mdash; Louder</li>
+			<li><strong>Ctrl+⇩ (Down)</strong> &mdash; Quieter</li>
+			<li><strong>F3</strong> or <strong>Ctrl+F</strong> &mdash; Search in playlist. To control the search process use the following hotkeys:
+				<ul>
+					<li><strong>F3</strong> or <strong>⇩ (Down)</strong> &mdash; Go to the next found song</li>
+					<li><strong>⇧ (Up)</strong> &mdash; Go to the previous found song</li>
+				</ul>
+			</li>
+			<li><strong>Home</strong> &mdash; Go to the top of the playlist</li>
+			<li><strong>End</strong> &mdash; Go to the bottom of the playlist</li>
+			<li><strong>PageUp</strong> &mdash; Scroll playlist up for an one page</li>
+			<li><strong>PageDown</strong> &mdash; Scroll playlist down for an one page</li>
+			<li><strong>⇧ (Up)</strong> &mdash; Scroll up the playlist</li>
+			<li><strong>⇩ (Down)</strong> &mdash; Scroll down the playlist</li>
+		</ul>
+	"},
+
+	"donate_content": {"message": "
+		<p>
+			During the last year we are watching a lot of people, who likes VoKadio
+			and have come to understand that this project is not just for us, as it was originally.
+			Everyday we see how you react, and what you like, getting a lot of feedback and suggestions on the project.
+			Everytime, all of this gives us the inspiration to do it much more better and eventually create
+			a real high-level project (<i>perhaps even more than an extension for Google Chrome browser</i>).
+			YOUR REWARDS for our work will not only help us to keep the project afloat,
+			but also to implement more and more <b>new ideas and opportunities</b>.
+		</p>
+		<p>
+			Without you, our users, this project costs nothing, like an our work.
+			<b>Only together we can achieve true success!</b>
+		</p>
+		<h3>Our accounts:</h3>
+		<ul>
+			<li><strong>Yandex.Money</strong> 410011075584627</li>
+			<li><strong>Webmoney</strong> Z785881917414, R253977804154, U419001659924</li>
+			<li><strong>Moneybookers</strong> infostyle.com.ua@gmail.com</li>
+		</ul>
+	"}
+}

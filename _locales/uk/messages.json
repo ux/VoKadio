@@ -1,0 +1,94 @@
+{
+	"ext_name":                   {"message": "VoKadio — плеєр для ВКонтактi"},
+	"ext_description":            {"message": "Слухайте і насолоджуйтесь Вашою улюбленою музикою на сайті ВКонтакті за допомогою аудіоплеєра VoKadio!"},
+
+	"download":                   {"message": "Завантажити аудіозапис"},
+	"download_short":             {"message": "Завантажити"},
+
+	"add_track":                  {"message": "Додати в мої аудіозаписи"},
+	"add_track_short":            {"message": "Додати"},
+
+	"del_track":                  {"message": "Видалити з моїх аудіозаписів"},
+	"del_track_short":            {"message": "Видалити"},
+
+	"history_add":                {"message": "Додати в чергу"},
+	"history_add_short":          {"message": "В чергу"},
+
+	"history_del":                {"message": "Видалити з історії"},
+	"history_del_short":          {"message": "Забути"},
+
+	"prev_track":                 {"message": "Попередній трек"},
+	"play_pause":                 {"message": "Грати / Пауза"},
+	"next_track":                 {"message": "Наступний трек"},
+	"repeat_mode":                {"message": "Режим повтору"},
+	"play_order":                 {"message": "Порядок програвання"},
+	"refresh_session":            {"message": "Оновити сесію"},
+	"volume":                     {"message": "Гучність"},
+
+	"history":                    {"message": "Історія програвання"},
+	"my_music":                   {"message": "Мої аудіозаписи"},
+	"search":                     {"message": "Пошук аудіозаписів"},
+	"track_info":                 {"message": "Інформація про поточний аудіозапис"},
+
+	"folders":                    {"message": "Альбоми"},
+	"all_music_folder":           {"message": "Всі аудіозаписи"},
+	"search_placeholder":         {"message": "Пошук аудіозапису"},
+	"nothing_found":              {"message": "Нічого не знайдено"},
+	"local_search_placeholder":   {"message": "Що знайти?"},
+
+	"vokadio_options_title":      {"message": "Налаштування VoKadio"},
+	"settings":                   {"message": "Налаштування"},
+	"last_fm_scrobbling":         {"message": "Скробблінг на Last.fm"},
+	"disable_hotkeys":            {"message": "Відключити гарячі клавіші"},
+	"disable_scrollbars":         {"message": "Відключити смуги прокрутки"},
+	"notification_show_behavior": {"message": "Як показувати вікно повідомлення?"},
+	"notification_hide":          {"message": "Не показувати"},
+	"notification_auto":          {"message": "Показати на декілька секунд"},
+	"notification_show":          {"message": "Завжди показувати"},
+	"thanks":                     {"message": "Дякуємо!"},
+	"donate_disclaimer":          {"message": "Ваша підтримка допоможе<br/> розвитку VoKadio"},
+
+	"hotkeys_section": {"message": "
+		<h2>Гарячі клавіші</h2>
+		<ul>
+			<li><strong>Ctrl+Пробіл</strong> &mdash; Грати / Пауза</li>
+			<li><strong>Ctrl+⇨ (Вправо)</strong> &mdash; Наступний трек</li>
+			<li><strong>Ctrl+⇦ (Вліво)</strong> &mdash; Попередній трек</li>
+			<li><strong>Ctrl+⇧ (Вгору)</strong> &mdash; Голосніше</li>
+			<li><strong>Ctrl+⇩ (Вниз)</strong> &mdash; Тихіше</li>
+			<li><strong>F3</strong> або <strong>Ctrl+F</strong> &mdash; Пошук по треклісту. Для управління пошуком використовуються наступні клавіші:
+				<ul>
+					<li><strong>F3</strong> або <strong>⇩ (Вниз)</strong> &mdash; Перейти до наступного знайденого треку</li>
+					<li><strong>⇧ (Вгору)</strong> &mdash; Перейти до попереднього знайденого треку</li>
+				</ul>
+			</li>
+			<li><strong>Home</strong> &mdash; На початок треклісту</li>
+			<li><strong>End</strong> &mdash; В кінець треклісту</li>
+			<li><strong>PageUp</strong> &mdash; Прокрутити трекліст на одну сторінку вгору</li>
+			<li><strong>PageDown</strong> &mdash; Прокрутити трекліст на одну сторінку вниз</li>
+			<li><strong>⇧ (Вгору)</strong> &mdash; Прокрутити трекліст вгору</li>
+			<li><strong>⇩ (Вниз)</strong> &mdash; Прокрутити трекліст вниз</li>
+		</ul>
+	"},
+
+	"donate_content": {"message": "
+		<p>
+			За останній рік роботи VoKadio показав, що він потрібен багатьом, і не тільки нам, як це було спочатку.
+			Кожен день ми бачимо те, як ви реагуєте, і те, що вам подобається, отримуючи масу відгуків і пропозицій до проекту.
+			Все це дає нам натхнення робити його краще і краще, і з часом створити
+			проект дійсно високого рівня (<i>можливо навіть більше, ніж розширення для браузера Google Chrome</i>).
+			ВАШІ ВИНАГОРОДИ за нашу працю допоможуть не тільки підтримувати існування даного проекту,
+			але й реалізовувати все більше і більше <b>нових ідей і можливостей</b>.
+		</p>
+		<p>
+			Без вас, наших користувачів, цей проект нічого не вартує, так як і наша робота.
+			<b>Тільки разом ми зможемо досягнути справжнього успіху!</b>
+		</p>
+		<h3>Наші рахунки:</h3>
+		<ul>
+			<li><strong>Yandex.Money</strong> 410011075584627</li>
+			<li><strong>Webmoney</strong> Z785881917414, R253977804154, U419001659924</li>
+			<li><strong>Moneybookers</strong> infostyle.com.ua@gmail.com</li>
+		</ul>
+	"}
+}
