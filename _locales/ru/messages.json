@@ -34,5 +34,62 @@
 	"all_music_folder":		{"message": "Все аудиозаписи"},
 	"search_placeholder":	{"message": "Поиск аудиозаписи"},
 	"nothing_found":		{"message": "Ничего не найдено"},
-	"local_search_placeholder":	{"message": "Что найти?"}
+	"local_search_placeholder":	{"message": "Что найти?"},
+
+	"vokadio_options_title": {"message": "Настройка VoKadio"},
+	"settings":				{"message": "Настройки"},
+	"last_fm_scrobbling":	{"message": "Скробблинг на Last.fm"},
+	"disable_hotkeys":		{"message": "Отключить горячие клавиши"},
+	"disable_scrollbars":	{"message": "Отключить полосы прокрутки"},
+	"notification_show_behavior": {"message": "Как показывать окно уведомления?"},
+	"notification_hide":	{"message": "Не показывать"},
+	"notification_auto":	{"message": "Показать на несколько секунд"},
+	"notification_show":	{"message": "Всегда показывать"},
+
+	"hotkeys_section": {"message": "
+                    <h2>Горячие клавиши</h2>
+                    <ul>
+                        <li><strong>Ctrl+Пробел</strong> &mdash; Играть / Пауза</li>
+                        <li><strong>Ctrl+⇨ (Вправо)</strong> &mdash; Следующий трек</li>
+                        <li><strong>Ctrl+⇦ (Влево)</strong> &mdash; Предыдущий трек</li>
+                        <li><strong>Ctrl+⇧ (Вверх)</strong> &mdash; Громче</li>
+                        <li><strong>Ctrl+⇩ (Вниз)</strong> &mdash; Тише</li>
+                        <li><strong>F3</strong> или <strong>Ctrl+F</strong> &mdash; Поиск по треклисту. Для управления поиском используются следующие клавиши:
+                            <ul>
+                                <li><strong>F3</strong> или <strong>⇩ (Вниз)</strong> &mdash; Перейти к следующему найденному треку</li>
+                                <li><strong>⇧ (Вверх)</strong> &mdash; Перейти к предыдущему найденному треку</li>
+                            </ul>
+                        </li>
+                        <li><strong>Home</strong> &mdash; В начало треклиста</li>
+                        <li><strong>End</strong> &mdash; В конец треклиста</li>
+                        <li><strong>PageUp</strong> &mdash; Прокрутить треклист на одну страницу вверх</li>
+                        <li><strong>PageDown</strong> &mdash; Прокрутить треклист на одну страницу вниз</li>
+                        <li><strong>⇧ (Вверх)</strong> &mdash; Прокрутить треклист вверх</li>
+                        <li><strong>⇩ (Вниз)</strong> &mdash; Прокрутить треклист вниз</li>
+                    </ul>
+	"},
+	"donate_disclaimer": {"message": "Ваша поддержка поможет<br/> развитию VoKadio"},
+
+	"donate_content": {"message": "
+                <p>
+                    За последний год работы VoKadio показал, что он нужен многим, и не только нам, как это было изначально.
+                    Каждый день мы видим то, как вы реагируете, и то, что вам нравится, получая масу отзывов и предложений по проекту.
+                    Всё это даёт нам вдохновение делать его лучше и лучше, и со временем создать
+                    проект действительно высокого уровня (<i>возможно даже больше, чем расширение для браузера Google Chrome</i>).
+                    ВАШИ ВОЗНАГРАЖДЕНИЯ за наши труды помогут не только держать данный проект на плаву,
+                    но и реализовывать всё больше и больше <b>новых идей и возможностей</b>.
+                </p>
+                <p>
+                    Без вас, наших пользователей, этот проект ничего не стоит, так как и наша работа.
+                    <b>Только вместе мы сможем достичь истинного успеха!</b>
+                </p>
+                <h3>Наши счета:</h3>
+                <ul>
+                    <li><strong>Yandex.Money</strong> 410011075584627</li>
+                    <li><strong>Webmoney</strong> Z785881917414, R253977804154, U419001659924</li>
+                    <li><strong>Moneybookers</strong> infostyle.com.ua@gmail.com</li>
+                </ul>
+	"},
+
+	"thanks": {"message": "Спасибо!"}
 }

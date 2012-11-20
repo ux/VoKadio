@@ -193,23 +193,23 @@
         <div id="content">
             <div class="box">
                 <div class="section">
-                    <h2>Настройки</h2>
+                    <h2 id="settings-header">Настройки</h2>
 
                     <div class="group">
-                        <label><input id="use-lastfm" type="checkbox" /> Скробблинг на Last.fm</label>
+                        <label><input id="use-lastfm" type="checkbox" /> <span id="use-lastfm-label">Скробблинг на Last.fm</span></label>
                     </div>
 
                     <div class="group">
-                        <label><input id="disable-hotkeys" type="checkbox" /> Отключить горячие клавиши</label>
+                        <label><input id="disable-hotkeys" type="checkbox" /> <span id="disable-hotkeys-label">Отключить горячие клавиши</span></label>
                     </div>
 
                     <div class="group">
-                        <label><input id="disable-scrollbars" type="checkbox" /> Отключить полосы прокрутки</label>
+                        <label><input id="disable-scrollbars" type="checkbox" /> <span id="disable-scrollbars-label">Отключить полосы прокрутки</span></label>
                     </div>
 
                     <div class="group">
                         <label>
-                            Как показывать окно уведомления?
+                            <span id="notification-show-behavior-label">Как показывать окно уведомления?</span>
                             <select id="notification-show-behavior">
                                 <option value="hide">Не показывать</option>
                                 <option value="show-on-update">Показать на несколько секунд</option>
@@ -219,7 +219,7 @@
                     </div>
                 </div>
 
-                <div class="section">
+                <div class="section" id="hotkeys-section">
                     <h2>Горячие клавиши</h2>
                     <ul>
                         <li><strong>Ctrl+Пробел</strong> &mdash; Играть / Пауза</li>
@@ -243,7 +243,7 @@
                 </div>
             </div>
 
-            <a href="#donate-box" class="disclaimer" name="donate"><span>Ваша поддержка поможет<br/> развитию VoKadio</span></a>
+            <a href="#donate-box" class="disclaimer" name="donate"><span id="donate-disclaimer-text">Ваша поддержка поможет<br/> развитию VoKadio</span></a>
             <div id="donate-box" class="box">
                 <p>
                     За последний год работы VoKadio показал, что он нужен многим, и не только нам, как это было изначально.
@@ -267,7 +267,7 @@
         </div><!--/content-->
 
         <div id="footer">
-            <h1>Спасибо!</h1>
+            <h1 id="thanks-header">Спасибо!</h1>
         </div><!--/footer-->
     </div>
 

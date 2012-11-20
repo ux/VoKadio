@@ -19,6 +19,22 @@
 
 var bp = chrome.extension.getBackgroundPage();
 
+(function init_i18n() {
+    document.title = chrome.i18n.getMessage('vokadio_options_title');
+    $("#settings-header").text(chrome.i18n.getMessage('settings'));
+    $("#use-lastfm-label").text(chrome.i18n.getMessage('last_fm_scrobbling'));
+    $("#disable-hotkeys-label").text(chrome.i18n.getMessage('disable_hotkeys'));
+    $("#disable-scrollbars-label").text(chrome.i18n.getMessage('disable_scrollbars'));
+    $("#notification-show-behavior-label").text(chrome.i18n.getMessage('notification_show_behavior'));
+    $("#notification-show-behavior option[value=hide]").text(chrome.i18n.getMessage('notification_hide'));
+    $("#notification-show-behavior option[value=show-on-update]").text(chrome.i18n.getMessage('notification_auto'));
+    $("#notification-show-behavior option[value=show-always]").text(chrome.i18n.getMessage('notification_show'));
+    $("#hotkeys-section").html(chrome.i18n.getMessage('hotkeys_section'));
+    $("#donate-disclaimer-text").html(chrome.i18n.getMessage('donate_disclaimer'));
+    $("#donate-box").html(chrome.i18n.getMessage('donate_content'));
+    $("#thanks-header").text(chrome.i18n.getMessage('thanks'));
+})();
+
 (function init_lastfm_option()
 {
     $('#use-lastfm')[0].checked = bp.options.get('lastfm');
