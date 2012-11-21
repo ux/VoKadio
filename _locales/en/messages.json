@@ -1,6 +1,6 @@
 {
 	"ext_name":                   {"message": "VoKadio — player for VK.com"},
-	"ext_description":            {"message": "Listen and enjoy your favorite music on the site VK.com with the VoKadio audio player!"},
+	"ext_description":            {"message": "Listen and enjoy your favorite music on VK.com with VoKadio audio player!"},
 
 	"download":                   {"message": "Download song"},
 	"download_short":             {"message": "Download"},
