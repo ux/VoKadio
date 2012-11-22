@@ -117,7 +117,7 @@ function DynamicListView(list_element, draw_item_callback)
 
         var min_item_index = get_min_item_index(),
             max_item_index = get_max_item_index(),
-            all_items_visible = items_count < max_visible_items_count;
+            all_items_visible = items_count < max_visible_items_count - 1;
 
         if (max_item_index >= min_item_index) {
             list_element.start = min_item_index + 1;
@@ -177,8 +177,7 @@ function DynamicListView(list_element, draw_item_callback)
     {
         scrollbar_height_element.style.height = (items_count > 0 ? items_count * item_height - 1 : 0) + 'px';
 
-        var all_items_visible = items_count < max_visible_items_count,
-            list_items_count  = all_items_visible ? items_count : max_visible_items_count;
+        var list_items_count  = items_count < max_visible_items_count ? items_count : max_visible_items_count;
 
         if (list_items_count > list_element.children.length - 1)
             while (list_element.children.length - 1 != list_items_count)
@@ -188,7 +187,7 @@ function DynamicListView(list_element, draw_item_callback)
             while (list_element.children.length - 1 != list_items_count)
                 list_element.removeChild(list_element.children[1]);
 
-        scrollbar_element.style.display = all_items_visible ? 'none': 'block';
+        scrollbar_element.style.display = items_count < max_visible_items_count - 1 ? 'none': 'block';
     }
 
     function get_item_height()
