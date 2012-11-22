@@ -653,8 +653,8 @@ var history_tracklist, my_tracklist, search_tracklist;
     history_tracklist = new Tracklist($("#history-view > .tracklist > ol")[0], ['removeFromHistory', 'download'], bp.player.history);
 
     $("#history").click(function () {
-        history_tracklist.applyToPlaylist(bp.player.history);
         activateViewElement(this);
+        history_tracklist.applyToPlaylist(bp.player.history);
         history_tracklist.view.activate();
     });
 }());
