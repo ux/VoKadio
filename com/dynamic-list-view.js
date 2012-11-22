@@ -115,7 +115,9 @@ function DynamicListView(list_element, draw_item_callback)
         if ( ! this.active)
             return;
 
-        var min_item_index = get_min_item_index(), max_item_index = get_max_item_index();
+        var min_item_index = get_min_item_index(),
+            max_item_index = get_max_item_index(),
+            all_items_visible = items_count < max_visible_items_count;
 
         if (max_item_index >= min_item_index) {
             list_element.start = min_item_index + 1;
@@ -128,7 +130,7 @@ function DynamicListView(list_element, draw_item_callback)
                 draw_item_callback.call(item, i);
 
                 var margin_right = document.defaultView ? parseInt(document.defaultView.getComputedStyle(item, null).marginRight) : 0;
-                item.style.marginRight = DynamicListView.disableScrollbar ? '0' : ((isNaN(margin_right) ? 0 : margin_right) + scrollbar_width) + 'px';
+                item.style.marginRight = (DynamicListView.disableScrollbar || all_items_visible) ? '0' : ((isNaN(margin_right) ? 0 : margin_right) + scrollbar_width) + 'px';
             }
         }
     };
@@ -175,7 +177,8 @@ function DynamicListView(list_element, draw_item_callback)
     {
         scrollbar_height_element.style.height = (items_count > 0 ? items_count * item_height - 1 : 0) + 'px';
 
-        var list_items_count = items_count < max_visible_items_count ? items_count : max_visible_items_count;
+        var all_items_visible = items_count < max_visible_items_count,
+            list_items_count  = all_items_visible ? items_count : max_visible_items_count;
 
         if (list_items_count > list_element.children.length - 1)
             while (list_element.children.length - 1 != list_items_count)
@@ -184,6 +187,8 @@ function DynamicListView(list_element, draw_item_callback)
         else if (list_items_count < list_element.children.length - 1)
             while (list_element.children.length - 1 != list_items_count)
                 list_element.removeChild(list_element.children[1]);
+
+        scrollbar_element.style.display = all_items_visible ? 'none': 'block';
     }
 
     function get_item_height()

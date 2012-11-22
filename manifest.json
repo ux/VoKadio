@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 
 	"name":         "__MSG_ext_name__",
-	"version":      "2.1.22",
+	"version":      "2.1.23",
 	"description":  "__MSG_ext_description__",
 	"homepage_url": "http://vk.com/vokadio",
 	"default_locale": "ru",
