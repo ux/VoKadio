@@ -15,7 +15,7 @@ body
 }
 
 
-::-webkit-scrollbar { width: 10px }
+::-webkit-scrollbar { width: 11px; box-shadow: inset 3px 0 3px -3px #666; }
 ::-webkit-scrollbar-button { width: 0; height: 0; }
 ::-webkit-scrollbar-corner { background: transparent }
 
@@ -23,6 +23,7 @@ body
 {
     min-height: 24px;
     border: 1px solid transparent;
+    border-left-width: 2px;
     background-clip: padding-box;
     background-color: rgba(0, 0, 0, .2);
     box-shadow: inset 1px 1px 0 rgba(0, 0, 0, .1), inset 0 -1px 0 rgba(0, 0, 0, .07);
