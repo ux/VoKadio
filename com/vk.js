@@ -169,7 +169,7 @@ VK.Audio.Album = function (id, owner_id, index, title, player, query)
     {
         get_playlist();
 
-        var params = {count: 16000};
+        var params = {}; /*{count: 16000};*/
         (owner_id != null) && (params.uid = owner_id);
         (id != null)       && (params.album_id = id);
 

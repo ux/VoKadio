@@ -22,8 +22,8 @@ var bp = chrome.extension.getBackgroundPage();
 (function init_i18n() {
     document.title = chrome.i18n.getMessage('vokadio_options_title');
     $("#settings-header").text(chrome.i18n.getMessage('settings'));
+    $("#broadcast-audio-label").text(chrome.i18n.getMessage('audio_broadcasting'));
     $("#use-lastfm-label").text(chrome.i18n.getMessage('last_fm_scrobbling'));
-    $("#disable-hotkeys-label").text(chrome.i18n.getMessage('disable_hotkeys'));
     $("#disable-scrollbars-label").text(chrome.i18n.getMessage('disable_scrollbars'));
     $("#notification-show-behavior-label").text(chrome.i18n.getMessage('notification_show_behavior'));
     $("#notification-show-behavior option[value=hide]").text(chrome.i18n.getMessage('notification_hide'));
@@ -35,6 +35,15 @@ var bp = chrome.extension.getBackgroundPage();
     $("#thanks-header").text(chrome.i18n.getMessage('thanks'));
 })();
 
+(function init_broadcast_audio_option()
+{
+    $('#broadcast-audio')[0].checked = bp.options.get('broadcast-audio');
+
+    $('#broadcast-audio').change(function () {
+        this.checked ? bp.options.set('broadcast-audio', true) : bp.options.delete('broadcast-audio');
+    });
+}());
+
 (function init_lastfm_option()
 {
     $('#use-lastfm')[0].checked = bp.options.get('lastfm');
@@ -44,15 +53,6 @@ var bp = chrome.extension.getBackgroundPage();
     });
 
     $(window).unload(function () { bp.checkLastfmSession(); });
-}());
-
-(function init_disable_hotkeys_option()
-{
-    $('#disable-hotkeys')[0].checked = bp.options.get('hotkeys.disabled');
-
-    $('#disable-hotkeys').change(function () {
-        bp.options.set('hotkeys.disabled', this.checked);
-    });
 }());
 
 (function init_disable_scrollbars_option()

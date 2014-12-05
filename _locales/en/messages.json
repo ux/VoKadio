@@ -24,6 +24,8 @@
 	"play_order":                 {"message": "Play order"},
 	"refresh_session":            {"message": "Refresh session"},
 	"volume":                     {"message": "Volume"},
+	"volume_up":                  {"message": "Louder"},
+	"volume_down":                {"message": "Quieter"},
 
 	"history":                    {"message": "History"},
 	"my_music":                   {"message": "My Music"},
@@ -38,8 +40,8 @@
 
 	"vokadio_options_title":      {"message": "VoKadio Settings"},
 	"settings":                   {"message": "Settings"},
+	"audio_broadcasting":         {"message": "Broadcast names of the tracks I'm listening to"},
 	"last_fm_scrobbling":         {"message": "Last.fm scrobbling"},
-	"disable_hotkeys":            {"message": "Disable hotkeys"},
 	"disable_scrollbars":         {"message": "Disable scrollbars"},
 	"notification_show_behavior": {"message": "Notification behavior"},
 	"notification_hide":          {"message": "Hide always"},
@@ -51,11 +53,6 @@
 	"hotkeys_section": {"message": "
 		<h2>Hotkeys</h2>
 		<ul>
-			<li><strong>Ctrl+Space</strong> &mdash; Play / Pause</li>
-			<li><strong>Ctrl+⇨ (Right)</strong> &mdash; Next song</li>
-			<li><strong>Ctrl+⇦ (Left)</strong> &mdash; Previous song</li>
-			<li><strong>Ctrl+⇧ (Up)</strong> &mdash; Louder</li>
-			<li><strong>Ctrl+⇩ (Down)</strong> &mdash; Quieter</li>
 			<li><strong>F3</strong> or <strong>Ctrl+F</strong> &mdash; Search in playlist. To control the search process use the following hotkeys:
 				<ul>
 					<li><strong>F3</strong> or <strong>⇩ (Down)</strong> &mdash; Go to the next found song</li>

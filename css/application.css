@@ -1398,7 +1398,7 @@ input, button
 
     #search-controls input[type="search"]
     {
-        width: 97%;
+        width: 100%;
         font-family: 'Trebuchet MS', Trebuchet, Tahoma, 'Droid Sans', Geneva, sans-serif;
         font-style: italic;
         color: #493c3c;
@@ -1406,7 +1406,7 @@ input, button
         border-radius: 4px;
         border: 2px solid #d6d6d6;
         padding: 5px 0 5px 0px;
-        margin: -2px 0 0 -1px;
+        margin: -2px 0 0 0;
         outline: none;
         box-shadow: 0 0 6px #c0c0c0;
     }
@@ -1428,7 +1428,7 @@ input, button
         height: 34px;
         position: absolute;
         top: -3px;
-        right: -3px;
+        right: -2px;
         border: 0 none;
         background: url('../images/sprite.png') no-repeat -670px 0;
     }

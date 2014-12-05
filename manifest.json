@@ -37,6 +37,24 @@
 		]
 	},
 
+        "commands": {
+          "toggle-play": {
+            "description": "__MSG_play_pause__"
+          },
+          "play-next": {
+            "description": "__MSG_next_track__"
+          },
+          "play-previous": {
+            "description": "__MSG_prev_track__"
+          },
+          "volume-up": {
+            "description": "__MSG_volume_up__"
+          },
+          "volume-down": {
+            "description": "__MSG_volume_down__"
+          }
+	},
+	
 	"browser_action": {
 		"default_title": "VoKadio",
 		"default_icon":  "icons/popup.png",
@@ -45,16 +63,14 @@
 
 	"options_page": "options.html",
 
-	"content_scripts": [
-		{"matches": ["http://*/*", "https://*/*"], "js": ["app/hotkeys.js"], "run_at": "document_start"}
-	],
-
 	"permissions": [
 		"notifications",
 		"background",
 		"https://api.vk.com/",
 		"http://ws.audioscrobbler.com/"
 	],
+	
+	"web_accessible_resources": ["auth/*.html"],
 
 	"minimum_chrome_version": "18"
 }

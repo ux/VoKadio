@@ -25,5 +25,6 @@ if (location.search.length > 1) {
     // ?error=access_denied&error_reason=user_denied&error_description=User+denied+your+request
 }
 
-window.open('', '_self', ''); // Google Chrome bug fix ;)
-window.close();
+chrome.tabs.query({'active': true}, function(tab) {
+    chrome.tabs.remove(tab[0].id, function() { });
+});

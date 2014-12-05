@@ -14,5 +14,6 @@ function extractParams(params_str)
 if (location.search.length > 1)
     chrome.extension.getBackgroundPage().lastfmAuthCallback(extractParams(location.search.substr(1)));
 
-window.open('', '_self', ''); // Google Chrome bug fix ;)
-window.close();
+chrome.tabs.query({'active': true}, function(tab) {
+    chrome.tabs.remove(tab[0].id, function() { });
+});

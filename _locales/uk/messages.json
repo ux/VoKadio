@@ -24,6 +24,8 @@
 	"play_order":                 {"message": "Порядок програвання"},
 	"refresh_session":            {"message": "Оновити сесію"},
 	"volume":                     {"message": "Гучність"},
+	"volume_up":                  {"message": "Гучніше"},
+	"volume_down":                {"message": "Тихіше"},
 
 	"history":                    {"message": "Історія програвання"},
 	"my_music":                   {"message": "Мої аудіозаписи"},
@@ -38,8 +40,8 @@
 
 	"vokadio_options_title":      {"message": "Налаштування VoKadio"},
 	"settings":                   {"message": "Налаштування"},
+	"audio_broadcasting":         {"message": "Транслювати у статус музику, яка звучить"},
 	"last_fm_scrobbling":         {"message": "Скробблінг на Last.fm"},
-	"disable_hotkeys":            {"message": "Відключити гарячі клавіші"},
 	"disable_scrollbars":         {"message": "Відключити смуги прокрутки"},
 	"notification_show_behavior": {"message": "Як показувати вікно повідомлення?"},
 	"notification_hide":          {"message": "Не показувати"},
@@ -47,15 +49,10 @@
 	"notification_show":          {"message": "Завжди показувати"},
 	"thanks":                     {"message": "Дякуємо!"},
 	"donate_disclaimer":          {"message": "Ваша підтримка допоможе<br/> розвитку VoKadio"},
-
+	
 	"hotkeys_section": {"message": "
 		<h2>Гарячі клавіші</h2>
 		<ul>
-			<li><strong>Ctrl+Пробіл</strong> &mdash; Грати / Пауза</li>
-			<li><strong>Ctrl+⇨ (Вправо)</strong> &mdash; Наступний трек</li>
-			<li><strong>Ctrl+⇦ (Вліво)</strong> &mdash; Попередній трек</li>
-			<li><strong>Ctrl+⇧ (Вгору)</strong> &mdash; Голосніше</li>
-			<li><strong>Ctrl+⇩ (Вниз)</strong> &mdash; Тихіше</li>
 			<li><strong>F3</strong> або <strong>Ctrl+F</strong> &mdash; Пошук по треклісту. Для управління пошуком використовуються наступні клавіші:
 				<ul>
 					<li><strong>F3</strong> або <strong>⇩ (Вниз)</strong> &mdash; Перейти до наступного знайденого треку</li>

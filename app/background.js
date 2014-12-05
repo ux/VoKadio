@@ -18,9 +18,9 @@
  */
 
 var options = new Options({
+    'broadcast-audio': false,
     'lastfm': false,
     'notification.show-behavior': NOTIFICATION_DEFAULT_SHOW_BEHAVIOR,
-    'hotkeys.disabled': false,
     'ui.disable-scrollbars': false
 });
 
@@ -136,17 +136,42 @@ function checkLastfmSession()
 
 (function init_notification()
 {
+    var notification_id = 0;
+    
     if (options.get('notification.show-behavior') == 'show-always')
         show_notification();
 
     player.history.addEventListener(AudioPlayer.Playlist.EVENT_NOW_PLAYING_CHANGED, function (event) {
-        if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && chrome.extension.getViews({type: 'notification'}).length == 0)
-            show_notification();
+        chrome.notifications.getAll(function (n){
+            if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && Object.keys(n).length == 0)
+                show_notification(event.nowPlaying);
+            else if (event.nowPlaying && options.get('notification.show-behavior') != 'hide' && Object.keys(n).length != 0)
+                update_notification(event.nowPlaying);
+        });
     });
 
-    function show_notification()
+    function show_notification(data)
     {
-        webkitNotifications.createHTMLNotification('/notification.html').show();
+        chrome.notifications.create("", {
+            type:     "basic",
+            iconUrl:  "/icons/128x128.png",
+            title:    data.artist,
+            message:  data.title,
+        },
+        function(id) {
+            notification_id = id;
+            //console.log(id);
+            setTimeout(function (){
+                chrome.notifications.clear(id, function() {});
+            },NOTIFICATION_TIMEOUT);
+        });
+    }
+    
+    function update_notification(data){
+        chrome.notifications.update(notification_id, {
+            title:   data.artist,
+            message: data.title
+        },  function() { });
     }
 }());
 
@@ -184,10 +209,12 @@ function checkLastfmSession()
 
 (function init_vk_audio_broadcast()
 {
-    player.audio.addEventListener('playing', function () {
-        var track = player.history.nowPlaying;
-        vk_query.call('status.set', {audio: track.owner_id + '_' + track.aid});
-    });
+        player.audio.addEventListener('playing', function () {
+            if (options.get('broadcast-audio')) {
+                var track = player.history.nowPlaying;
+                vk_query.call('audio.setBroadcast', {audio: track.owner_id + '_' + track.aid});
+            }
+        });
 }());
 
 (function init_lastfm_scrobbling()
@@ -214,10 +241,8 @@ function checkLastfmSession()
 
 (function init_global_hotkeys()
 {
-    chrome.extension.onRequest.addListener(function(request) {
-        if (options.get('hotkeys.disabled')) return;
-
-        switch (request.command) {
+    chrome.commands.onCommand.addListener(function(command) {
+        switch (command) {
             case 'toggle-play':
                 player.togglePlay();
                 break;
